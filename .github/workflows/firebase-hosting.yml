@@ -23,17 +23,50 @@ jobs:
         run: npm install -g firebase-tools
 
       - name: Create Service Account
+        shell: bash
         run: |
-          echo '${{ secrets.F1A_FIREBASE_SERVICE_ACCOUNT }}' > service-account.json
+          cat > service-account.json <<EOF
+          ${{ secrets.F1A_FIREBASE_SERVICE_ACCOUNT }}
+          EOF
+
+      - name: Validate JSON
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+          jq . service-account.json
+
+      - name: Show Service Account (without private key)
+        run: |
+          jq 'del(.private_key)' service-account.json
+
+      - name: Configure Credentials
+        run: |
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$PWD/service-account.json" >> $GITHUB_ENV
+
+      - name: Firebase Version
+        run: firebase --version
+
+      - name: Test Firebase Authentication
+        run: firebase projects:list
+
+      - name: Install Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authenticate Google Cloud
+        run: |
+          gcloud auth activate-service-account \
+            --key-file=service-account.json
+
+      - name: Active Account
+        run: gcloud auth list
 
       - name: Validate firebase.json
-        run: |
-          test -f firebase.json
+        run: test -f firebase.json
 
-      - name: Deploy F1A
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: service-account.json
+      - name: Deploy Hosting
         run: |
           firebase deploy \
+            --project projeto-ceocard \
             --only hosting:sitef1a \
-            --project projeto-ceocard
+            --non-interactive \
+            --debug
