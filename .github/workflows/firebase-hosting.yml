@@ -14,14 +14,15 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 22
 
       - name: Authenticate Google Cloud
-        id: auth
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.F1A_FIREBASE_SERVICE_ACCOUNT }}'
@@ -34,9 +35,32 @@ jobs:
       - name: Firebase Version
         run: firebase --version
 
+      - name: Debug Google Auth
+        run: |
+          echo "===================================="
+          echo "GOOGLE_APPLICATION_CREDENTIALS"
+          echo "$GOOGLE_APPLICATION_CREDENTIALS"
+          echo "===================================="
+
+          ls -la
+
+          echo "===================================="
+
+          env | grep GOOGLE || true
+
+      - name: Test Google Cloud Auth
+        run: |
+          gcloud auth list || true
+          gcloud config list || true
+
+      - name: Firebase Projects
+        run: |
+          firebase projects:list --debug || true
+
       - name: Deploy Hosting
         run: |
           firebase deploy \
             --project projeto-ceocard \
             --only hosting:sitef1a \
-            --non-interactive
+            --non-interactive \
+            --debug
