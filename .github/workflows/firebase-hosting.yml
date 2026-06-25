@@ -12,6 +12,9 @@ jobs:
     permissions:
       contents: read
 
+    env:
+      GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-key.json
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,15 +24,23 @@ jobs:
         with:
           node-version: 22
 
-      - name: Validate firebase.json
+      - name: Create Firebase Key
         run: |
-          test -f firebase.json
+          echo '${{ secrets.F1A_FIREBASE_SERVICE_ACCOUNT }}' > firebase-key.json
 
-      - name: Deploy F1A
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          firebaseServiceAccount: "${{ secrets.F1A_FIREBASE_SERVICE_ACCOUNT }}"
-          projectId: projeto-ceocard
-          target: sitef1a
-          channelId: live
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Verify Firebase CLI
+        run: firebase --version
+
+      - name: Verify Authentication
+        run: |
+          firebase projects:list
+
+      - name: Deploy Hosting
+        run: |
+          firebase deploy \
+            --project projeto-ceocard \
+            --only hosting:sitef1a \
+            --non-interactive
