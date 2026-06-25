@@ -1,0 +1,30 @@
+name: Test Google Auth
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.F1A_FIREBASE_SERVICE_ACCOUNT }}'
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authenticate
+        run: |
+          gcloud auth activate-service-account \
+            --key-file="${GOOGLE_GHA_CREDS_PATH}"
+
+      - name: List Projects
+        run: |
+          gcloud projects list
