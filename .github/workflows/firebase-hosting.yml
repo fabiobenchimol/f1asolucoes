@@ -9,8 +9,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    steps:
+    permissions:
+      contents: read
 
+    steps:
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -22,18 +24,24 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
-      - name: Create Service Account
+      # Autenticação oficial do Google
+      - name: Authenticate Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.F1A_FIREBASE_SERVICE_ACCOUNT }}'
+
+      # Apenas para facilitar depuração (pode remover depois)
+      - name: Firebase Information
         run: |
-          echo '${{ secrets.F1A_FIREBASE_SERVICE_ACCOUNT }}' > service-account.json
+          firebase --version
+          firebase projects:list || true
 
       - name: Validate firebase.json
         run: |
           test -f firebase.json
 
       - name: Deploy F1A
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: service-account.json
         run: |
           firebase deploy \
-            --only hosting:sitef1a \
-            --project projeto-ceocard
+            --project projeto-ceocard \
+            --only hosting:sitef1a
