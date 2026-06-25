@@ -1,0 +1,966 @@
+---
+description: Design System Infinity Blue e Componentes Oficiais F1A
+globs:
+alwaysApply: true
+---
+
+# F1A UI Architecture
+
+Você é especialista no Design System oficial da plataforma F1A.
+
+Toda interface criada deve parecer parte nativa do sistema.
+
+O usuário não deve conseguir distinguir se a tela foi criada recentemente ou se já existia.
+
+---
+
+# Design System Oficial
+
+Nome:
+
+Infinity Blue
+
+Características:
+
+- Corporativo
+- Premium
+- Moderno
+- Limpo
+- Responsivo
+- SaaS Enterprise
+
+---
+
+# Paleta Oficial
+
+Utilizar prioritariamente:
+
+```css
+--f1a-blue
+--f1a-blue-dark
+--f1a-navy
+--f1a-copper
+```
+
+Evitar:
+
+- cores aleatórias
+- gradientes diferentes
+- tons fora do padrão
+
+---
+
+# Estrutura Oficial de Página
+
+Toda página deve seguir:
+
+```html
+<body>
+
+<header>
+
+<aside class="sidebar">
+
+<main>
+
+<section>
+
+</body>
+```
+
+Nunca criar layouts independentes.
+
+---
+
+# Estrutura de Conteúdo
+
+Modelo padrão:
+
+```html
+<div class="mesa-container">
+
+    <div class="page-header">
+
+    </div>
+
+    <div class="page-content">
+
+    </div>
+
+</div>
+```
+
+---
+
+# Header Oficial
+
+Toda tela deve possuir:
+
+- título
+- subtítulo opcional
+- ações principais
+
+Exemplo:
+
+```html
+<div class="page-header">
+    <h1>Título</h1>
+    <p>Descrição</p>
+</div>
+```
+
+---
+
+# Cards Oficiais
+
+Utilizar:
+
+```html
+<div class="card">
+```
+
+Características:
+
+- bordas suaves
+- sombra leve
+- fundo branco
+- espaçamento interno
+
+---
+
+# Dashboard Cards
+
+Estrutura:
+
+```html
+<div class="kpi-card">
+```
+
+Componentes:
+
+- título
+- valor
+- ícone
+- variação
+
+---
+
+# Tabelas Oficiais
+
+Estrutura obrigatória:
+
+```html
+<div class="tabela-container">
+
+    <div class="tabela-wrapper">
+
+        <table class="tabela-dados">
+
+        </table>
+
+    </div>
+
+</div>
+```
+
+Nunca criar tabelas fora desse padrão.
+
+---
+
+# Regras das Tabelas
+
+Sempre:
+
+✓ Cabeçalho fixo
+
+✓ Responsividade
+
+✓ Hover
+
+✓ Paginação quando necessário
+
+✓ Estado vazio
+
+---
+
+# Estado Vazio
+
+Padrão:
+
+```html
+Nenhum registro encontrado.
+```
+
+Evitar telas em branco.
+
+---
+
+# Formulários
+
+Estrutura:
+
+```html
+<div class="form-group">
+
+    <label>
+
+    <input>
+
+</div>
+```
+
+---
+
+# Campos Obrigatórios
+
+Todo campo deve possuir:
+
+```html
+label
+id
+name
+```
+
+---
+
+# Inputs
+
+Utilizar:
+
+```html
+input
+select
+textarea
+```
+
+Padronizados.
+
+Evitar estilos próprios.
+
+---
+
+# Botões
+
+Categorias:
+
+## Primário
+
+```html
+btn-primary
+```
+
+Ação principal.
+
+---
+
+## Secundário
+
+```html
+btn-secondary
+```
+
+Ações auxiliares.
+
+---
+
+## Perigo
+
+```html
+btn-danger
+```
+
+Exclusões.
+
+---
+
+# Ícones
+
+Biblioteca oficial:
+
+```html
+Material Symbols Rounded
+```
+
+Não misturar bibliotecas.
+
+---
+
+# Dropdown Oficial
+
+Classes oficiais:
+
+```html
+dropdown-content-f1a
+
+show-dropdown-f1a
+
+dropbtn-f1a
+```
+
+Nunca criar dropdowns paralelos.
+
+---
+
+# Toast Oficial
+
+Função:
+
+```javascript
+mostrarToast(
+    mensagem,
+    tipo
+)
+```
+
+Tipos:
+
+```text
+sucesso
+erro
+```
+
+Não reinventar sistema de notificações.
+
+---
+
+# Modais
+
+Priorizar modal reutilizável.
+
+Evitar criar modais diferentes para cada tela.
+
+---
+
+# Sidebar
+
+A Sidebar pertence ao Core.
+
+Nunca:
+
+- duplicar sidebar
+- recriar sidebar
+- alterar estrutura principal
+
+---
+
+# Perfil do Usuário
+
+O componente de usuário é global.
+
+Não duplicar.
+
+Não recriar.
+
+---
+
+# Loader
+
+Utilizar loaders padronizados.
+
+Exemplo:
+
+```html
+Buscando dados...
+```
+
+ou
+
+```html
+Carregando...
+```
+
+---
+
+# Responsividade
+
+Obrigatório:
+
+## Desktop
+
+>= 1200px
+
+---
+
+## Tablet
+
+768px - 1199px
+
+---
+
+## Mobile
+
+< 768px
+
+---
+
+# Mobile First
+
+Sempre validar:
+
+- tabelas
+- cards
+- formulários
+- modais
+
+---
+
+# Tema Global
+
+O tema pertence ao Core.
+
+Funções oficiais:
+
+```javascript
+alternarTemaGlobal()
+
+aplicarTemaGlobal()
+```
+
+Nunca criar:
+
+```javascript
+toggleDarkMode()
+```
+
+ou similares.
+
+---
+
+# Dark Mode
+
+Se existir suporte:
+
+Utilizar variáveis CSS.
+
+Nunca:
+
+```css
+background: #000;
+color: #fff;
+```
+
+hardcoded.
+
+---
+
+# Espaçamentos
+
+Priorizar:
+
+```css
+8px
+12px
+16px
+24px
+32px
+48px
+```
+
+Evitar valores aleatórios.
+
+---
+
+# Bordas
+
+Padrão:
+
+```css
+6px
+8px
+12px
+16px
+```
+
+---
+
+# Sombras
+
+Utilizar apenas sombras oficiais.
+
+Evitar:
+
+```css
+box-shadow exagerado
+```
+
+---
+
+# Animações
+
+Utilizar:
+
+- fade
+- slide leve
+- hover suave
+
+Evitar:
+
+- bounce
+- zoom agressivo
+- efeitos chamativos
+
+---
+
+# Página de Login
+
+Estrutura oficial:
+
+Split Layout
+
+```text
+Painel Institucional
++
+Painel de Acesso
+```
+
+Características:
+
+- branding à esquerda
+- autenticação à direita
+
+---
+
+# Dashboard Executivo
+
+Componentes:
+
+- KPI Cards
+- Gráficos
+- Indicadores
+- Tabelas
+
+---
+
+# Master Vision
+
+Sempre destacar visualmente:
+
+- usuário simulado
+- empresa simulada
+
+Evitar ambiguidades.
+
+---
+
+# Crochê
+
+Exceção permitida:
+
+O módulo Crochê possui identidade visual complementar.
+
+Pode utilizar:
+
+```css
+--premium-gold
+--croche-rose
+```
+
+Desde que mantenha compatibilidade com o Core.
+
+---
+
+# Regras do Agente
+
+Antes de gerar qualquer tela:
+
+1. Verificar padrão Infinity Blue.
+2. Verificar componentes existentes.
+3. Reutilizar tabelas oficiais.
+4. Reutilizar cards oficiais.
+5. Reutilizar dropdowns oficiais.
+6. Reutilizar toast oficial.
+7. Reutilizar modais existentes.
+8. Validar responsividade.
+9. Validar dark mode.
+10. Garantir consistência visual.
+
+Nunca criar componentes incompatíveis com o restante da plataforma.
+
+Toda nova interface deve parecer nativa do F1A.
+
+# Reutilização Obrigatória
+
+Antes de criar qualquer componente visual:
+
+1. Procurar componente equivalente em módulos existentes.
+2. Procurar página semelhante.
+3. Reutilizar HTML existente.
+4. Reutilizar CSS existente.
+5. Reutilizar JavaScript existente.
+
+É proibido recriar:
+
+- Sidebar
+- Header principal
+- Dropdown do usuário
+- Dark Mode
+- Menu lateral
+- Sistema de notificações
+
+Quando existir um componente oficial, sua reutilização é obrigatória.
+
+# Componentes de Referência Oficial
+
+Quando existir mais de uma implementação visual no projeto,
+a referência oficial deve ser utilizada.
+
+Página de referência principal:
+
+modulo-crm/clientes.html
+
+---
+
+## Header Oficial
+
+Fonte da verdade:
+
+modulo-crm/clientes.html
+
+Elementos obrigatórios:
+
+- empresa ativa
+- ícone da empresa
+- botão de tema
+- perfil do usuário
+
+Não criar variantes.
+
+---
+
+## Perfil do Usuário
+
+Fonte da verdade:
+
+modulo-crm/clientes.html
+modulo-crm/clientes.js
+
+Estrutura obrigatória:
+
+- avatar
+- nome
+- cargo
+- dropdown
+- alterar nome
+- sair do sistema
+
+Qualquer nova página deve reutilizar esta implementação.
+
+---
+
+## Sidebar Oficial
+
+Fonte da verdade:
+
+modulo-crm/clientes.html
+
+Estrutura obrigatória:
+
+- nav-item
+- nav-texto
+- sidebar retraída
+- sair do módulo no rodapé
+
+Não utilizar implementações alternativas.
+
+---
+
+## Tema Global
+
+Fonte da verdade:
+
+core.js
+
+Funções obrigatórias:
+
+alternarTemaGlobal()
+aplicarTemaGlobal()
+
+---
+
+## Dropdowns Oficiais
+
+Prioridade:
+
+1. Reutilizar dropdown existente
+2. Copiar implementação existente
+3. Criar novo apenas se não existir equivalente
+
+---
+
+## Regra de Revisão
+
+Toda alteração visual deve validar:
+
+✓ Header igual ao padrão
+
+✓ Perfil igual ao padrão
+
+✓ Sidebar igual ao padrão
+
+✓ Tema igual ao padrão
+
+✓ Responsividade
+
+Se houver divergência, considerar implementação incorreta.
+
+## COMPONENTES OFICIAIS F1A
+
+# Cabeçalho Oficial F1A
+
+Página de referência:
+
+/modulo-crm/clientes.html
+
+Sempre utilizar este padrão.
+
+Elementos obrigatórios:
+
+- botão recolher menu
+- seletor de empresa ativa
+- alternância de tema
+- avatar
+- nome do usuário
+- cargo
+- dropdown perfil
+
+Dropdown obrigatório:
+
+- Alterar Nome
+- Sair do Sistema
+
+Funções obrigatórias:
+
+window.toggleDropdownPerfil()
+window.sair()
+
+IDs oficiais:
+
+cargoUsuario
+nomeUsuario
+dropdownPerfilLocal
+
+Não criar cabeçalhos alternativos.
+
+# Sidebar Oficial F1A
+
+Sempre utilizar o padrão consolidado.
+
+Elementos obrigatórios:
+
+- logo F1A
+- menu principal
+- botão Sair do Módulo
+
+Todo texto deve estar dentro de:
+
+```html
+<span class="nav-texto">
+```
+
+para suportar retração.
+
+Não utilizar botão "Início" na parte superior.
+
+O botão oficial é:
+
+"Sair do Módulo"
+
+localizado no rodapé da sidebar.
+
+# Atualização de Menu e Cabeçalho
+
+Quando o usuário solicitar:
+
+- atualizar menu
+- padronizar menu
+- atualizar cabeçalho
+- alinhar ao padrão F1A
+
+NÃO realizar análise.
+
+Assumir como referência:
+
+/modulo-crm/clientes.html
+
+Aplicar diretamente.
+
+# Componentes Oficiais F1A
+
+## Página de Referência
+
+O padrão visual oficial da plataforma F1A é:
+
+/modulo-crm/clientes.html
+
+Sempre utilizar esta página como referência para:
+
+- cabeçalho
+- sidebar
+- perfil
+- dropdowns
+- tema
+- empresa ativa
+
+Não criar variantes visuais sem necessidade.
+
+---
+
+# Cabeçalho Oficial
+
+Todo módulo novo ou atualizado deve utilizar:
+
+- botão recolher menu
+- seletor de empresa ativa
+- alternância de tema
+- avatar
+- nome do usuário
+- cargo
+- dropdown de perfil
+
+Elementos obrigatórios:
+
+```html
+#nomeUsuario
+#cargoUsuario
+#dropdownPerfilLocal
+```
+
+Funções obrigatórias:
+
+```javascript
+window.toggleDropdownPerfil()
+window.sair()
+```
+
+Dropdown oficial:
+
+- Alterar Nome
+- Sair do Sistema
+
+Não remover opções.
+
+Não criar dropdowns alternativos.
+
+---
+
+# Sidebar Oficial
+
+Toda sidebar deve utilizar:
+
+```html
+<span class="nav-texto">
+```
+
+em todos os itens.
+
+Objetivo:
+
+compatibilidade com menu recolhido.
+
+---
+
+Estrutura obrigatória:
+
+Logo F1A
+↓
+Menu Principal
+↓
+Sair do Módulo
+
+---
+
+Não utilizar:
+
+"Início"
+
+na parte superior da sidebar.
+
+O padrão oficial é:
+
+"Sair do Módulo"
+
+no rodapé.
+
+---
+
+# Atualização de Menu e Cabeçalho
+
+Quando o usuário solicitar:
+
+- atualizar menu
+- padronizar menu
+- atualizar cabeçalho
+- alinhar ao padrão F1A
+
+o agente NÃO deve realizar investigação.
+
+Assumir automaticamente:
+
+/modulo-crm/clientes.html
+
+como referência oficial.
+
+Aplicar diretamente.
+
+---
+
+# Perfil do Usuário
+
+Sempre exibir:
+
+- avatar
+- nome
+- cargo
+
+O cargo deve ser obtido do perfil do usuário.
+
+Elemento obrigatório:
+
+```html
+<span id="cargoUsuario">
+```
+
+---
+
+# Empresa Ativa
+
+Sempre suportar:
+
+```javascript
+visaoEmpresaAtiva
+```
+
+quando o módulo possuir contexto multiempresa.
+
+O seletor de empresa deve seguir o padrão oficial F1A.
+
+---
+
+# Tema
+
+Sempre utilizar:
+
+- tema claro
+- tema escuro
+
+através do Core.
+
+Não criar sistemas próprios de tema.
+
+---
+
+# Regra de Consumo
+
+Solicitações de:
+
+- atualização de menu
+- atualização de cabeçalho
+- atualização visual
+
+são consideradas tarefas de execução.
+
+Não realizar análise arquitetural.
+
+Não buscar referências adicionais.
+
+Aplicar diretamente o padrão oficial F1A.

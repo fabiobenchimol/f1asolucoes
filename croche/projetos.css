@@ -1,0 +1,149 @@
+/* Calculadora de Preço — layout projetos */
+
+.calc-card-precificacao .calc-cabecalho {
+    margin-bottom: 12px;
+}
+
+.calc-card-precificacao .calc-titulo {
+    margin: 0;
+    color: var(--premium-gold);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.calc-badge-linha {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.calc-badge-linha .calc-modo-badge {
+    margin-bottom: 0;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.calc-btn-ajustar {
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--premium-gold);
+    border-radius: 8px;
+    padding: 5px 10px;
+    width: auto;
+    font-weight: bold;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.calc-btn-ajustar .material-symbols-rounded {
+    font-size: 16px;
+}
+
+/* Contraste — Preço de Venda */
+.calc-card-precificacao .calc-item-destaque {
+    background: linear-gradient(145deg, #c9a227 0%, #9a7209 100%);
+    color: #ffffff;
+    border: 1px solid rgba(154, 114, 9, 0.6);
+    box-shadow: 0 2px 8px rgba(154, 114, 9, 0.35);
+}
+
+.calc-card-precificacao .calc-label-destaque {
+    color: #ffffff;
+    opacity: 1;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+}
+
+.calc-card-precificacao .calc-valor-destaque {
+    color: #ffffff;
+    font-weight: 900;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .calc-badge-linha {
+        flex-wrap: nowrap;
+    }
+
+    .calc-card-precificacao .calc-grid-precificacao #wsBlocoPrecoFinal {
+        order: 1;
+        grid-column: 1 / -1;
+        grid-row: auto;
+    }
+
+    .calc-card-precificacao .calc-grid-precificacao #wsBlocoCustoMaterial {
+        order: 2;
+        grid-column: auto;
+        grid-row: auto;
+    }
+
+    .calc-card-precificacao .calc-grid-precificacao #wsBlocoMaoObra {
+        order: 3;
+        grid-column: auto;
+        grid-row: auto;
+    }
+
+    .calc-card-precificacao .calc-grid-precificacao #wsBlocoOutrosCustos {
+        order: 4;
+        grid-column: auto;
+        grid-row: auto;
+    }
+
+    .calc-card-precificacao .calc-grid-precificacao #wsBlocoCustoTotal {
+        order: 5;
+        grid-column: auto;
+        grid-row: auto;
+    }
+
+    .calc-card-precificacao .calc-grid-precificacao #wsBlocoLucro {
+        order: 6;
+        grid-column: auto;
+        grid-row: auto;
+    }
+
+    .calc-card-precificacao .calc-grid-precificacao #wsBlocoHoraReal {
+        order: 7;
+        grid-column: 1 / -1;
+        grid-row: auto;
+    }
+
+    .calc-card-precificacao .calc-item-destaque {
+        padding: 10px 12px;
+    }
+
+    .calc-card-precificacao .calc-valor-destaque {
+        font-size: 22px;
+    }
+}
+
+/* Desktop */
+@media (min-width: 769px) {
+    .calc-card-precificacao {
+        padding: 28px 32px;
+    }
+
+    .calc-card-precificacao .calc-grid-precificacao {
+        padding: 20px 24px;
+        gap: 18px;
+        justify-content: flex-start;
+    }
+
+    .calc-card-precificacao .calc-item-destaque {
+        order: -1;
+    }
+
+    .calc-card-precificacao .calc-valor-destaque {
+        font-size: 28px;
+    }
+}

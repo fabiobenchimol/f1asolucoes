@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Materiais - Ponto de Ouro</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="croche.css">
+
+    <style>
+        .header .header-title { color: #ffffff; }
+        .header .header-left .btn-icon,
+        .header .header-right #btnTemaGlobal { color: #ffffff; }
+        .header .header-left .btn-icon .material-symbols-rounded,
+        .header .header-right #btnTemaGlobal .material-symbols-rounded { color: #ffffff !important; }
+        .menu-perfil-flutuante {
+            position: absolute;
+            top: 55px;
+            right: 0;
+            background: #0f172a;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            width: 220px;
+            z-index: 9999;
+            padding: 10px;
+            overflow: hidden;
+        }
+        .menu-perfil-flutuante a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: #f8fafc;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.2s ease;
+            border-radius: 8px;
+        }
+        .user-profile {
+            position: relative !important;
+            overflow: visible !important;
+        }
+
+        .tabela-dados td {
+            vertical-align: middle !important;
+            padding: 11px 14px !important;
+            font-size: 12px !important;
+        }
+
+        .menu-pontinhos-wrapper {
+            position: relative;
+            text-align: center;
+        }
+
+        .dropdown-materiais {
+            display: none;
+            position: fixed;
+            width: 220px;
+            min-width: 220px;
+            max-width: 220px;
+            right: auto;
+            top: auto;
+            background-color: #0f172a;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            max-height: 240px;
+            overflow-y: auto;
+            opacity: 1;
+            z-index: 1000002;
+            padding: 8px;
+            box-shadow: 0 18px 40px rgba(0,0,0,.35);
+        }
+
+        #menuAcoesMateriaisGlobal {
+            width: 220px;
+            min-width: 220px;
+            max-width: 220px;
+        }
+
+        body.dark-mode .dropdown-materiais {
+            background-color: #fff;
+            border-color: #cbd5e1;
+            box-shadow: 0 18px 40px rgba(15,23,42,.18);
+        }
+
+        .dropdown-materiais.show-menu-material {
+            display: block;
+        }
+
+        .dropdown-materiais a,
+        .dropdown-item-materiais {
+            color: var(--cor-texto);
+            padding: 10px 12px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        .dropdown-materiais a:hover,
+        .dropdown-item-materiais:hover {
+            background-color: rgba(0,0,0,.05);
+        }
+
+        body.dark-mode .dropdown-materiais a:hover,
+        body.dark-mode .dropdown-item-materiais:hover {
+            background-color: rgba(15,23,42,.06);
+        }
+
+        .dropdown-item-materiais {
+            width: 100%;
+            background: transparent;
+            border: none;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .dropdown-item-materiais .material-symbols-rounded {
+            font-size: 19px;
+        }
+
+        .modal-overlay {
+            z-index: 9999 !important;
+        }
+
+        .materiais-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+        }
+
+        .materiais-titulo h3 {
+            margin: 0;
+            color: var(--cor-titulo);
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: -.7px;
+        }
+
+        .materiais-titulo p {
+            margin: 5px 0 0;
+            color: var(--cor-texto);
+            font-size: 13px;
+            max-width: 700px;
+        }
+
+        .materiais-cta {
+            min-height: 50px;
+            border-radius: 14px;
+            padding: 14px 18px;
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg,#f59e0b,#f97316) !important;
+            color: #fff !important;
+            box-shadow: 0 10px 24px rgba(249,115,22,.24) !important;
+        }
+
+        .btn-premium:hover {
+            background: linear-gradient(135deg,#fb923c,#ea580c) !important;
+            box-shadow: 0 14px 28px rgba(249,115,22,.28) !important;
+        }
+
+        .filtros-container {
+            display: grid;
+            grid-template-columns: minmax(220px,2fr) minmax(160px,1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .filtros-container input,
+        .filtros-container select {
+            padding: 14px 16px !important;
+            border-radius: 14px !important;
+            background: var(--bg-painel) !important;
+            border: 1px solid var(--borda) !important;
+            box-shadow: 0 8px 20px rgba(0,0,0,.10);
+        }
+
+        .materiais-card {
+            background: var(--bg-painel);
+            border-radius: 22px;
+            border: 1px solid var(--borda);
+            box-shadow: 0 22px 50px rgba(0,0,0,.16);
+            overflow: hidden;
+        }
+
+        .tabela-dados {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .tabela-dados thead th {
+            background: linear-gradient(
+                180deg,
+                rgba(212,175,55,.12),
+                rgba(212,175,55,.04)
+            );
+
+            color: var(--cor-titulo);
+            font-size: 11px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            padding: 12px 14px;
+        }
+
+        .sortable-header {
+            cursor: pointer;
+            user-select: none;
+            transition: .2s;
+        }
+
+        .sortable-header:hover {
+            opacity: .85;
+        }
+
+        .sort-icon {
+            font-size: 15px;
+            vertical-align: middle;
+        }
+
+        .tabela-dados tbody tr {
+            transition: background-color .18s ease, box-shadow .18s ease;
+        }
+
+        .material-nome {
+            font-weight: 800;
+            color: var(--cor-titulo);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .material-nome::before {
+            content: '';
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: linear-gradient(135deg,var(--premium-gold),#f59e0b);
+            box-shadow: 0 0 0 4px rgba(212,175,55,.12);
+            flex: 0 0 auto;
+        }
+
+        .estoque-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+            padding: 4px 9px;
+            border-radius: 999px;
+            background: rgba(0,71,255,.18);
+            border: 1px solid rgba(0,71,255,.45);
+            color: #3b82f6;
+            font-weight: 900;
+            font-size: 11px;
+        }
+
+        .label-com-acao {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .label-com-acao label {
+            margin-bottom: 0;
+        }
+
+        .link-auxiliar {
+            background: none;
+            border: none;
+            padding: 0;
+            color: var(--f1a-blue);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .link-auxiliar:hover {
+            text-decoration: underline;
+        }
+
+        .modal-content.materiais-modal-sm {
+            max-width: 380px;
+            padding: 24px;
+        }
+
+        .modal-acoes-inline {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .modal-acoes-inline button {
+            flex: 1;
+            justify-content: center;
+        }
+
+        .acoes-celula {
+            text-align: center;
+            width: 88px;
+        }
+
+        .acao-principal {
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 12px !important;
+            background: linear-gradient(
+                135deg,
+                rgba(212,175,55,.16),
+                rgba(0,71,255,.12)
+            ) !important;
+
+            border: 1px solid var(--borda) !important;
+            color: var(--cor-titulo) !important;
+            box-shadow: none !important;
+        }
+
+        .acao-principal:hover {
+            border-color: rgba(212,175,55,.55) !important;
+        }
+
+        .modal-content.materiais-modal {
+            border-radius: 22px;
+            border: 1px solid var(--borda);
+            box-shadow: 0 28px 60px rgba(0,0,0,.26);
+        }
+
+        .area-upload-material {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 140px;
+            border: 2px dashed var(--borda);
+            border-radius: 14px;
+            background: var(--bg-body);
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .area-upload-material img {
+            max-width: 100%;
+            max-height: 160px;
+            object-fit: contain;
+        }
+
+        .area-upload-material .icon-placeholder {
+            font-size: 42px;
+            color: var(--cor-texto);
+            opacity: .6;
+        }
+
+        .input-readonly {
+            background: rgba(148, 163, 184, .08) !important;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+
+            .filtros-container {
+                grid-template-columns: 1fr;
+            }
+
+            .acoes-celula {
+                width: 72px;
+            }
+
+            .dropdown-materiais {
+                min-width: 210px;
+            }
+        }
+
+    </style>
+</head>
+
+<body style="display:none;" id="corpoPagina">
+
+    <div id="overlayMobile" class="overlay-mobile" onclick="toggleSidebarF1A()"></div>
+
+    <aside class="sidebar" id="sidebarF1A">
+
+        <div class="sidebar-logo"
+             onclick="window.location.href='../lobby.html'"
+             style="cursor:pointer;">
+
+            <img src="../assets/logo_f1a.png"
+                 id="logoSidebar"
+                 alt="Ponto de Ouro">
+        </div>
+
+        <nav class="nav-links">
+
+            <a href="inicio.html" class="nav-item">
+                <span class="material-symbols-rounded">dashboard</span>
+                <span class="nav-texto">Meu Resumo</span>
+            </a>
+
+            <a href="materiais.html" class="nav-item ativo">
+                <span class="material-symbols-rounded">inventory_2</span>
+                <span class="nav-texto">Materiais</span>
+            </a>
+
+            <a href="projetos.html" class="nav-item">
+                <span class="material-symbols-rounded">architecture</span>
+                <span class="nav-texto">Meus Projetos</span>
+            </a>
+
+            <div class="nav-divisor"></div>
+
+            <a href="../lobby.html" class="nav-item">
+                <span class="material-symbols-rounded">arrow_back</span>
+                <span class="nav-texto">Sair do Módulo</span>
+            </a>
+
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="header">
+
+            <div class="header-left">
+
+                <button class="btn-icon" onclick="toggleSidebarF1A()">
+                    <span class="material-symbols-rounded">menu</span>
+                </button>
+
+                <h2 class="header-title">Meus Materiais</h2>
+
+            </div>
+
+            <div class="header-right">
+
+                <button class="btn-icon" id="btnTemaGlobal" onclick="alternarTemaGlobal()" title="Alternar Tema">
+                    <span class="material-symbols-rounded">dark_mode</span>
+                </button>
+
+                <div class="user-profile" onclick="toggleDropdownPerfil(event)" style="cursor: pointer; position: relative; display: flex; align-items: center; gap: 12px; background: #0f172a; padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid rgba(148, 163, 184, 0.25); box-shadow: 0 2px 8px rgba(0,0,0,0.18); transition: border 0.3s;">
+
+                    <div class="user-avatar" id="iniciaisUsuario" style="width: 32px; height: 32px; border-radius: 50%; background: var(--f1a-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px;">--</div>
+
+                    <div class="user-info">
+                        <span class="user-name" id="nomeUsuario" style="display: block; font-size: 13px; font-weight: 800; color: #f8fafc;">Carregando...</span>
+                        <span class="user-role" id="cargoUsuario" style="display: block; font-size: 11px; color: #cbd5e1; font-weight: 600;">Aguarde</span>
+                    </div>
+
+                    <span class="material-symbols-rounded" style="color: #cbd5e1; font-size: 18px;">expand_more</span>
+
+                    <div class="menu-perfil-flutuante escondido" id="dropdownPerfilLocal">
+                        <a href="#" onclick="if(typeof alterarNomeExibicao === 'function') alterarNomeExibicao()" class="dropdown-item" style="color: #f8fafc; font-size: 13px; font-weight: 600;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
+                            <span class="material-symbols-rounded" style="margin-right: 12px; font-size: 18px; color: var(--f1a-blue);">edit</span> Alterar Nome
+                        </a>
+                        <div style="height: 1px; background: rgba(148, 163, 184, 0.18); margin: 5px 0;"></div>
+                        <a href="#" onclick="sair()" class="dropdown-item" style="color: #ef4444; font-size: 13px; font-weight: 700;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'">
+                            <span class="material-symbols-rounded" style="margin-right: 12px; font-size: 18px;">logout</span> Sair do Sistema
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+        <div class="content-area">
+
+            <div class="materiais-topbar">
+
+                <div class="materiais-titulo">
+
+                    <h3>Estoque de Materiais</h3>
+
+                    <p>
+                        Gerencie entradas, saídas, ajustes e custos dos materiais
+                        com histórico completo de movimentações.
+                    </p>
+
+                </div>
+
+                <button class="btn-premium materiais-cta"
+                        onclick="abrirModalMaterial()">
+
+                    <span class="material-symbols-rounded">add</span>
+                    Novo Material
+
+                </button>
+
+            </div>
+
+            <div class="filtros-container">
+
+                <input type="text"
+                       id="filtroTexto"
+                       class="input-filtro"
+                       placeholder="Buscar material..."
+                       onkeyup="filtrarListaMateriais()">
+
+                <select id="filtroCategoria"
+                        class="input-filtro"
+                        onchange="filtrarListaMateriais()">
+
+                    <option value="">Todas Categorias</option>
+                    <option value="Fio/Linha">Fio / Linha</option>
+                    <option value="Enchimento">Enchimento</option>
+                    <option value="Acessório">Acessório</option>
+                    <option value="Embalagem">Embalagem</option>
+                    <option value="Outros">Outros</option>
+
+                </select>
+
+                <select id="filtroOrdenacaoMobile"
+                        class="input-filtro materiais-ordenacao-mobile"
+                        onchange="aplicarOrdenacaoMobile()"
+                        aria-label="Ordenar materiais">
+
+                    <option value="nome-asc">Nome (A → Z)</option>
+                    <option value="nome-desc">Nome (Z → A)</option>
+                    <option value="categoria-asc">Categoria (A → Z)</option>
+                    <option value="categoria-desc">Categoria (Z → A)</option>
+                    <option value="estoque-asc">Estoque (menor → maior)</option>
+                    <option value="estoque-desc">Estoque (maior → menor)</option>
+                    <option value="ultimaUtilizacao-desc">Última Utilização (recente)</option>
+                    <option value="ultimaUtilizacao-asc">Última Utilização (antiga)</option>
+
+                </select>
+
+            </div>
+
+            <div class="materiais-card">
+
+                <div id="listaMateriaisMobile"
+                     class="materiais-mobile-lista"
+                     aria-label="Lista de materiais em cards"></div>
+
+                <div class="tabela-container">
+
+                    <div class="tabela-wrapper">
+
+                        <table class="tabela-dados">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th class="sortable-header"
+                                        onclick="ordenarMateriais('nome')">
+
+                                        Material
+
+                                        <span class="material-symbols-rounded sort-icon">
+                                            sort
+                                        </span>
+
+                                    </th>
+
+                                    <th class="sortable-header"
+                                        onclick="ordenarMateriais('categoria')">
+
+                                        Categoria
+
+                                        <span class="material-symbols-rounded sort-icon">
+                                            sort
+                                        </span>
+
+                                    </th>
+
+                                    <th style="text-align:right;">
+                                        Custo
+                                    </th>
+
+                                    <th class="sortable-header"
+                                        onclick="ordenarMateriais('estoque')"
+                                        style="text-align:right;">
+
+                                        Estoque
+
+                                        <span class="material-symbols-rounded sort-icon">
+                                            sort
+                                        </span>
+
+                                    </th>
+
+                                    <th class="sortable-header col-ultima-entrada"
+                                        onclick="ordenarMateriais('ultimaEntrada')">
+
+                                        Última Entrada
+
+                                        <span class="material-symbols-rounded sort-icon">
+                                            sort
+                                        </span>
+
+                                    </th>
+
+                                    <th class="sortable-header col-ultima-utilizacao"
+                                        onclick="ordenarMateriais('ultimaUtilizacao')">
+
+                                        Última Utilização
+
+                                        <span class="material-symbols-rounded sort-icon">
+                                            sort
+                                        </span>
+
+                                    </th>
+
+                                    <th class="col-acoes" style="text-align:center;width:88px;">
+                                        Ações
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="tabelaMateriaisBody"></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <div id="menuAcoesMateriaisGlobal"
+         class="dropdown-materiais"
+         aria-hidden="true">
+
+        <button type="button"
+                class="dropdown-item-materiais"
+                data-acao="abrirModalEntrada">
+
+            <span class="material-symbols-rounded">add_shopping_cart</span>
+            Registrar Entrada
+
+        </button>
+
+        <button type="button"
+                class="dropdown-item-materiais"
+                data-acao="abrirModalHistorico">
+
+            <span class="material-symbols-rounded">history</span>
+            Histórico
+
+        </button>
+
+        <button type="button"
+                class="dropdown-item-materiais"
+                data-acao="abrirModalEditarMaterial">
+
+            <span class="material-symbols-rounded">edit</span>
+            Editar Material
+
+        </button>
+
+        <button type="button"
+                class="dropdown-item-materiais"
+                data-acao="excluirMaterial"
+                style="color:#ef4444;">
+
+            <span class="material-symbols-rounded">delete</span>
+            Excluir Material
+
+        </button>
+
+    </div>
+
+    <div id="modalMaterial" class="modal-overlay escondido">
+
+        <div class="modal-content materiais-modal modal-material" style="max-width: 520px;">
+
+            <div class="modal-header">
+
+                <h3 id="tituloModalMaterial">Cadastrar Material</h3>
+
+                <button type="button"
+                        class="btn-fechar"
+                        onclick="fecharModalBase()"
+                        aria-label="Fechar modal">
+
+                    <span class="material-symbols-rounded">close</span>
+
+                </button>
+
+            </div>
+
+            <form id="formMaterial"
+                  class="form-croche form-material-modal"
+                  onsubmit="salvarMaterial(event)">
+
+                <input type="hidden" id="materialId" value="">
+
+                <div class="modal-body">
+
+                <div class="form-group-croche">
+                    <label for="matNome">Nome do Material</label>
+                    <input type="text"
+                           id="matNome"
+                           name="matNome"
+                           placeholder="Ex: Linha Amigurumi Rosa"
+                           required>
+                </div>
+
+                <div class="form-group-croche">
+                    <div class="label-com-acao">
+                        <label for="matCategoria">Categoria</label>
+                        <button type="button"
+                                class="link-auxiliar"
+                                onclick="abrirModalNovaCategoria()">
+                            + Nova Categoria
+                        </button>
+                    </div>
+                    <select id="matCategoria" name="matCategoria" required>
+                        <option value="">Selecione...</option>
+                        <option value="Fio/Linha">Fio / Linha</option>
+                        <option value="Enchimento">Enchimento</option>
+                        <option value="Acessório">Acessório</option>
+                        <option value="Embalagem">Embalagem</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+
+                <div class="form-group-croche">
+                    <div class="label-com-acao">
+                        <label for="matMarca">Marca</label>
+                        <button type="button"
+                                class="link-auxiliar"
+                                onclick="abrirModalNovaMarca()">
+                            + Nova Marca
+                        </button>
+                    </div>
+                    <select id="matMarca" name="matMarca">
+                        <option value="">Selecione...</option>
+                    </select>
+                </div>
+
+                <div class="form-group-croche">
+                    <div class="label-com-acao">
+                        <label for="matUnidade">Unidade de Medida</label>
+                        <button type="button"
+                                class="link-auxiliar"
+                                onclick="abrirModalNovaUnidade()">
+                            + Nova Medida
+                        </button>
+                    </div>
+                    <select id="matUnidade" name="matUnidade" required>
+                        <option value="g">Gramas (g)</option>
+                        <option value="m">Metros (m)</option>
+                        <option value="cm">Centímetros (cm)</option>
+                        <option value="un">Unidades (un)</option>
+                        <option value="rol">Rolos (rol)</option>
+                        <option value="pacote">Pacotes</option>
+                    </select>
+                </div>
+
+                <div class="form-group-croche">
+                    <label for="matFileInputImagem">Foto do Material</label>
+                    <div class="area-upload-material"
+                         id="matAreaPreviewImagem"
+                         onclick="focarFileInputMaterial()"
+                         role="button"
+                         tabindex="0"
+                         aria-label="Selecionar foto do material">
+                        <span class="material-symbols-rounded icon-placeholder"
+                              id="matIconPhotoPlaceholder">add_a_photo</span>
+                        <img id="matImgPreview"
+                             src=""
+                             alt="Foto do Material"
+                             class="escondido img-fluid rounded">
+                    </div>
+                    <input type="file"
+                           id="matFileInputImagem"
+                           accept="image/*"
+                           class="input-file-oculto"
+                           onchange="previewFotoMaterial(this)">
+                </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit"
+                            class="btn-premium"
+                            id="btnSalvarMaterial">
+
+                        <span class="material-symbols-rounded">save</span>
+                        Salvar Material
+
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div id="modalEntrada" class="modal-overlay escondido">
+
+        <div class="modal-content materiais-modal" style="max-width: 460px; padding: 30px;">
+
+            <div class="modal-header"
+                 style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+
+                <h3 style="margin:0; color:var(--cor-titulo); font-size:20px;">
+                    Registrar Entrada
+                </h3>
+
+                <button type="button"
+                        class="btn-fechar"
+                        onclick="fecharModalBase()"
+                        style="background:none; border:none; color:var(--cor-texto); cursor:pointer;">
+
+                    <span class="material-symbols-rounded">close</span>
+
+                </button>
+
+            </div>
+
+            <form id="formEntrada"
+                  class="form-croche"
+                  onsubmit="salvarEntrada(event)">
+
+                <input type="hidden" id="entradaMatId" value="">
+
+                <div class="form-group-croche">
+                    <label for="qtdEntrada">Quantidade</label>
+                    <input type="number"
+                           id="qtdEntrada"
+                           name="qtdEntrada"
+                           step="0.01"
+                           min="0.01"
+                           placeholder="Ex: 50"
+                           oninput="calcularValorTotalEntrada()"
+                           required>
+                </div>
+
+                <div class="form-group-croche">
+                    <label for="precoUnitarioEntrada">Preço Unitário (R$)</label>
+                    <input type="text"
+                           id="precoUnitarioEntrada"
+                           name="precoUnitarioEntrada"
+                           class="input-moeda"
+                           placeholder="0,00"
+                           oninput="aplicarMascaraMoeda(this); calcularValorTotalEntrada()"
+                           required>
+                </div>
+
+                <div class="form-group-croche">
+                    <label for="valorTotalEntrada">Valor Total (R$)</label>
+                    <input type="text"
+                           id="valorTotalEntrada"
+                           name="valorTotalEntrada"
+                           class="input-moeda input-readonly"
+                           placeholder="0,00"
+                           readonly>
+                </div>
+
+                <div class="form-group-croche">
+                    <div class="label-com-acao">
+                        <label for="entradaLoja">Loja</label>
+                        <button type="button"
+                                class="link-auxiliar"
+                                onclick="abrirModalNovaLoja()">
+                            + Nova Loja
+                        </button>
+                    </div>
+                    <select id="entradaLoja" name="entradaLoja" required>
+                        <option value="">Selecione...</option>
+                    </select>
+                </div>
+
+                <button type="submit"
+                        class="btn-premium"
+                        id="btnSalvarEntrada"
+                        style="width:100%; justify-content:center; margin-top:10px;">
+
+                    <span class="material-symbols-rounded">inventory</span>
+                    Confirmar Entrada
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div id="modalNovaCategoria" class="modal-overlay escondido">
+
+        <div class="modal-content materiais-modal materiais-modal-sm">
+
+            <div class="modal-header"
+                 style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+
+                <h3 style="margin:0; color:var(--cor-titulo); font-size:18px;">
+                    Nova Categoria
+                </h3>
+
+                <button type="button"
+                        class="btn-fechar"
+                        onclick="document.getElementById('modalNovaCategoria').classList.add('escondido')"
+                        style="background:none; border:none; color:var(--cor-texto); cursor:pointer;">
+
+                    <span class="material-symbols-rounded">close</span>
+
+                </button>
+
+            </div>
+
+            <form id="formNovaCategoria"
+                  class="form-croche"
+                  onsubmit="salvarNovaCategoria(event)">
+
+                <div class="form-group-croche">
+                    <label for="novaCategoriaNome">Nome da Categoria</label>
+                    <input type="text"
+                           id="novaCategoriaNome"
+                           name="novaCategoriaNome"
+                           placeholder="Ex: Fio premium"
+                           required>
+                </div>
+
+                <div class="modal-acoes-inline">
+                    <button type="button"
+                            class="btn-secundario-croche"
+                            onclick="document.getElementById('modalNovaCategoria').classList.add('escondido')">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                            class="btn-premium"
+                            id="btnSalvarNovaCategoria">
+                        Salvar
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div id="modalNovaUnidade" class="modal-overlay escondido">
+
+        <div class="modal-content materiais-modal materiais-modal-sm">
+
+            <div class="modal-header"
+                 style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+
+                <h3 style="margin:0; color:var(--cor-titulo); font-size:18px;">
+                    Nova Medida
+                </h3>
+
+                <button type="button"
+                        class="btn-fechar"
+                        onclick="document.getElementById('modalNovaUnidade').classList.add('escondido')"
+                        style="background:none; border:none; color:var(--cor-texto); cursor:pointer;">
+
+                    <span class="material-symbols-rounded">close</span>
+
+                </button>
+
+            </div>
+
+            <form id="formNovaUnidade"
+                  class="form-croche"
+                  onsubmit="salvarNovaUnidade(event)">
+
+                <div class="form-group-croche">
+                    <label for="novaUnidadeNome">Nome da Medida</label>
+                    <input type="text"
+                           id="novaUnidadeNome"
+                           name="novaUnidadeNome"
+                           placeholder="Ex: kg, ml, cone..."
+                           required>
+                </div>
+
+                <div class="modal-acoes-inline">
+                    <button type="button"
+                            class="btn-secundario-croche"
+                            onclick="document.getElementById('modalNovaUnidade').classList.add('escondido')">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                            class="btn-premium"
+                            id="btnSalvarNovaUnidade">
+                        Salvar
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div id="modalNovaMarca" class="modal-overlay escondido">
+
+        <div class="modal-content materiais-modal materiais-modal-sm">
+
+            <div class="modal-header"
+                 style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+
+                <h3 style="margin:0; color:var(--cor-titulo); font-size:18px;">
+                    Nova Marca
+                </h3>
+
+                <button type="button"
+                        class="btn-fechar"
+                        onclick="document.getElementById('modalNovaMarca').classList.add('escondido')"
+                        style="background:none; border:none; color:var(--cor-texto); cursor:pointer;">
+
+                    <span class="material-symbols-rounded">close</span>
+
+                </button>
+
+            </div>
+
+            <form id="formNovaMarca"
+                  class="form-croche"
+                  onsubmit="salvarNovaMarca(event)">
+
+                <div class="form-group-croche">
+                    <label for="novaMarcaNome">Nome da Marca</label>
+                    <input type="text"
+                           id="novaMarcaNome"
+                           name="novaMarcaNome"
+                           placeholder="Ex: Circulo, Cisne..."
+                           required>
+                </div>
+
+                <div class="modal-acoes-inline">
+                    <button type="button"
+                            class="btn-secundario-croche"
+                            onclick="document.getElementById('modalNovaMarca').classList.add('escondido')">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                            class="btn-premium"
+                            id="btnSalvarNovaMarca">
+                        Salvar
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div id="modalNovaLoja" class="modal-overlay escondido">
+
+        <div class="modal-content materiais-modal materiais-modal-sm">
+
+            <div class="modal-header"
+                 style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+
+                <h3 style="margin:0; color:var(--cor-titulo); font-size:18px;">
+                    Nova Loja
+                </h3>
+
+                <button type="button"
+                        class="btn-fechar"
+                        onclick="document.getElementById('modalNovaLoja').classList.add('escondido')"
+                        style="background:none; border:none; color:var(--cor-texto); cursor:pointer;">
+
+                    <span class="material-symbols-rounded">close</span>
+
+                </button>
+
+            </div>
+
+            <form id="formNovaLoja"
+                  class="form-croche"
+                  onsubmit="salvarNovaLoja(event)">
+
+                <div class="form-group-croche">
+                    <label for="novaLojaNome">Nome da Loja</label>
+                    <input type="text"
+                           id="novaLojaNome"
+                           name="novaLojaNome"
+                           placeholder="Ex: Armazém Central"
+                           required>
+                </div>
+
+                <div class="form-group-croche">
+                    <label for="novaLojaEndereco">Endereço</label>
+                    <input type="text"
+                           id="novaLojaEndereco"
+                           name="novaLojaEndereco"
+                           placeholder="Ex: Rua das Flores, 123">
+                </div>
+
+                <div class="modal-acoes-inline">
+                    <button type="button"
+                            class="btn-secundario-croche"
+                            onclick="document.getElementById('modalNovaLoja').classList.add('escondido')">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                            class="btn-premium"
+                            id="btnSalvarNovaLoja">
+                        Salvar
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div id="modalHistorico" class="modal-overlay escondido">
+
+        <div class="modal-content materiais-modal" style="max-width: 560px; padding: 30px;">
+
+            <div class="modal-header"
+                 style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+
+                <h3 id="tituloModalHistorico"
+                    style="margin:0; color:var(--cor-titulo); font-size:20px;">
+                    Histórico de Movimentações
+                </h3>
+
+                <button type="button"
+                        class="btn-fechar"
+                        onclick="fecharModalBase()"
+                        style="background:none; border:none; color:var(--cor-texto); cursor:pointer;">
+
+                    <span class="material-symbols-rounded">close</span>
+
+                </button>
+
+            </div>
+
+            <div id="historicoConteudo" class="historico-lista">
+                <p style="text-align:center;color:var(--cor-texto);padding:30px 0;">
+                    Carregando...
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script src="../core.js?v=1"></script>
+    <script src="../ui.js?v=1"></script>
+
+    <script src="materiais.js?v=9"></script>
+
+</body>
+</html>

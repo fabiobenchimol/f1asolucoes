@@ -1,0 +1,438 @@
+---
+description: Regras do módulo Financeiro da plataforma F1A
+globs:
+  - "**/modulo-financeiro/**"
+alwaysApply: false
+---
+
+# F1A Financeiro
+
+Você é especialista no módulo Financeiro da plataforma F1A.
+
+Este módulo é responsável por:
+
+- Indicadores Financeiros
+- Inadimplência
+- Valores a Receber
+- Juros e Multas
+- Repasses
+- Relatórios
+- Impressão
+- Consolidação Financeira
+
+---
+
+# Conceito Central
+
+O módulo Financeiro fornece visão consolidada da operação.
+
+Fluxo principal:
+
+Vendas
+↓
+Recebimentos
+↓
+Inadimplência
+↓
+Repasses
+↓
+Relatórios
+
+---
+
+# Identificador Oficial
+
+Compatibilidade obrigatória:
+
+```text
+financeiro
+modulo_financeiro
+```
+
+Sempre considerar ambas as nomenclaturas.
+
+---
+
+# KPIs Oficiais
+
+Indicadores identificados:
+
+```text
+Vendas Totais
+
+Inadimplência
+
+A Receber
+
+Juros e Multas
+```
+
+Nunca alterar nomenclatura sem validação.
+
+---
+
+# Vendas Totais
+
+Representa:
+
+```text
+Soma de todas as vendas
+```
+
+do período analisado.
+
+---
+
+# Inadimplência
+
+Representa:
+
+```text
+Clientes em atraso
+```
+
+ou
+
+```text
+Valores em atraso
+```
+
+dependendo do relatório.
+
+---
+
+# Valores a Receber
+
+Representa:
+
+```text
+Recebimentos pendentes
+```
+
+---
+
+# Juros e Multas
+
+Representa:
+
+```text
+Receita gerada por atraso
+```
+
+---
+
+# Relatório de Repasse
+
+Relatório oficial identificado.
+
+Campos:
+
+```javascript
+loja
+
+vendaBruta
+
+encargos
+
+liquidoRepasse
+
+status
+```
+
+---
+
+# Fluxo de Repasse
+
+Venda
+↓
+Encargos
+↓
+Líquido
+↓
+Repasse
+
+Preservar lógica.
+
+---
+
+# Hierarquia Oficial
+
+Empresa
+↓
+Rede
+↓
+Loja
+
+Toda consulta deve respeitar:
+
+```javascript
+empresaId
+redeId
+lojaId
+```
+
+---
+
+# Filtros Obrigatórios
+
+Antes de carregar dados:
+
+Validar:
+
+```javascript
+visaoEmpresaAtiva
+```
+
+---
+
+# Multiempresa
+
+Obrigatório.
+
+Toda consulta financeira deve respeitar:
+
+```javascript
+empresaId
+```
+
+---
+
+# Perfil MASTER
+
+Possui visão global.
+
+Pode visualizar:
+
+- Todas as empresas
+- Todas as redes
+- Todas as lojas
+
+---
+
+# Perfil ADMIN
+
+Filtrado por:
+
+```javascript
+empresaId
+```
+
+---
+
+# Perfil GERENTE
+
+Filtrado por:
+
+```javascript
+gerenteId
+```
+
+quando aplicável.
+
+---
+
+# Perfil VENDEDOR
+
+Visualização limitada.
+
+Nunca expor dados globais.
+
+---
+
+# Dashboard Financeiro
+
+Indicadores esperados:
+
+```text
+Vendas Totais
+Inadimplência
+A Receber
+Juros e Multas
+```
+
+---
+
+# Impressão
+
+Funcionalidade oficial identificada:
+
+```javascript
+window.print()
+```
+
+Preservar compatibilidade.
+
+---
+
+# Relatórios
+
+Todo relatório deve ser:
+
+✓ visualizável
+
+✓ imprimível
+
+✓ compatível com PDF
+
+---
+
+# Exportação
+
+Ao criar novas exportações:
+
+Priorizar:
+
+```text
+Impressão
+PDF
+```
+
+Antes de formatos proprietários.
+
+---
+
+# Integração com Pagamentos
+
+Relacionamento:
+
+Propostas
+↓
+Borderôs
+↓
+Repasses
+
+Nunca quebrar.
+
+---
+
+# Integração com CRM
+
+Relacionamento:
+
+Clientes
+↓
+Recebimentos
+↓
+Indicadores
+
+---
+
+# Integração com ADM Cartão
+
+Relacionamento:
+
+Lojas
+↓
+Aluguéis
+↓
+Receita Recorrente
+
+---
+
+# Integração com Contratos
+
+Relacionamento:
+
+Contratos
+↓
+Receita
+↓
+Indicadores
+
+---
+
+# Master Vision
+
+Suportado.
+
+Ao detectar:
+
+```javascript
+f1a_simulated_uid
+```
+
+Operar em contexto simulado.
+
+---
+
+# UI
+
+Utilizar:
+
+- cards oficiais
+- tabelas oficiais
+- relatórios oficiais
+- toast oficial
+
+---
+
+# Toast
+
+Obrigatório:
+
+```javascript
+mostrarToast(
+    mensagem,
+    tipo
+)
+```
+
+---
+
+# Auditoria
+
+Registrar:
+
+```javascript
+usuario
+data
+acao
+```
+
+em alterações financeiras críticas.
+
+---
+
+# Segurança
+
+Nunca permitir:
+
+- acesso sem permissão
+- visualização cruzada entre empresas
+- bypass de filtros hierárquicos
+
+---
+
+# Regras do Agente
+
+Ao alterar o módulo Financeiro:
+
+✓ preservar KPIs oficiais
+
+✓ preservar relatório de repasse
+
+✓ preservar impressão
+
+✓ preservar exportação PDF
+
+✓ preservar hierarquia Empresa → Rede → Loja
+
+✓ preservar integração CRM
+
+✓ preservar integração Pagamentos
+
+✓ preservar integração Contratos
+
+✓ preservar integração ADM Cartão
+
+✓ preservar multiempresa
+
+✓ preservar Master Vision
+
+Nunca alterar cálculos financeiros sem validação.
+
+Nunca remover filtros hierárquicos.
+
+Nunca quebrar relatórios existentes.
+
+Nunca expor dados financeiros fora do escopo autorizado.

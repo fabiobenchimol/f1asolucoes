@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Documentos - F1A Platform</title>
+    
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css"> 
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.11/docxtemplater.js"></script>
+    <script src="https://unpkg.com/pizzip@3.1.4/dist/pizzip.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script> 
+    
+    <style>
+        .header .header-title { color: #ffffff; }
+        .header .header-left .btn-icon,
+        .header .header-right #btnTemaGlobal { color: #ffffff; }
+        .header .header-left .btn-icon .material-symbols-rounded,
+        .header .header-right #btnTemaGlobal .material-symbols-rounded { color: #ffffff !important; }
+        .menu-perfil-flutuante { position: absolute; top: 55px; right: 0; background: #0f172a; border: 1px solid rgba(148, 163, 184, 0.25); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); width: 220px; z-index: 9999; padding: 10px; overflow: hidden; }
+        .menu-perfil-flutuante a { display: flex; align-items: center; padding: 12px 15px; color: #f8fafc; text-decoration: none; font-size: 14px; transition: background 0.2s ease; border-radius: 8px; }
+
+        .secao-form { background: rgba(0, 71, 255, 0.02); border: 1px dashed var(--borda); padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .secao-titulo { font-size: 13px; color: var(--f1a-blue); font-weight: 800; margin-top: 0; margin-bottom: 15px; text-transform: uppercase; display: flex; align-items: center; gap: 8px;}
+        .grid-2-col { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .grid-3-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        
+        input, select { width: 100%; padding: 10px 12px; margin-top: 5px; border: 1.5px solid var(--borda); border-radius: 8px; background-color: var(--bg-body); font-size: 13px; color: var(--cor-titulo); transition: 0.3s; box-sizing: border-box; }
+        input:focus, select:focus { border-color: var(--f1a-copper); outline: none; box-shadow: 0 0 0 3px rgba(230, 145, 56, 0.15); }
+        label { font-weight: 600; font-size: 11px; color: var(--cor-texto); text-transform: uppercase; }
+        .maiusculo { text-transform: uppercase; }
+        
+        .btn-buscar { background-color: var(--f1a-blue); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 21px; display: flex; align-items: center; justify-content: center; gap: 5px; transition: 0.2s; box-sizing: border-box; height: 38px;}
+        .btn-buscar:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+        .escondido { display: none !important; }
+        #caixaPersonalizada { background: rgba(230, 145, 56, 0.05); border: 1px dashed var(--f1a-copper); padding: 15px; border-radius: 8px; margin-top: 15px; }
+
+        #loadingInit { position: fixed; inset: 0; background: var(--bg-body); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--cor-titulo); }
+
+        input[type="date"] {
+            -webkit-appearance: auto !important;
+            appearance: auto !important;
+            color-scheme: dark; 
+        }
+
+        body.dark-mode input[type="date"] { color-scheme: light; }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            cursor: pointer !important;
+            filter: none !important;
+        }
+    </style>
+
+</head>
+<body style="display: none;" id="corpoPagina">
+
+    <div id="loadingInit">
+        <span class="material-symbols-rounded" style="font-size: 40px; animation: spin 1s linear infinite; color: var(--f1a-copper);">sync</span>
+        <h3 style="margin-top: 15px;">Autenticando Módulo de Contratos...</h3>
+    </div>
+
+    <div id="overlayMobile" class="overlay-mobile" onclick="toggleSidebarF1A()"></div>
+
+    <aside class="sidebar" id="sidebarF1A">
+        <div class="sidebar-logo" style="cursor: pointer;" onclick="window.location.href='../lobby.html'">
+            <img src="../assets/logo_f1a.png" id="logoSidebar" alt="Logo F1A">
+        </div>
+        <nav class="nav-links">
+            <a href="index.html" class="nav-item ativo"><span class="material-symbols-rounded">contract</span><span class="nav-texto">Gerador de Contratos</span></a>
+            <div class="nav-divisor"></div>
+            <a href="../lobby.html" class="nav-item"><span class="material-symbols-rounded">arrow_back</span><span class="nav-texto">Sair do Módulo</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <button class="btn-icon" onclick="toggleSidebarF1A()"><span class="material-symbols-rounded">menu</span></button>
+                <h2 class="header-title">Gerador de Documentos Oficiais</h2>
+            </div>
+            <div class="header-right">
+                <button class="btn-icon" id="btnTemaGlobal" onclick="alternarTemaGlobal()" title="Alternar Tema"><span class="material-symbols-rounded">dark_mode</span></button>
+                <div class="user-profile" onclick="toggleDropdownPerfil(event)" style="cursor: pointer; position: relative; display: flex; align-items: center; gap: 12px; background: #0f172a; padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid rgba(148, 163, 184, 0.25); box-shadow: 0 2px 8px rgba(0,0,0,0.18); transition: border 0.3s;">
+                    <div class="user-avatar" id="iniciaisUsuario" style="width: 32px; height: 32px; border-radius: 50%; background: var(--f1a-copper); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px;">--</div>
+                    <div class="user-info">
+                        <span class="user-name" id="nomeUsuario" style="display: block; font-size: 13px; font-weight: 800; color: #f8fafc;">Carregando...</span>
+                        <span class="user-role" id="cargoUsuario" style="display: block; font-size: 11px; color: #cbd5e1; font-weight: 600;">Aguarde</span>
+                    </div>
+                    <span class="material-symbols-rounded" style="color: #cbd5e1; font-size: 18px;">expand_more</span>
+                    <div class="menu-perfil-flutuante escondido" id="dropdownPerfilLocal">
+                        <a href="#" onclick="if(typeof alterarNomeExibicao === 'function') alterarNomeExibicao()" class="dropdown-item" style="color: #f8fafc; font-size: 13px; font-weight: 600;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
+                            <span class="material-symbols-rounded" style="margin-right: 12px; font-size: 18px; color: var(--f1a-blue);">edit</span> Alterar Nome
+                        </a>
+                        <div style="height: 1px; background: rgba(148, 163, 184, 0.18); margin: 5px 0;"></div>
+                        <a href="#" onclick="sair()" class="dropdown-item" style="color: #ef4444; font-size: 13px; font-weight: 700;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'">
+                            <span class="material-symbols-rounded" style="margin-right: 12px; font-size: 18px;">logout</span> Sair do Sistema
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="mesa-container" style="background: var(--bg-painel); border-radius: 12px; padding: 30px; box-shadow: var(--shadow); max-width: 900px; margin: 0 auto;">
+                
+                <div class="secao-form" style="background: rgba(230, 145, 56, 0.05); border-color: rgba(230, 145, 56, 0.3);">
+                    <h4 class="secao-titulo" style="color: var(--f1a-copper);"><span class="material-symbols-rounded">description</span> 1. Tipo de Documento</h4>
+                    <select id="modeloContrato" onchange="adaptarTela()" style="font-weight: bold; font-size: 14px; padding: 12px;">
+                        <option value="Contrato_ceocard.docx">Contrato de Prestação de Serviços (Cartão)</option>
+                        <option value="Recibo.docx">Recibo de Pagamento Genérico</option>
+                    </select>
+                </div>
+
+                <div class="secao-form">
+                    <h4 class="secao-titulo"><span class="material-symbols-rounded">domain</span> 2. Dados do Cliente / Contratante</h4>
+                    
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div>
+                            <label>CPF / CNPJ:</label>
+                            <input type="text" id="cnpj" placeholder="Digite para buscar os dados..." maxlength="18" oninput="aplicarMascaraCpfCnpj(this)">
+                        </div>
+                        <div style="display: flex; align-items: flex-end;">
+                            <button class="btn-buscar" onclick="buscarDadosCNPJ()"><span class="material-symbols-rounded" style="font-size: 18px;">search</span> Buscar na Receita</button>
+                        </div>
+                    </div>
+
+                    <div class="grid-2-col" style="margin-bottom: 15px;">
+                        <div>
+                            <label>Nome do Cliente (Razão Social):</label>
+                            <input type="text" id="cliente" class="maiusculo" placeholder="Ex: EMPRESA FICTÍCIA LTDA">
+                        </div>
+                        <div id="campoFantasia">
+                            <label>Nome Fantasia (Opcional):</label>
+                            <input type="text" id="fantasia" class="maiusculo" placeholder="Ex: NOME POPULAR">
+                        </div>
+                    </div>
+
+                    <div id="dadosEndereco" class="grid-3-col">
+                        <div><label>CEP:</label><input type="text" id="cep" placeholder="00000-000" maxlength="9" oninput="aplicarMascaraCEP(this)"></div>
+                        <div><label>Cidade:</label><input type="text" id="cidade" placeholder="Ex: Ananindeua"></div>
+                        <div><label>UF:</label><input type="text" id="uf" class="maiusculo" placeholder="Ex: PA" maxlength="2"></div>
+                    </div>
+                </div>
+                
+                <div class="grid-2-col" style="margin-bottom: 20px;">
+                    <div id="dataContratoContainer">
+                        <label>Data de Emissão do Documento:</label>
+                        <input type="date" id="dataEscolhida">
+                    </div>
+                    <div id="dataRecibo" class="escondido">
+                        <label style="color: #10b981;">Data de Emissão do Recibo:</label>
+                        <input type="date" id="dataEscolhidaRecibo" style="border-color: #10b981;">
+                    </div>
+                </div>
+
+                <div id="secaoValores" class="secao-form">
+                    <h4 class="secao-titulo" style="color: #10b981;"><span class="material-symbols-rounded">payments</span> 3. Condições Comerciais</h4>
+                    
+                    <label>Pacote de Cartões Contratado:</label>
+                    <select id="pacoteCartoes" onchange="verificarPacote()">
+                        <option value="0">Selecione o plano...</option>
+                        <option value="500">500 unidades (R$ 17,00/un) - Total: R$ 8.500,00</option>
+                        <option value="1000">1.000 unidades (R$ 13,00/un) - Total: R$ 13.000,00</option>
+                        <option value="2000">2.000 unidades (R$ 11,00/un) - Total: R$ 22.000,00</option>
+                        <option value="personalizado">Plano Personalizado (Preencher Manualmente)</option>
+                    </select>
+
+                    <div id="caixaPersonalizada" class="escondido">
+                        <div class="grid-3-col">
+                            <div>
+                                <label>Qtd de Cartões:</label>
+                                <input type="text" id="qtdCartoes" placeholder="Ex: 350" oninput="this.value=this.value.replace(/\D/g,''); calcularTotalPersonalizado();">
+                            </div>
+                            <div>
+                                <label>V. Unitário (R$):</label>
+                                <input type="text" id="valorUnitario" placeholder="Ex: 11,00" oninput="aplicarMascaraMoeda(this); calcularTotalPersonalizado();">
+                            </div>
+                            <div>
+                                <label>Valor Total (R$):</label>
+                                <input type="text" id="valorTotal" placeholder="Ex: 3.850,00" oninput="aplicarMascaraMoeda(this); calcularUnitarioPersonalizado();">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2-col" style="margin-top: 20px; border-top: 1px dashed var(--borda); padding-top: 15px;">
+                        <div>
+                            <label>Taxa de Manutenção de Fatura (R$):</label>
+                            <input type="text" id="taxaManutencao" placeholder="Ex: 5,90" oninput="aplicarMascaraMoeda(this)">
+                        </div>
+                        <div>
+                            <label>Taxa Plastico (R$):</label>
+                            <input type="text" id="taxaPlastico" placeholder="Ex: 3,50" oninput="aplicarMascaraMoeda(this)">
+                        </div>
+                    </div>
+
+                </div>
+
+                <button onclick="gerarDocumento()" style="width: 100%; padding: 15px; margin-top: 10px; background: var(--f1a-copper); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span class="material-symbols-rounded">download</span> Gerar Documento Word
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script src="../core.js?v=1"></script>
+    <script src="../ui.js?v=1"></script>
+    <script src="contratos.js?v=7"></script>
+</body>
+</html>

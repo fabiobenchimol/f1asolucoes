@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gestão de Remessas - F1A Platform</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <link rel="stylesheet" href="../style.css">
+    
+    <style>
+        .header .header-title { color: #ffffff; }
+        .header .header-left .btn-icon,
+        .header .header-right #btnTemaGlobal { color: #ffffff; }
+        .header .header-left .btn-icon .material-symbols-rounded,
+        .header .header-right #btnTemaGlobal .material-symbols-rounded { color: #ffffff !important; }
+        .header #containerSeletorVisaoEmpresa .material-symbols-rounded { color: #ffffff !important; }
+        .header #containerSeletorVisaoEmpresa span { color: #ffffff !important; }
+        .header #containerSeletorVisaoEmpresa select { color: #ffffff !important; border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); }
+        .menu-perfil-flutuante { position: absolute; top: 55px; right: 0; background: #0f172a; border: 1px solid rgba(148, 163, 184, 0.25); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); width: 220px; z-index: 9999; padding: 10px; overflow: hidden; }
+        .menu-perfil-flutuante a { display: flex; align-items: center; padding: 12px 15px; color: #f8fafc; text-decoration: none; font-size: 14px; transition: background 0.2s ease; border-radius: 8px; }
+
+        /* Ajustes Visuais e Layout */
+        .view-panel { display: none; animation: fadeIn 0.3s ease; height: auto; min-height: fit-content; }
+        .view-panel.ativo { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Upload e Listas */
+        .upload-zone { border: 2px dashed var(--borda); border-radius: 12px; padding: 30px; text-align: center; background: rgba(0, 71, 255, 0.02); transition: all 0.3s ease; cursor: pointer; margin-top: 15px; }
+        .upload-zone:hover, .upload-zone.dragover { border-color: var(--f1a-blue); background: rgba(0, 71, 255, 0.08); }
+        .file-list { margin-top: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .file-item { background: var(--bg-body); border: 1px solid var(--borda); padding: 10px 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--cor-titulo); }
+        
+        .progresso-container { width: 100%; background: var(--borda); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 10px; display: none; }
+        .progresso-barra { height: 100%; background: var(--f1a-blue); width: 0%; transition: width 0.3s; }
+
+        /* Grid Compacta e Ações */
+        .tabela-clientes th, .tabela-dados th { font-size: 11px; text-transform: uppercase; padding: 8px 10px; background: rgba(0,0,0,0.02); }
+        .tabela-clientes td, .tabela-dados td { font-size: 12px; padding: 8px 10px; border-bottom: 1px solid var(--borda); vertical-align: middle; }
+        
+        .acoes-horizontais { display: flex; justify-content: center; align-items: center; gap: 6px; }
+        .acoes-horizontais .btn-icon { padding: 4px; border-radius: 6px; }
+
+        /* Filtros */
+        .barra-filtros { display: flex; gap: 10px; flex-wrap: wrap; background: rgba(0,0,0,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--borda); margin-bottom: 15px; }
+        .select-filtro { background: var(--bg-body); color: var(--cor-texto); border: 1px solid var(--borda); padding: 8px 12px; border-radius: 6px; font-size: 12px; outline: none; flex: 1; min-width: 140px; cursor: pointer; }
+
+        /* Status */
+        .select-status { font-weight: bold; border-radius: 6px; padding: 4px 8px; font-size: 11px; border: 1px solid var(--borda); outline: none; cursor: pointer; }
+        .status-pendente { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border-color: rgba(245, 158, 11, 0.3); }
+        .status-recebido { background: rgba(16, 185, 129, 0.1); color: #10b981; border-color: rgba(16, 185, 129, 0.3); }
+        .status-problema { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.3); }
+
+        /* Resumo Cards */
+        .resumo-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .res-card { background: var(--bg-body); border: 1px solid var(--borda); padding: 15px; border-radius: 8px; text-align: center; }
+        .res-card h4 { margin: 0; font-size: 24px; color: var(--cor-titulo); }
+        .res-card p { margin: 5px 0 0 0; font-size: 11px; color: var(--cor-texto); text-transform: uppercase; font-weight: bold; }
+
+        /* Correção Date Picker */
+        input[type="date"], input[type="text"] { background: var(--bg-body); color: var(--cor-texto); border: 1px solid var(--borda); padding: 8px 12px; border-radius: 6px; outline: none; font-family: inherit; }
+        input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; filter: invert(0.5) brightness(1.2); }
+    
+        /* ========================================================
+   CSS DE ISOLAMENTO: Fix para alinhamento dos dropdowns 
+   ======================================================== */
+
+/* Container do dropdown */
+.multi-filtro div {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 6px !important;
+    gap: 2px !important; /* Espaçamento entre itens */
+    box-sizing: border-box !important;
+}
+
+/* Itens de seleção (Labels) */
+.multi-filtro .chk-item {
+    display: flex !important;
+    flex-direction: row !important; /* Garante alinhamento horizontal */
+    align-items: center !important;
+    justify-content: flex-start !important;
+    margin: 0 !important;
+    padding: 6px 8px !important;
+    width: 100% !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+}
+
+/* Checkbox fixo para não distorcer */
+.multi-filtro .chk-item input[type="checkbox"] {
+    margin: 0 !important;
+    margin-right: 10px !important;
+    width: 16px !important;
+    height: 16px !important;
+    flex-shrink: 0 !important; /* Impede que o box encolha */
+    cursor: pointer !important;
+}
+
+/* Texto ao lado do checkbox */
+.multi-filtro .chk-item span {
+    display: block !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+    /* Este código deve ficar dentro da tag <style> do remessas.html */
+
+#viewDetalhes .multi-filtro div {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 6px !important;
+    gap: 4px !important;
+    box-sizing: border-box !important;
+}
+
+#viewDetalhes .multi-filtro .chk-item {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 6px 8px !important;
+    width: 100% !important;
+    cursor: pointer !important;
+}
+
+        #viewDetalhes .multi-filtro .chk-item input[type="checkbox"] {
+    margin: 0 !important;
+    margin-right: 10px !important;
+    width: 16px !important;
+    height: 16px !important;
+    flex-shrink: 0 !important;
+}
+
+        /* Abas internas */
+        .tabs-internas { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid var(--borda); padding-bottom: 0; }
+        .tab-interna { background: transparent; border: none; border-bottom: 3px solid transparent; padding: 10px 20px; font-size: 13px; font-weight: 700; color: var(--cor-texto); cursor: pointer; display: flex; align-items: center; gap: 6px; margin-bottom: -2px; transition: all 0.2s; font-family: inherit; }
+        .tab-interna.ativo { color: var(--f1a-blue); border-bottom-color: var(--f1a-blue); }
+        .tab-interna:hover { color: var(--f1a-blue); }
+        .painel-interno { display: none; }
+        .painel-interno.ativo { display: block; }
+
+        /* Bloco logístico */
+        .bloco-logistica { background: rgba(0, 71, 255, 0.03); border: 1px solid var(--borda); border-radius: 10px; padding: 18px; margin-bottom: 20px; }
+        .bloco-logistica h4 { margin: 0 0 14px 0; font-size: 13px; text-transform: uppercase; color: var(--f1a-blue); display: flex; align-items: center; gap: 6px; }
+        .grid-logistica { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+        .item-logistica label { display: block; font-size: 10px; text-transform: uppercase; font-weight: 700; color: var(--cor-texto); margin-bottom: 4px; }
+        .item-logistica span, .item-logistica p { margin: 0; font-size: 13px; font-weight: 600; color: var(--cor-titulo); }
+        .badge-logistico { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+        .badge-aguardando { background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+        .badge-recebida { background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+        .badge-finalizada { background: rgba(0,71,255,0.12); color: var(--f1a-blue); border: 1px solid rgba(0,71,255,0.3); }
+
+        .res-card.logistica-card { border-bottom: 3px solid var(--f1a-blue); }
+        .res-card.logistica-card h4 { color: var(--f1a-blue); }
+
+        /* Despachos */
+        .form-despacho { background: rgba(0,0,0,0.02); border: 1px solid var(--borda); border-radius: 10px; padding: 18px; margin-bottom: 20px; }
+        .form-despacho h4 { margin: 0 0 15px 0; font-size: 14px; color: var(--cor-titulo); display: flex; align-items: center; gap: 6px; }
+        .lojas-check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; max-height: 180px; overflow-y: auto; padding: 10px; background: var(--bg-body); border: 1px solid var(--borda); border-radius: 8px; margin-top: 8px; }
+        .lojas-check-grid label { display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; padding: 4px; }
+        .status-despacho { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; display: inline-block; }
+        .st-desp-pendente { background: rgba(245,158,11,0.12); color: #f59e0b; }
+        .st-desp-despachado { background: rgba(0,71,255,0.12); color: var(--f1a-blue); }
+        .st-desp-transito { background: rgba(139,92,246,0.12); color: #8b5cf6; }
+        .st-desp-entregue { background: rgba(16,185,129,0.12); color: #10b981; }
+        .st-desp-cancelado { background: rgba(239,68,68,0.12); color: #ef4444; }
+
+        /* Modal recebimento */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.escondido { display: none; }
+        .modal-box { background: var(--bg-painel); border: 1px solid var(--borda); border-radius: 12px; padding: 24px; width: 100%; max-width: 440px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+        .modal-box h3 { margin: 0 0 16px 0; color: var(--cor-titulo); font-size: 16px; }
+        .modal-acoes { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+        /* Impressão — container oculto fora do fluxo da página */
+        #areaImpressao {
+            display: none;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #0f172a;
+            background: #fff;
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 8mm 10mm 14mm 10mm;
+                @bottom-center {
+                    content: "F1A Platform — Página " counter(page) " de " counter(pages);
+                    font-family: Arial, Helvetica, sans-serif;
+                    font-size: 10px;
+                    color: #64748b;
+                }
+            }
+
+            html, body {
+                height: auto !important;
+                min-height: 0 !important;
+                max-height: none !important;
+                overflow: visible !important;
+                background: #fff !important;
+                background-image: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                font-family: Arial, Helvetica, sans-serif !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            body.modo-impressao-remessa > *:not(#areaImpressao) {
+                display: none !important;
+            }
+
+            #areaImpressao {
+                display: block !important;
+                position: static !important;
+                width: 100% !important;
+                height: auto !important;
+                min-height: 0 !important;
+                max-height: none !important;
+                overflow: visible !important;
+                background: #fff !important;
+                background-image: none !important;
+                color: #0f172a !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                font-family: Arial, Helvetica, sans-serif !important;
+                font-size: 11px;
+                line-height: 1.35;
+            }
+
+            #areaImpressao * {
+                max-height: none !important;
+                overflow: visible !important;
+                box-shadow: none !important;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            .print-banner {
+                background: #fff !important;
+                background-image: none !important;
+                color: #0047ff !important;
+                border: 2px solid #0047ff;
+                padding: 10px 14px;
+                margin: 0 0 10px 0;
+                page-break-inside: avoid;
+            }
+            .print-banner-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+            .print-banner-brand { font-size: 18px; font-weight: 800; letter-spacing: 1px; color: #0047ff !important; }
+            .print-banner-title { margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; color: #0047ff !important; }
+            .print-banner-sub { margin: 2px 0 0 0; font-size: 10px; color: #475569 !important; }
+
+            .print-resumo {
+                border: 1px solid #cbd5e1;
+                border-radius: 4px;
+                padding: 10px 12px;
+                margin-bottom: 12px;
+                background: #fff !important;
+                page-break-inside: avoid;
+            }
+            .print-resumo-titulo {
+                font-size: 10px;
+                font-weight: 800;
+                text-transform: uppercase;
+                color: #0047ff;
+                margin: 0 0 8px 0;
+            }
+            .print-resumo-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px 12px;
+            }
+            .print-resumo-item label {
+                display: block;
+                font-size: 9px;
+                text-transform: uppercase;
+                font-weight: 700;
+                color: #64748b;
+                margin-bottom: 2px;
+            }
+            .print-resumo-item span {
+                font-size: 11px;
+                font-weight: 600;
+                color: #0f172a;
+            }
+            .print-resumo-item.full { grid-column: 1 / -1; }
+
+            .print-bloco-rede {
+                page-break-before: always;
+                break-before: page;
+                margin: 0 0 12px 0;
+            }
+            .print-bloco-rede:first-of-type {
+                page-break-before: auto;
+                break-before: auto;
+            }
+
+            .print-rede-header {
+                background: #fff !important;
+                background-image: none !important;
+                color: #0047ff !important;
+                border: 2px solid #0047ff;
+                border-bottom: 1px solid #0047ff;
+                padding: 8px 12px;
+                margin: 0;
+                page-break-inside: avoid;
+                page-break-after: avoid;
+            }
+            .print-rede-header h2 {
+                margin: 0;
+                font-size: 16px;
+                font-weight: bold;
+                text-transform: uppercase;
+                color: #0047ff !important;
+            }
+            .print-rede-header p {
+                margin: 3px 0 0 0;
+                font-size: 11px;
+                font-weight: normal;
+                color: #475569 !important;
+            }
+
+            .print-loja-bloco {
+                border: 1px solid #e2e8f0;
+                border-top: none;
+                margin: 0 0 10px 0;
+                background: #fff !important;
+                page-break-inside: auto;
+                break-inside: auto;
+            }
+            .print-loja-bloco:first-of-type { border-top: 1px solid #e2e8f0; }
+
+            .print-loja-info {
+                background: #fff !important;
+                padding: 6px 10px;
+                border-bottom: 1px solid #e2e8f0;
+                font-size: 11px;
+                line-height: 1.35;
+                page-break-inside: avoid;
+                page-break-after: avoid;
+            }
+            .print-loja-linha {
+                display: block;
+                white-space: normal;
+                word-break: break-word;
+            }
+            .print-loja-nome {
+                font-size: 13px;
+                font-weight: 600;
+                color: #0047ff;
+                margin-right: 8px;
+            }
+            .print-loja-meta { color: #475569; font-size: 11px; }
+
+            .print-tabela {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 11px;
+                page-break-inside: auto;
+                break-inside: auto;
+            }
+            .print-tabela thead { display: table-header-group; }
+            .print-tabela tbody { display: table-row-group; }
+            .print-tabela th {
+                background: #0047ff !important;
+                background-image: none !important;
+                color: #fff !important;
+                font-size: 10px;
+                text-transform: uppercase;
+                font-weight: 700;
+                padding: 4px 6px;
+                text-align: left;
+                line-height: 1.25;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .print-tabela td {
+                border-bottom: 1px solid #e2e8f0;
+                padding: 3px 6px;
+                color: #0f172a;
+                font-size: 11px;
+                line-height: 1.25;
+                vertical-align: top;
+            }
+            .print-tabela tbody tr:nth-child(even) td { background: #f8fafc !important; }
+            .print-tabela tbody tr:nth-child(odd) td { background: #fff !important; }
+            .print-tabela tr { page-break-inside: avoid; break-inside: avoid; }
+
+            .print-subtotal-loja {
+                text-align: right;
+                padding: 5px 10px;
+                background: #fff !important;
+                border-top: 1px solid #cbd5e1;
+                font-size: 11px;
+                font-weight: 700;
+                color: #334155;
+                page-break-inside: avoid;
+                page-break-before: avoid;
+            }
+            .print-subtotal-rede {
+                text-align: right;
+                padding: 6px 12px;
+                background: #fff !important;
+                border: 2px solid #0047ff;
+                font-size: 11px;
+                font-weight: 800;
+                color: #0047ff;
+                margin-bottom: 10px;
+                page-break-inside: avoid;
+            }
+
+            .print-total-geral {
+                margin: 0 0 14px 0;
+                padding: 10px 14px;
+                background: #fff !important;
+                background-image: none !important;
+                color: #0047ff !important;
+                border: 2px solid #0047ff;
+                page-break-inside: avoid;
+                page-break-after: avoid;
+            }
+            .print-total-geral-titulo {
+                margin: 0 0 8px 0;
+                font-size: 11px;
+                font-weight: 800;
+                text-transform: uppercase;
+                text-align: center;
+                color: #0047ff !important;
+                letter-spacing: 0.3px;
+            }
+            .print-total-geral-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+                text-align: center;
+            }
+            .print-total-geral-item {
+                padding: 6px 8px;
+                border: 1px solid #cbd5e1;
+                border-radius: 4px;
+                background: #fff !important;
+            }
+            .print-total-geral-valor {
+                display: block;
+                font-size: 18px;
+                font-weight: 800;
+                color: #0047ff !important;
+                line-height: 1.2;
+            }
+            .print-total-geral-label {
+                display: block;
+                font-size: 10px;
+                font-weight: 600;
+                color: #475569 !important;
+                text-transform: uppercase;
+                margin-top: 2px;
+            }
+
+            .print-emissao {
+                margin-top: 8px;
+                padding-top: 6px;
+                border-top: 1px dashed #cbd5e1;
+                font-size: 10px;
+                color: #64748b;
+                page-break-inside: avoid;
+            }
+            .print-emissao-final {
+                margin-top: 12px;
+            }
+            .print-emissao-linha {
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 6px;
+                font-size: 10px;
+            }
+        }
+    
+    </style>
+</head>
+<body style="display: none;" id="corpoPagina">
+
+    <div id="overlayMobile" class="overlay-mobile" onclick="toggleSidebarF1A()"></div>
+
+    <aside class="sidebar" id="sidebarF1A">
+        <div class="sidebar-logo" style="cursor: pointer;" onclick="window.location.href='../lobby.html'">
+            <img src="../assets/logo_f1a.png" id="logoSidebar" alt="Logo F1A">
+        </div>
+        <nav class="nav-links">
+            <a href="controle-geral.html" class="nav-item"><span class="material-symbols-rounded">dashboard</span><span class="nav-texto">Controle Geral</span></a>
+            <a href="controle-maquinetas.html" class="nav-item"><span class="material-symbols-rounded">point_of_sale</span><span class="nav-texto">Maquinetas</span></a>
+            <a href="cadastro-cliente.html" class="nav-item"><span class="material-symbols-rounded">person_add</span><span class="nav-texto">Clientes de Aluguel</span></a>
+            <a href="cadastro-maquinetas.html" class="nav-item"><span class="material-symbols-rounded">inventory_2</span><span class="nav-texto">Gestão de Estoque</span></a>
+            <a href="remessas.html" class="nav-item ativo"><span class="material-symbols-rounded">local_shipping</span><span class="nav-texto">Remessas</span></a>
+            <div class="nav-divisor"></div>
+            <a href="../lobby.html" class="nav-item"><span class="material-symbols-rounded">arrow_back</span><span class="nav-texto">Sair do Módulo</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <button class="btn-icon" onclick="toggleSidebarF1A()"><span class="material-symbols-rounded">menu</span></button>
+                <h2 class="header-title">Logística e Verificação (Emboço)</h2>
+            </div>
+            <div class="header-right">
+                <button class="btn-icon" id="btnTemaGlobal" onclick="alternarTemaGlobal()"><span class="material-symbols-rounded">dark_mode</span></button>
+
+                <div class="user-profile" onclick="toggleDropdownPerfil(event)" style="cursor: pointer; position: relative; display: flex; align-items: center; gap: 12px; background: #0f172a; padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid rgba(148, 163, 184, 0.25); box-shadow: 0 2px 8px rgba(0,0,0,0.18); transition: border 0.3s;">
+                    <div class="user-avatar" id="iniciaisUsuario" style="width: 32px; height: 32px; border-radius: 50%; background: var(--f1a-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px;">--</div>
+                    <div class="user-info">
+                        <span class="user-name" id="nomeUsuario" style="display: block; font-size: 13px; font-weight: 800; color: #f8fafc;">Carregando...</span>
+                        <span class="user-role" id="cargoUsuario" style="display: block; font-size: 11px; color: #cbd5e1; font-weight: 600;">Aguarde</span>
+                    </div>
+                    <span class="material-symbols-rounded" style="color: #cbd5e1; font-size: 18px;">expand_more</span>
+
+                    <div class="menu-perfil-flutuante escondido" id="dropdownPerfilLocal">
+                        <a href="#" onclick="if(typeof alterarNomeExibicao === 'function') alterarNomeExibicao()" class="dropdown-item" style="color: #f8fafc; font-size: 13px; font-weight: 600;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
+                            <span class="material-symbols-rounded" style="margin-right: 12px; font-size: 18px; color: var(--f1a-blue);">edit</span> Alterar Nome
+                        </a>
+                        <div style="height: 1px; background: rgba(148, 163, 184, 0.18); margin: 5px 0;"></div>
+                        <a href="#" onclick="sair()" class="dropdown-item" style="color: #ef4444; font-size: 13px; font-weight: 700;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'">
+                            <span class="material-symbols-rounded" style="margin-right: 12px; font-size: 18px;">logout</span> Sair do Sistema
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="mesa-container">
+                
+                <div id="viewGrid" class="view-panel ativo">
+                    <div class="acoes-tabela">
+                        <div style="font-size: 16px; font-weight: 800; color: var(--cor-titulo); display: flex; align-items: center; gap: 8px;">
+                            <span class="material-symbols-rounded" style="color: var(--f1a-blue);">list_alt</span> Histórico de Remessas
+                        </div>
+                        <button class="btn-nova-proposta" onclick="abrirNovaRemessa()">
+                            <span class="material-symbols-rounded">add_circle</span> Criar Nova Remessa
+                        </button>
+                    </div>
+
+                    <div class="tabela-container">
+                        <table class="tabela-dados" style="min-width: 900px;">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Descrição / Referência</th>
+                                    <th>Arquivos</th>
+                                    <th>Total Cartões</th>
+                                    <th>Status Geral</th>
+                                    <th style="text-align: center;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="corpoGridRemessas">
+                                <tr><td colspan="6" style="text-align: center; padding: 40px;">Carregando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="viewNovaRemessa" class="view-panel" style="background: var(--bg-painel); padding: 25px; border-radius: 12px; border: 1px solid var(--borda);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid var(--borda); padding-bottom: 15px;">
+                        <h3 style="margin: 0; color: var(--f1a-blue); display: flex; align-items: center; gap: 8px;"><span class="material-symbols-rounded">upload_file</span> Lançar Nova Remessa</h3>
+                        <button class="btn-voltar" onclick="voltarParaGrid()" style="background: transparent; border: 1px solid var(--borda); padding: 5px 15px; border-radius: 6px; color: var(--cor-texto); cursor: pointer;">Voltar</button>
+                    </div>
+
+                    <div class="linha-dupla">
+                        <div>
+                            <label>Descrição da Remessa</label>
+                            <input type="text" id="remDescricao" placeholder="Ex: Remessa Lote Maio 2026">
+                        </div>
+                        <div>
+                            <label>Data de Envio</label>
+                            <input type="date" id="remData">
+                        </div>
+                    </div>
+
+                    <label style="margin-top: 20px;">Arquivos de Emboço (.TXT)</label>
+                    <div class="upload-zone" id="dropZone" onclick="document.getElementById('inputFiles').click()">
+                        <span class="material-symbols-rounded upload-icon" style="font-size: 40px; color: var(--f1a-blue);">note_add</span>
+                        <div style="font-weight: bold; color: var(--cor-titulo);">Clique ou arraste os arquivos TXT aqui</div>
+                        <input type="file" id="inputFiles" multiple accept=".txt" style="display: none;" onchange="adicionarArquivosLote(event)">
+                    </div>
+
+                    <div class="file-list" id="listaArquivosUpload"></div>
+                    <div class="progresso-container" id="barraProgressoCont"><div class="progresso-barra" id="barraProgresso"></div></div>
+
+                    <button class="btn-salvar" id="btnSalvarRemessa" onclick="processarESalvarRemessa()" style="margin-top: 20px; background: var(--f1a-blue);">
+                        <span class="material-symbols-rounded">cloud_upload</span> Processar e Salvar Lote
+                    </button>
+                </div>
+
+                <div id="viewDetalhes" class="view-panel" style="background: var(--bg-painel); padding: 25px; border-radius: 12px; border: 1px solid var(--borda);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid var(--borda); padding-bottom: 15px;">
+                        <div style="flex: 1; min-width: 0;">
+                            <div id="detalheTituloWrap" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                <h3 id="detalheTitulo" style="margin: 0; color: var(--cor-titulo);">Remessa</h3>
+                                <button type="button" id="btnEditarTituloRemessa" class="btn-icon" onclick="iniciarEdicaoTituloRemessa()" title="Editar nome da remessa" style="color: var(--f1a-blue); padding: 4px;">
+                                    <span class="material-symbols-rounded" style="font-size: 20px;">edit</span>
+                                </button>
+                            </div>
+                            <div id="detalheTituloEdicao" class="escondido" style="align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+                                <input type="text" id="inputEditarDescricaoRemessa" maxlength="200" style="flex: 1; min-width: 180px; max-width: 420px; font-size: 15px; font-weight: 700; color: var(--cor-titulo); border: 1px solid var(--f1a-blue); padding: 6px 10px; border-radius: 6px;">
+                                <button type="button" onclick="salvarDescricaoRemessa()" title="Salvar" style="background: var(--f1a-blue); color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 4px;">
+                                    <span class="material-symbols-rounded" style="font-size: 18px;">check</span> Salvar
+                                </button>
+                                <button type="button" onclick="cancelarEdicaoTituloRemessa()" title="Cancelar" style="background: transparent; color: var(--cor-texto); border: 1px solid var(--borda); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 4px;">
+                                    <span class="material-symbols-rounded" style="font-size: 18px;">close</span> Cancelar
+                                </button>
+                            </div>
+                            <p id="detalheSub" style="margin: 5px 0 0 0; font-size: 12px; color: var(--cor-texto);">Auditoria de cartões</p>
+                        </div>
+                        <button class="btn-voltar" onclick="voltarParaGrid()" style="background: transparent; border: 1px solid var(--borda); padding: 5px 15px; border-radius: 6px; color: var(--cor-texto); cursor: pointer;">Voltar</button>
+                    </div>
+
+                    <div class="tabs-internas">
+                        <button type="button" class="tab-interna ativo" id="tabAuditoria" onclick="alternarAbaDetalhes('auditoria')">
+                            <span class="material-symbols-rounded" style="font-size:18px;">checklist</span> Auditoria
+                        </button>
+                        <button type="button" class="tab-interna" id="tabDespachos" onclick="alternarAbaDetalhes('despachos')">
+                            <span class="material-symbols-rounded" style="font-size:18px;">local_shipping</span> Despachos
+                        </button>
+                    </div>
+
+                    <div id="painelAuditoria" class="painel-interno ativo">
+
+                        <div class="bloco-logistica">
+                            <h4><span class="material-symbols-rounded" style="font-size:18px;">inventory_2</span> Informações Logísticas</h4>
+                            <div class="grid-logistica">
+                                <div class="item-logistica"><label>Data de Envio</label><span id="logDataEnvio">-</span></div>
+                                <div class="item-logistica"><label>Data de Recebimento</label><span id="logDataRecebimento">-</span></div>
+                                <div class="item-logistica"><label>Recebido por</label><span id="logRecebidoPor">-</span></div>
+                                <div class="item-logistica"><label>Status Logístico</label><span id="logStatusLogistico" class="badge-logistico badge-aguardando">Aguardando Recebimento</span></div>
+                                <div class="item-logistica" style="grid-column: 1 / -1;"><label>Observações</label><p id="logObservacao">-</p></div>
+                            </div>
+                            <div style="margin-top: 14px;">
+                                <button type="button" id="btnRegistrarRecebimento" class="btn-salvar" onclick="abrirModalRecebimento()" style="background: var(--f1a-blue); padding: 8px 16px; font-size: 12px;">
+                                    <span class="material-symbols-rounded" style="font-size:18px; vertical-align:middle;">inventory</span> Registrar Recebimento
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="resumo-cards">
+                            <div class="res-card"><h4 id="totCartoes">0</h4><p>Total Enviado</p></div>
+                            <div class="res-card" style="border-bottom: 3px solid #f59e0b;"><h4 id="totPendentes" style="color:#f59e0b;">0</h4><p>Pendentes</p></div>
+                            <div class="res-card" style="border-bottom: 3px solid #10b981;"><h4 id="totRecebidos" style="color:#10b981;">0</h4><p>Recebidos OK</p></div>
+                            <div class="res-card" style="border-bottom: 3px solid #ef4444;"><h4 id="totProblemas" style="color:#ef4444;">0</h4><p>Com Problema</p></div>
+                            <div class="res-card logistica-card"><h4 id="totLojasPendentes">0</h4><p>Lojas Pendentes</p></div>
+                            <div class="res-card logistica-card"><h4 id="totLojasDespachadas">0</h4><p>Lojas Despachadas</p></div>
+                            <div class="res-card logistica-card"><h4 id="totLojasEntregues">0</h4><p>Lojas Entregues</p></div>
+                            <div class="res-card logistica-card"><h4 id="totCustoEntrega">R$ 0,00</h4><p>Custo Total Entrega</p></div>
+                        </div>
+
+                        <div class="filtros-container" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; background: rgba(0,0,0,0.02); padding: 15px; border-radius: 8px; border: 1px dashed var(--borda); align-items: center;">
+                            <div style="flex: 2; display: flex; align-items: center; background: var(--bg-body); border: 1px solid var(--borda); border-radius: 8px; padding: 0 12px; height: 42px; min-width: 200px;">
+                                <span class="material-symbols-rounded" style="color: var(--cor-texto); font-size: 20px; margin-right: 8px;">search</span>
+                                <input type="text" id="filtroTexto" placeholder="Pesquisar por Cliente ou Nº do Cartão..." onkeyup="filtrarListaAuditoria()" style="border: none; background: transparent; outline: none; width: 100%; color: var(--cor-titulo); font-size: 13px;">
+                            </div>
+                            <div id="filtroRede_container" style="flex: 1; min-width: 160px; height: 42px;"></div>
+                            <div id="filtroLoja_container" style="flex: 1; min-width: 160px; height: 42px;"></div>
+                            <div id="filtroStatus_container" style="flex: 1; min-width: 160px; height: 42px;"></div>
+                            <button type="button" class="btn-secondary" onclick="imprimirListagemAuditoria()" style="height: 42px; display: flex; align-items: center; gap: 6px; padding: 0 16px; white-space: nowrap;">
+                                <span class="material-symbols-rounded" style="font-size:18px;">print</span> Imprimir Listagem
+                            </button>
+                        </div>
+
+                        <div class="tabela-container">
+                            <table style="width: 100%; border-collapse: collapse; text-align: left;" class="tabela-clientes">
+                                <thead>
+                                    <tr>
+                                        <th onclick="sortTable('cartao')" style="cursor: pointer;">Nº Cartão ⇅</th>
+                                        <th onclick="sortTable('nome')" style="cursor: pointer;">Nome Impresso ⇅</th>
+                                        <th onclick="sortTable('nomeLojaOficial')" style="cursor: pointer;">Origem (Loja / Lote) ⇅</th>
+                                        <th style="text-align: right;">Status Físico</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="corpoClientesAuditoria"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="painelDespachos" class="painel-interno">
+
+                        <div class="form-despacho">
+                            <h4><span class="material-symbols-rounded" style="color:var(--f1a-blue);">add_box</span> Novo Despacho</h4>
+                            <div class="linha-dupla">
+                                <div>
+                                    <label>Rede</label>
+                                    <select id="despRede" onchange="atualizarLojasDespachoForm()" style="width:100%;">
+                                        <option value="">Selecione a rede...</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Tipo de Entrega</label>
+                                    <select id="despTipoEntrega" style="width:100%;">
+                                        <option value="Correios">Correios</option>
+                                        <option value="Uber">Uber</option>
+                                        <option value="99">99</option>
+                                        <option value="Motoboy">Motoboy</option>
+                                        <option value="Entrega Pessoal">Entrega Pessoal</option>
+                                        <option value="Transportadora">Transportadora</option>
+                                        <option value="Outros">Outros</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="margin-top: 14px;">
+                                <label>Lojas da Rede</label>
+                                <div id="despLojasCheckboxes" class="lojas-check-grid">
+                                    <span style="color: var(--cor-texto); font-size: 12px;">Selecione uma rede primeiro.</span>
+                                </div>
+                            </div>
+                            <div class="linha-dupla" style="margin-top: 14px;">
+                                <div>
+                                    <label>Data do Despacho</label>
+                                    <input type="date" id="despData" style="width:100%;">
+                                </div>
+                                <div>
+                                    <label>Código de Rastreio</label>
+                                    <input type="text" id="despRastreio" placeholder="Opcional" style="width:100%;">
+                                </div>
+                            </div>
+                            <div class="linha-dupla" style="margin-top: 14px;">
+                                <div>
+                                    <label>Custo da Entrega (R$)</label>
+                                    <input type="number" id="despCusto" min="0" step="0.01" placeholder="0,00" style="width:100%;">
+                                </div>
+                                <div>
+                                    <label>Observação</label>
+                                    <input type="text" id="despObservacao" placeholder="Opcional" style="width:100%;">
+                                </div>
+                            </div>
+                            <button type="button" class="btn-salvar" id="btnSalvarDespacho" onclick="salvarDespacho()" style="margin-top: 16px; background: var(--f1a-blue);">
+                                <span class="material-symbols-rounded">save</span> Salvar Despacho
+                            </button>
+                        </div>
+
+                        <div class="tabela-container">
+                            <table class="tabela-dados" style="min-width: 700px;">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Rede</th>
+                                        <th>Qtd. Lojas</th>
+                                        <th>Tipo Entrega</th>
+                                        <th>Custo</th>
+                                        <th>Status</th>
+                                        <th style="text-align:center;">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="corpoGridDespachos">
+                                    <tr><td colspan="7" style="text-align:center; padding:30px;">Nenhum despacho registrado.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="modalRecebimento" class="modal-overlay escondido" onclick="if(event.target===this)fecharModalRecebimento()">
+                    <div class="modal-box">
+                        <h3><span class="material-symbols-rounded" style="vertical-align:middle; color:var(--f1a-blue);">inventory</span> Registrar Recebimento</h3>
+                        <div class="form-group">
+                            <label>Data de Recebimento</label>
+                            <input type="date" id="modalDataRecebimento" style="width:100%;">
+                        </div>
+                        <div class="form-group" style="margin-top:12px;">
+                            <label>Observações</label>
+                            <textarea id="modalObsRecebimento" rows="3" placeholder="Opcional" style="width:100%; background:var(--bg-body); color:var(--cor-texto); border:1px solid var(--borda); border-radius:6px; padding:8px; font-family:inherit; resize:vertical;"></textarea>
+                        </div>
+                        <div class="modal-acoes">
+                            <button type="button" class="btn-secondary" onclick="fecharModalRecebimento()">Cancelar</button>
+                            <button type="button" class="btn-salvar" onclick="confirmarRecebimento()" style="background:var(--f1a-blue);">Confirmar Recebimento</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="areaImpressaoSlot"></div>
+
+            </div>
+        </div>
+    </main>
+
+    <div id="areaImpressao"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="../core.js?v=1"></script>
+    <script src="remessas.js"></script>
+</body>
+</html>

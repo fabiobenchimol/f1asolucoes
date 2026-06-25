@@ -1,0 +1,532 @@
+---
+description: Núcleo Arquitetural da Plataforma F1A
+globs:
+alwaysApply: true
+---
+
+# F1A Core Architecture
+
+Você é um desenvolvedor especialista na plataforma F1A.
+
+Sua principal responsabilidade é preservar a arquitetura existente da plataforma.
+
+Antes de criar qualquer código, você deve compreender que o F1A possui um Core centralizado responsável por autenticação, permissões, sessão, tema, navegação e integração Firebase.
+
+---
+
+# Visão Geral da Plataforma
+
+A arquitetura segue:
+
+F1A Core
+↓
+UI Global
+↓
+Módulos de Negócio
+↓
+Firebase
+
+Todos os módulos devem respeitar esta hierarquia.
+
+---
+
+# Responsabilidades Exclusivas do Core
+
+Somente o Core pode controlar:
+
+- Firebase Initialization
+- Firebase Authentication
+- Sessão
+- Logout
+- Router Guards
+- Sidebar Global
+- Tema Global
+- Usuário Logado
+- Empresa Ativa
+- Master Vision
+- Controle de Permissões
+
+---
+
+# Regra Absoluta
+
+NUNCA:
+
+- Inicializar Firebase em módulos
+- Criar novo firebase.initializeApp()
+- Duplicar autenticação
+- Duplicar controle de sessão
+- Duplicar Router Guard
+- Duplicar tema
+- Duplicar sidebar
+
+---
+
+# Ciclo de Vida dos Módulos
+
+Fluxo correto:
+
+Core.js
+↓
+Validação de Login
+↓
+Validação de Empresa
+↓
+Validação de Permissões
+↓
+Carregamento do Usuário
+↓
+window.posAuthCallback()
+↓
+Inicialização do Módulo
+
+---
+
+# Callback Obrigatório
+
+Todo módulo deve utilizar:
+
+```javascript
+window.posAuthCallback = async function() {
+
+}
+```
+
+Jamais utilizar:
+
+```javascript
+window.onload
+document.ready
+DOMContentLoaded
+```
+
+para carregar dados protegidos.
+
+---
+
+# Usuário Logado
+
+Disponibilizado pelo Core.
+
+Variável:
+
+```javascript
+usuarioLogado
+```
+
+O agente nunca deve recriar essa estrutura.
+
+---
+
+# Empresa Ativa
+
+Disponibilizada pelo Core.
+
+Variável principal:
+
+```javascript
+visaoEmpresaAtiva
+```
+
+Origem:
+
+```javascript
+sessionStorage
+```
+
+Todas as consultas devem respeitar essa empresa.
+
+---
+
+# Multiempresa
+
+O sistema é multiempresa.
+
+Todo novo módulo deve suportar:
+
+```javascript
+empresaId
+```
+
+Mesmo que inicialmente exista apenas uma empresa.
+
+Nunca criar consultas globais sem filtro empresarial.
+
+---
+
+# Compatibilidade Legada
+
+Os campos abaixo podem chegar como:
+
+- string
+- array
+
+Campos:
+
+```javascript
+empresaId
+redeId
+lojaId
+```
+
+Sempre normalizar.
+
+Exemplo:
+
+```javascript
+const empresas = Array.isArray(empresaId)
+    ? empresaId
+    : [empresaId];
+```
+
+---
+
+# Hierarquia Oficial
+
+Empresa
+↓
+Rede
+↓
+Loja
+
+Toda modelagem nova deve respeitar essa estrutura.
+
+---
+
+# Perfis Oficiais
+
+Perfis suportados:
+
+```text
+master
+admin
+gerente
+vendedor
+```
+
+---
+
+# Hierarquia de Perfis
+
+MASTER
+↓
+ADMIN
+↓
+GERENTE
+↓
+VENDEDOR
+
+---
+
+# Status de Usuário
+
+Valores oficiais:
+
+```text
+ativo
+bloqueado
+```
+
+Usuários bloqueados não podem acessar o sistema.
+
+---
+
+# Status de Empresa
+
+Valores oficiais:
+
+```text
+ativa
+bloqueada
+cancelada
+```
+
+Empresas bloqueadas ou canceladas impedem acesso.
+
+---
+
+# Router Guards
+
+O Core é responsável pela proteção de rotas.
+
+Os módulos NÃO devem criar sistemas próprios de autorização.
+
+A autorização deve utilizar:
+
+```javascript
+modulosAcesso
+ferramentasAcesso
+```
+
+---
+
+# Módulos
+
+Controle principal:
+
+```javascript
+modulosAcesso
+```
+
+Exemplos:
+
+```text
+crm
+contratos
+financeiro
+pagamentos
+visitas
+adm-cartao
+croche
+```
+
+---
+
+# Ferramentas
+
+Controle principal:
+
+```javascript
+ferramentasAcesso
+```
+
+Exemplos:
+
+```text
+dashboard
+executivo
+equipe
+administracao
+```
+
+---
+
+# Master Vision
+
+Recurso exclusivo do perfil MASTER.
+
+Permite:
+
+- Simular usuários
+- Simular empresas
+- Simular permissões
+- Simular módulos
+
+Variáveis encontradas:
+
+```javascript
+f1a_simulated_uid
+```
+
+Origem:
+
+```javascript
+sessionStorage
+```
+
+---
+
+# Sessão
+
+Persistência oficial:
+
+```javascript
+firebase.auth.Auth.Persistence.SESSION
+```
+
+Não utilizar:
+
+```javascript
+LOCAL
+NONE
+```
+
+sem aprovação explícita.
+
+---
+
+# Primeiro Acesso
+
+Fluxo obrigatório.
+
+Campo:
+
+```javascript
+primeiroAcesso
+```
+
+Quando:
+
+```javascript
+primeiroAcesso === true
+```
+
+O usuário deve:
+
+1. Cadastrar e-mail de recuperação
+2. Criar senha pessoal
+3. Atualizar cadastro
+
+Somente depois:
+
+```javascript
+primeiroAcesso = false
+```
+
+---
+
+# Recuperação de Senha
+
+Campo:
+
+```javascript
+emailRecuperacao
+```
+
+Fluxo:
+
+Firebase Auth
+↓
+Password Reset
+↓
+Nova Senha
+
+---
+
+# Tema Global
+
+Controle exclusivo do Core.
+
+Funções oficiais:
+
+```javascript
+alternarTemaGlobal()
+aplicarTemaGlobal()
+```
+
+---
+
+# Sidebar Global
+
+Controle exclusivo do Core.
+
+Não criar sidebars paralelas.
+
+Não duplicar menus.
+
+Não criar layouts independentes.
+
+---
+
+# Toasts
+
+Sistema oficial:
+
+```javascript
+mostrarToast(
+    mensagem,
+    tipo
+)
+```
+
+Tipos:
+
+```text
+sucesso
+erro
+```
+
+Não utilizar:
+
+```javascript
+alert()
+```
+
+exceto para:
+
+- segurança
+- bloqueios
+- falhas críticas
+
+---
+
+# Padrão de Desenvolvimento
+
+Sempre:
+
+✓ utilizar async/await
+
+✓ utilizar try/catch
+
+✓ validar permissões
+
+✓ validar empresa ativa
+
+✓ validar perfil
+
+✓ validar documentos inexistentes
+
+✓ utilizar FieldValue.serverTimestamp()
+
+---
+
+# Auditoria
+
+Toda operação crítica deve registrar:
+
+- usuário
+- data
+- ação
+
+Sempre que possível.
+
+---
+
+# Responsividade
+
+Todo módulo novo deve funcionar em:
+
+- Desktop
+- Tablet
+- Mobile
+
+Sem quebrar:
+
+- Sidebar
+- Header
+- Tabelas
+- Cards
+
+---
+
+# Integração com UI
+
+Todo módulo deve consumir:
+
+UI.js
+
+Nunca duplicar:
+
+- Dropdowns
+- Toasts
+- Modais
+- Perfil do usuário
+
+---
+
+# Regra Final
+
+Ao gerar qualquer código para o F1A:
+
+1. Preserve a arquitetura existente.
+2. Preserve a compatibilidade legada.
+3. Preserve o modelo multiempresa.
+4. Preserve o modelo hierárquico.
+5. Preserve o Core como única fonte de verdade.
+6. Preserve a integração com Firebase.
+7. Preserve o padrão Infinity Blue.
+8. Preserve o uso de posAuthCallback().
+9. Preserve Master Vision.
+10. Preserve Router Guards.
+
+Se existir dúvida entre criar algo novo ou reutilizar um recurso do Core, sempre reutilize o Core.

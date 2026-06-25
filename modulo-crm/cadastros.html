@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cadastros Base - F1A CRM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .header .header-title { color: #ffffff; }
+        .header .header-left .btn-icon,
+        .header .header-right #btnTemaGlobal { color: #ffffff; }
+        .header .header-left .btn-icon .material-symbols-rounded,
+        .header .header-right #btnTemaGlobal .material-symbols-rounded { color: #ffffff !important; }
+        .menu-perfil-flutuante { position: absolute; top: 55px; right: 0; background: #0f172a; border: 1px solid rgba(148, 163, 184, 0.25); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); width: 220px; z-index: 9999; padding: 10px; overflow: hidden; }
+        .menu-perfil-flutuante a { display: flex; align-items: center; padding: 12px 15px; color: #f8fafc; text-decoration: none; font-size: 14px; transition: background 0.2s ease; border-radius: 8px; }
+        .tabela-dados td { padding: 8px 15px !important; }
+        .crm-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--borda); padding-bottom: 10px; overflow-x: auto; }
+        .crm-tab-btn { background: none; border: none; color: var(--cor-texto); font-size: 15px; font-weight: 700; padding: 8px 16px; cursor: pointer; border-radius: 8px; transition: all 0.3s; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+        .crm-tab-btn:hover { background: var(--bg-body); color: var(--cor-titulo); }
+        .crm-tab-btn.ativo { background: var(--f1a-blue); color: white; box-shadow: 0 4px 10px rgba(0, 71, 255, 0.3); }
+        .chip-variavel { background: var(--bg-body); border: 1px solid var(--borda); color: var(--f1a-blue); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 12px; cursor: pointer; }
+        .chip-variavel:hover { background: var(--f1a-blue); color: white; }
+        .area-upload-excel { border: 2px dashed var(--borda); border-radius: 12px; background: var(--bg-body); padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.3s ease; display: block; }
+        .toolbar-formatacao { display: flex; gap: 5px; margin-bottom: 5px; background: var(--bg-painel); padding: 5px; border-radius: 8px; border: 1px solid var(--borda); }
+        .btn-format { background: none; border: none; color: var(--cor-titulo); cursor: pointer; padding: 5px 10px; border-radius: 4px; font-size: 14px; font-weight: bold; }
+        .filtros-container { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .input-filtro { width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--borda); background: var(--bg-body); color: var(--cor-titulo); font-family: inherit; }
+        .btn-acao-premium { background: linear-gradient(135deg, var(--f1a-blue), #003ad6); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 800; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 71, 255, 0.3); transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-acao-premium:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 71, 255, 0.5); }
+    </style>
+</head>
+<body style="display: none;" id="corpoPagina">
+
+    <div id="overlayMobile" class="overlay-mobile" onclick="toggleSidebarF1A()"></div>
+
+    <aside class="sidebar" id="sidebarF1A">
+        <div class="sidebar-logo" onclick="window.location.href='../lobby.html'" style="cursor: pointer;">
+            <img src="../assets/logo_f1a.png" id="logoSidebar" alt="F1A CRM">
+        </div>
+        <nav class="nav-links">
+            <a href="painel.html" class="nav-item"><span class="material-symbols-rounded">dashboard</span><span class="nav-texto">Painel de Envios</span></a>
+            <a href="cadastros.html" class="nav-item ativo"><span class="material-symbols-rounded">folder_managed</span><span class="nav-texto">Cadastros Base</span></a>
+            <a href="clientes.html" class="nav-item"><span class="material-symbols-rounded">groups</span><span class="nav-texto">Base de Clientes</span></a>
+            <a href="comissoes.html" class="nav-item"><span class="material-symbols-rounded">payments</span><span class="nav-texto">Comissões</span></a>
+            <a href="nova_remessa.html" class="nav-item"><span class="material-symbols-rounded">campaign</span><span class="nav-texto">Nova Remessa</span></a>
+            <div class="nav-divisor"></div>
+            <a href="../lobby.html" class="nav-item"><span class="material-symbols-rounded">arrow_back</span><span class="nav-texto">Sair do Módulo</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <button class="btn-icon" onclick="toggleSidebarF1A()"><span class="material-symbols-rounded">menu</span></button>
+                <h2 class="header-title">Cadastros Base</h2>
+            </div>
+            <div class="header-right">
+                <button class="btn-icon" id="btnTemaGlobal" onclick="alternarTemaGlobal()"><span class="material-symbols-rounded">dark_mode</span></button>
+                <div class="user-profile" onclick="toggleDropdownPerfil(event)" style="cursor: pointer; position: relative; display: flex; align-items: center; gap: 12px; background: #0f172a; padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid rgba(148, 163, 184, 0.25); box-shadow: 0 2px 8px rgba(0,0,0,0.18); transition: border 0.3s;">
+                    <div class="user-avatar" id="iniciaisUsuario" style="width: 32px; height: 32px; border-radius: 50%; background: var(--f1a-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px;">--</div>
+                    <div class="user-info">
+                        <span class="user-name" id="nomeUsuario" style="display: block; font-size: 13px; font-weight: 800; color: #f8fafc;">Carregando...</span>
+                        <span class="user-role" id="cargoUsuario" style="display: block; font-size: 11px; color: #cbd5e1; font-weight: 600;">Aguarde</span>
+                    </div>
+                    <span class="material-symbols-rounded" style="color: #cbd5e1; font-size: 18px;">expand_more</span>
+                    <div class="menu-perfil-flutuante escondido" id="dropdownPerfilLocal">
+                        <a href="#" onclick="if(typeof alterarNomeExibicao === 'function') alterarNomeExibicao()" class="dropdown-item" style="color: #f8fafc; font-size: 13px; font-weight: 600;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
+                            <span class="material-symbols-rounded" style="margin-right: 12px; font-size: 18px; color: var(--f1a-blue);">edit</span> Alterar Nome
+                        </a>
+                        <div style="height: 1px; background: rgba(148, 163, 184, 0.18); margin: 5px 0;"></div>
+                        <a href="#" onclick="sair()" class="dropdown-item" style="color: #ef4444; font-size: 13px; font-weight: 700;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'">
+                            <span class="material-symbols-rounded" style="margin-right: 12px; font-size: 18px;">logout</span> Sair do Sistema
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div style="margin-bottom: 25px;">
+                <h3 style="margin: 0; color: var(--cor-titulo);">Configurações do Mensageiro</h3>
+                <p style="margin: 5px 0 0 0; color: var(--cor-texto); font-size: 13px;">Gerencie a sua base de lojas e os modelos prontos.</p>
+            </div>
+
+            <div class="crm-tabs">
+                <button class="crm-tab-btn ativo" id="btnAbaMensagens" onclick="mudarAba('mensagens')"><span class="material-symbols-rounded">chat</span> Modelos de Mensagem</button>
+                <button class="crm-tab-btn" id="btnAbaLojas" onclick="mudarAba('lojas')"><span class="material-symbols-rounded">storefront</span> Base de Lojas</button>
+            </div>
+
+            <div id="abaMensagens">
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                    <button class="btn-acao-premium" onclick="abrirModalMensagem()"><span class="material-symbols-rounded">add</span> Novo Modelo</button>
+                </div>
+                <div class="card-secao">
+                    <div class="tabela-container">
+                        <div class="tabela-wrapper">
+                            <table class="tabela-dados">
+                                <thead>
+                                    <tr>
+                                        <th>Nome do Modelo</th>
+                                        <th>Tipo</th>
+                                        <th>Prévia da Mensagem</th>
+                                        <th style="text-align: center;">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaMensagensBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="abaLojas" class="escondido">
+                <div class="card-secao" style="margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 15px 0; color: var(--cor-titulo);">Importar Planilha (Lojas.xls)</h4>
+                    <label for="fileUploadLojas" class="area-upload-excel" id="areaDropLojas">
+                        <span class="material-symbols-rounded" style="font-size: 48px; color: var(--f1a-blue); margin-bottom: 10px;">upload_file</span>
+                        <h4 style="margin: 0; color: var(--cor-titulo);">Clique para Selecionar o Arquivo</h4>
+                        <p style="margin: 5px 0 0 0; color: var(--cor-texto); font-size: 13px;">Atualiza automaticamente os dados cruzando pelo código.</p>
+                    </label>
+                    <input type="file" id="fileUploadLojas" accept=".csv, .xls, .xlsx" class="escondido" onchange="processarPlanilhaLojas(this)">
+                    <div id="feedbackImportacao" class="escondido" style="margin-top: 15px; padding: 15px; background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: 8px; color: #10b981; font-weight: bold; text-align: center;">Planilha processada!</div>
+                </div>
+
+                <div class="card-secao">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                        <h4 style="margin: 0; color: var(--cor-titulo);">Base de Lojas (<span id="totalLojasCadastradas">0</span>)</h4>
+                    </div>
+
+                    <div class="filtros-container">
+                        <input type="text" id="filtroLojas" class="input-filtro" placeholder="Buscar por código, nome, rede, cidade ou CNPJ..." onkeyup="filtrarLojas()">
+                    </div>
+
+                    <div class="tabela-container">
+                        <div class="tabela-wrapper">
+                            <table class="tabela-dados">
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Nome da Loja</th>
+                                        <th>Rede</th>
+                                        <th>CNPJ/CPF</th>
+                                        <th>Cidade</th>
+                                        <th style="text-align: center;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaLojasBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="modalMensagem" class="modal-overlay escondido">
+        <div class="modal-content" style="max-width: 500px; padding: 30px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 id="tituloModalMensagem" style="margin: 0; color: var(--cor-titulo); font-size: 20px;">Novo Modelo</h3>
+                <button onclick="fecharModal('modalMensagem')" style="background: none; border: none; color: var(--cor-texto); cursor: pointer;"><span class="material-symbols-rounded">close</span></button>
+            </div>
+
+            <form onsubmit="salvarModeloMensagem(event)">
+                <input type="hidden" id="msgId">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: var(--cor-texto); margin-bottom: 5px;">Nome do Modelo</label>
+                    <input type="text" id="msgNome" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--borda); background: var(--bg-body); color: var(--cor-titulo);">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: var(--cor-texto); margin-bottom: 5px;">Tipo de Ação</label>
+                    <select id="msgTipo" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--borda); background: var(--bg-body); color: var(--cor-titulo);">
+                        <option value="cobranca">Cobrança (Atrasados)</option>
+                        <option value="lembrete">Lembrete (A Vencer)</option>
+                        <option value="aviso">Aviso Geral</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: var(--cor-texto); margin-bottom: 5px;">Texto do WhatsApp</label>
+                    <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px;">
+                        <span class="chip-variavel" onclick="inserirVariavel('{{NOME_CLIENTE}}')">+ Nome</span>
+                        <span class="chip-variavel" onclick="inserirVariavel('{{VALOR_FATURA}}')">+ Valor</span>
+                        <span class="chip-variavel" onclick="inserirVariavel('{{DIAS_ATRASO}}')">+ Dias Atraso</span>
+                        <span class="chip-variavel" onclick="inserirVariavel('{{NOME_LOJA}}')">+ Loja</span>
+                    </div>
+                    <div class="toolbar-formatacao">
+                        <button type="button" class="btn-format" onclick="formatarTexto('*')" title="Negrito"><b>B</b></button>
+                        <button type="button" class="btn-format" onclick="formatarTexto('_')" title="Itálico"><i>I</i></button>
+                        <button type="button" class="btn-format" onclick="formatarTexto('~')" title="Riscado"><strike>S</strike></button>
+                    </div>
+                    <textarea id="msgTexto" rows="6" required placeholder="Escreva a sua mensagem aqui..." style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--borda); background: var(--bg-body); color: var(--cor-titulo); font-family: inherit; resize: vertical;"></textarea>
+                </div>
+                <button type="submit" class="btn-acao-premium" id="btnSalvarMsg" style="width: 100%; justify-content: center;">Salvar Modelo</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="../core.js?v=1"></script>
+    <script src="../ui.js?v=1"></script>
+    <script src="cadastros.js?v=4"></script>
+</body>
+</html>

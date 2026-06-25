@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Estrutura e SaaS - F1A Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        .escondido { display: none !important; }
+
+        .sidebar { transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow-x: hidden; white-space: nowrap; }
+        .sidebar.retraida { width: 75px; }
+        .sidebar.retraida .sidebar-logo img { display: none; }
+        .sidebar.retraida .sidebar-logo::after { content: 'F1A'; color: white; font-weight: 900; font-size: 18px; }
+        .sidebar.retraida .nav-item { justify-content: center; padding: 15px 0; }
+        .sidebar.retraida .nav-item span.material-symbols-rounded { margin-right: 0; font-size: 24px; }
+        .sidebar.retraida .nav-texto { display: none; }
+        .sidebar.retraida .nav-item.ativo { border-radius: 8px; border-left: none; background: rgba(0, 71, 255, 0.2); border: 1px solid rgba(0, 71, 255, 0.5); margin: 0 10px; }
+        
+        .header .header-title { color: #ffffff; }
+        .header .header-left .btn-icon,
+        .header .header-right #btnTema { color: #ffffff; }
+        .header .header-left .btn-icon .material-symbols-rounded,
+        .header .header-right #btnTema .material-symbols-rounded { color: #ffffff !important; }
+
+        .menu-perfil-flutuante { position: absolute; top: 55px; right: 0; background: #0f172a; border: 1px solid rgba(148, 163, 184, 0.25); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); width: 220px; z-index: 9999; padding: 10px; overflow: hidden; }
+        .menu-perfil-flutuante a { display: flex; align-items: center; padding: 12px 15px; color: #f8fafc; text-decoration: none; font-size: 14px; transition: background 0.2s ease; border-radius: 8px; }
+        .menu-perfil-flutuante a:hover { background: rgba(0,0,0,0.03); }
+
+        .view-panel { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .form-header-inpage { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--borda); }
+        .btn-voltar { background: transparent; border: 1px solid var(--borda); padding: 8px 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 5px; color: var(--cor-texto); font-weight: bold; transition: 0.2s; }
+        .btn-voltar:hover { background: var(--bg-body); border-color: var(--f1a-blue); color: var(--f1a-blue); }
+
+        .tabela-compacta th { padding: 10px !important; font-size: 11px !important; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tabela-compacta td { padding: 8px 10px !important; font-size: 12px !important; line-height: 1.3 !important; }
+        .tabela-compacta .status-badge { font-size: 10px !important; padding: 4px 8px !important; }
+        .tabela-compacta td strong { font-size: 13px !important; }
+
+        .box-importacao-info { background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: 8px; padding: 15px; margin-bottom: 20px; }
+        .box-importacao-info h4 { color: #10b981; margin: 0 0 10px 0; display: flex; align-items: center; gap: 5px; }
+        .layout-planilha { background: var(--bg-body); padding: 10px; border-radius: 6px; font-family: monospace; font-size: 12px; color: var(--f1a-copper); border: 1px dashed var(--borda); overflow-x: auto; }
+        .filtros-container { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .input-filtro { width: 100%; border: 1px solid var(--borda); background: var(--bg-body); border-radius: 8px; padding: 0 12px; height: 38px; color: var(--cor-titulo); font-size: 13px; font-family: inherit; outline: none; }
+        .input-filtro:focus { border-color: var(--f1a-blue); box-shadow: 0 0 0 3px rgba(0, 71, 255, 0.1); }
+        #form-redes div:has(> #redeVendedor) > label:first-of-type { display: none; }
+        #form-redes div:has(> #redePctComissaoPlastico) { max-width: 100% !important; width: 100%; display: flex; align-items: center; }
+        #redePctComissaoPlastico { width: 100%; }
+        #redePctComissaoPlastico + span { flex-shrink: 0; }
+
+        /* OVERLAY DE LOADING TELA CHEIA */
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .spinner { border: 4px solid rgba(255, 255, 255, 0.3); border-top: 4px solid #10b981; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+    </style>
+</head>
+<body style="display: none;" id="corpoPagina">
+
+    <div id="loadingGlobal" class="loading-overlay escondido">
+        <div class="spinner"></div>
+        <h2 style="color: white; margin: 0;">Processando Arquivo...</h2>
+        <p style="color: #ccc; font-size: 14px; margin-top: 5px;">O robô está extraindo e curando os dados. Aguarde.</p>
+    </div>
+
+    <div id="overlayMobile" class="overlay-mobile" onclick="toggleSidebarF1A()"></div>
+
+    <aside class="sidebar" id="sidebarF1A">
+        <div class="sidebar-logo" style="cursor: pointer;" onclick="window.location.href='lobby.html'">
+            <img src="assets/logo_f1a.png" id="logoSidebar" alt="Logo F1A">
+        </div>
+        <nav class="nav-links">
+            <a href="lobby.html" class="nav-item btn-inicio">
+                <span class="material-symbols-rounded">home</span><span class="nav-texto">Início</span>
+            </a>
+            <div class="nav-divisor"></div>
+            <a href="cadastros.html" class="nav-item ativo">
+                <span class="material-symbols-rounded">domain</span><span class="nav-texto">Estrutura & SaaS</span>
+            </a>
+            <a href="cadastros-usuarios.html" class="nav-item">
+                <span class="material-symbols-rounded">group</span><span class="nav-texto">Gestão de Equipe</span>
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <button class="btn-icon" onclick="toggleSidebarF1A()"><span class="material-symbols-rounded">menu</span></button>
+                <img src="assets/logo_f1a.png" class="mobile-header-logo" id="logoHeaderMobile" onclick="window.location.href='lobby.html'">
+                <h2 class="header-title">Gestão Estrutural & SaaS</h2>
+            </div>
+            <div class="header-right">
+                <button class="btn-icon" onclick="alternarTema()" id="btnTema" title="Alternar Tema"><span class="material-symbols-rounded">dark_mode</span></button>
+                <div class="user-profile" onclick="toggleDropdownPerfil(event)" style="cursor: pointer; position: relative; display: flex; align-items: center; gap: 12px; background: #0f172a; padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid rgba(148, 163, 184, 0.25); box-shadow: 0 2px 8px rgba(0,0,0,0.18); transition: border 0.3s;">
+                    <div class="user-avatar" id="iniciaisUsuario" style="width: 32px; height: 32px; border-radius: 50%; background: var(--f1a-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px;">--</div>
+                    <div class="user-info">
+                        <span class="user-name" id="nomeUsuario" style="display: block; font-size: 13px; font-weight: 800; color: #f8fafc;">Carregando...</span>
+                        <span class="user-role" id="cargoUsuario" style="display: block; font-size: 11px; color: #cbd5e1; font-weight: 600;">Aguarde</span>
+                    </div>
+                    <span class="material-symbols-rounded" style="color: #cbd5e1; font-size: 18px;">expand_more</span>
+                    
+                    <div class="menu-perfil-flutuante escondido" id="dropdownPerfilLocal">
+                        <a href="#" onclick="if(typeof alterarNomeExibicao === 'function') alterarNomeExibicao()" class="dropdown-item" style="color: #f8fafc; font-size: 13px; font-weight: 600;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
+                            <span class="material-symbols-rounded" style="margin-right: 12px; font-size: 18px; color: var(--f1a-blue);">edit</span> Alterar Nome
+                        </a>
+                        <div style="height: 1px; background: rgba(148, 163, 184, 0.18); margin: 5px 0;"></div>
+                        <a href="#" onclick="sair()" class="dropdown-item" style="color: #ef4444; font-size: 13px; font-weight: 700;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'">
+                            <span class="material-symbols-rounded" style="margin-right: 12px; font-size: 18px;">logout</span> Sair do Sistema
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="mesa-container" style="background: transparent; box-shadow: none; padding: 0; border: none;">
+                
+                <div class="grid-categorias" id="hubMenu">
+                    <div class="card-categoria" id="btnSaaS" style="display: none;" onclick="abrirAcoesHub('empresas')">
+                        <span class="material-symbols-rounded icone-cat" style="color: #10b981;">corporate_fare</span>
+                        <div><h4>Empresas</h4><p>Clientes SaaS</p></div>
+                    </div>
+                    <div class="card-categoria" id="btnPlanos" style="display: none;" onclick="abrirAcoesHub('planos')">
+                        <span class="material-symbols-rounded icone-cat" style="color: #f59e0b;">workspace_premium</span>
+                        <div><h4>Planos SaaS</h4><p>Pacotes/Licenças</p></div>
+                    </div>
+                    <div class="card-categoria" id="btnModulos" style="display: none;" onclick="abrirAcoesHub('modulos')">
+                        <span class="material-symbols-rounded icone-cat" style="color: #8b5cf6;">extension</span>
+                        <div><h4>Módulos F1A</h4><p>Gestão de Rotas/Apps</p></div>
+                    </div>
+
+                    <div class="card-categoria" id="btnRedes" onclick="abrirAcoesHub('redes')">
+                        <span class="material-symbols-rounded icone-cat" style="color: #f59e0b;">hub</span>
+                        <div><h4>Redes</h4><p>Grupos de Lojas</p></div>
+                    </div>
+                    <div class="card-categoria" id="btnLojas" onclick="abrirAcoesHub('lojas')">
+                        <span class="material-symbols-rounded icone-cat" style="color: #ec4899;">storefront</span>
+                        <div><h4>Lojas</h4><p>Pontos de Venda</p></div>
+                    </div>
+                </div>
+
+                <div id="viewLista" class="view-panel">
+                    <div class="acoes-tabela" style="padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; border-radius: 12px; margin-bottom: 20px; background: var(--bg-painel); box-shadow: var(--shadow); border: 1px solid var(--borda);">
+                        <div style="font-size: 15px; font-weight: 800; color: var(--cor-titulo); text-transform: uppercase; display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                            <span class="material-symbols-rounded" style="color: var(--f1a-blue);">table_chart</span> <span id="tituloTabelaAtual">Tabela</span>
+                        </div>
+                        
+                        <div class="filtros-container" style="justify-content: flex-end; flex: 1;">
+                            <select id="filtroDropdown" class="input-filtro" onchange="filtrarTabela()" style="display: none; max-width: 200px; font-weight: bold;">
+                                <option value="">Filtro: Todos</option>
+                            </select>
+
+                            <input type="text" placeholder="Pesquisar registro..." id="inputBusca" class="input-filtro" onkeyup="if(typeof filtrarTabela === 'function') filtrarTabela()" style="flex: 1; min-width: 200px; max-width: 300px;">
+
+                            <button id="btnImportarLote" class="btn-salvar" onclick="abrirModalImportacao()" style="display: none; background: #10b981; margin: 0; padding: 0 15px; height: 38px; width: auto; align-items: center; gap: 5px; font-size: 13px; font-weight: bold; white-space: nowrap;">
+                                <span class="material-symbols-rounded" style="font-size: 18px;">upload_file</span> Importar Planilha
+                            </button>
+
+                            <button class="btn-nova-proposta" onclick="acaoNovoCadastro()" style="margin: 0; white-space: nowrap; height: 38px; padding: 0 15px; width: auto; display: flex; align-items: center; gap: 5px; background: var(--f1a-blue); font-size: 13px; font-weight: bold;">
+                                <span class="material-symbols-rounded" style="font-size: 18px;">add</span> Criar Novo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="tabela-container" id="areaTabela" style="display: none; background: var(--bg-painel); border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 50px; overflow: hidden;">
+                        <div class="tabela-wrapper" style="overflow-x: auto;">
+                            <table class="tabela-dados tabela-compacta" style="width: 100%; border-collapse: collapse; min-width: 800px;">
+                                <thead id="cabecalhoTabela" style="background: var(--bg-body);">
+                                </thead>
+                                <tbody id="corpoTabela">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--cor-texto);">
+                                            Escolha uma categoria acima para carregar os dados.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="viewFormulario" class="view-panel escondido" style="background: var(--bg-painel); border-radius: 12px; box-shadow: var(--shadow); padding: 25px; margin-bottom: 50px; border: 1px solid var(--borda);">
+                    
+                    <div class="form-header-inpage">
+                        <div>
+                            <h3 id="tituloModal" style="margin: 0; font-size: 18px; color: var(--f1a-blue); display: flex; align-items: center; gap: 8px;">
+                                <span class="material-symbols-rounded">edit_document</span> Novo Cadastro
+                            </h3>
+                            <p style="margin: 5px 0 0 0; font-size: 12px; color: var(--cor-texto);">Preencha os dados estruturais abaixo.</p>
+                        </div>
+                        <button class="btn-voltar" onclick="fecharModalCadastro()">
+                            <span class="material-symbols-rounded" style="font-size: 20px;">arrow_back</span> Voltar à Tabela
+                        </button>
+                    </div>
+
+                    <div class="modal-body" style="padding: 0;">
+                        <input type="hidden" id="editId"> 
+                        <input type="hidden" id="tipoCadastroAtivo">
+
+                        <div id="boxMasterEmpresa" class="hierarquia-box" style="display: none; border-color: var(--f1a-copper); background: rgba(230, 145, 56, 0.05);">
+                            <label style="color: var(--f1a-copper); font-weight: 800; margin-top: 0;">🏢 Selecione a Empresa Alvo</label>
+                            <select id="masterEmpresa" onchange="carregarSelectsHierarquia()" style="border-color: var(--f1a-copper); font-weight: bold;">
+                                <option value="">Carregando...</option>
+                            </select>
+                        </div>
+
+                        <div id="form-planos" class="form-section">
+                            <label>Nome do Plano (Ex: PRO, START)</label>
+                            <input type="text" id="planoNome" class="maiusculo" placeholder="Ex: PLANO MAX">
+                            <label>Valor Mensal (R$)</label>
+                            <input type="text" id="planoValor" placeholder="R$ 0,00" oninput="aplicarMascaraMoeda(this)">
+                            
+                            <div style="background: var(--bg-body); padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid var(--borda);">
+                                <h4 style="margin: 0 0 15px 0; color: var(--cor-titulo); display: flex; align-items: center; gap: 8px;"><span class="material-symbols-rounded" style="color:var(--f1a-copper);">tune</span> Limites de Licenças</h4>
+                                <div class="linha-dupla">
+                                    <div><label>Max Admins</label><input type="number" id="planoLimAdm" value="1" min="1"></div>
+                                    <div><label>Max Gerentes</label><input type="number" id="planoLimGer" value="3" min="0"></div>
+                                    <div><label>Max Vendedores</label><input type="number" id="planoLimVen" value="15" min="1"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="form-empresas" class="form-section">
+                            <div style="display: flex; gap: 10px; align-items: flex-end; margin-bottom: 5px;">
+                                <div style="flex: 1;"><label>CNPJ da Empresa</label><input type="text" id="empCnpj" oninput="aplicarMascaraCNPJ(this)"></div>
+                                <button type="button" class="btn-salvar" style="width: 45px; height: 45px; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; background: var(--cor-titulo); color: var(--bg-painel);" onclick="buscarCnpj()"><span class="material-symbols-rounded">search</span></button>
+                            </div>
+                            <label>Razão Social</label><input type="text" id="empRazao" class="maiusculo">
+                            <label>Nome Fantasia</label><input type="text" id="empFantasia" class="maiusculo">
+                            
+                            <div style="background: rgba(0,71,255,0.03); padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(0,71,255,0.2);">
+                                <label style="color: var(--f1a-blue); margin-top: 0;">Pacote de Licenciamento</label>
+                                <select id="empPlano" style="font-weight: bold;"><option value="">Carregando planos...</option></select>
+                                
+                                <div class="linha-dupla" style="margin-top: 15px;">
+                                    <div><label>Data de Ativação</label><input type="date" id="empDataAtivacao"></div>
+                                    <div><label>Válido Até</label><input type="date" id="empDataValidade"></div>
+                                </div>
+
+                                <div style="margin-top: 15px;">
+                                    <label style="color: #ef4444; font-weight: bold; display: flex; align-items: center; gap: 5px;"><span class="material-symbols-rounded" style="font-size: 16px;">power_settings_new</span> Status da Licença (Kill Switch)</label>
+                                    <select id="empStatus" style="border-color: #ef4444; color: #ef4444; font-weight: bold; background: rgba(239, 68, 68, 0.05);">
+                                        <option value="ativa" style="color: #10b981;">🟢 ATIVA - Acesso Liberado</option>
+                                        <option value="bloqueada" style="color: #ef4444;">🔴 BLOQUEADO - Inadimplência / Suspensão</option>
+                                        <option value="cancelada" style="color: #6b7280;">⚫ CANCELADA - Contrato Encerrado</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="form-modulos" class="form-section">
+                            <div class="linha-dupla">
+                                <div><label>ID do Módulo (Sem espaços)</label><input type="text" id="modId" placeholder="Ex: financeiro" style="text-transform: lowercase;"></div>
+                                <div><label>Tipo</label>
+                                    <select id="modTipo">
+                                        <option value="comercial">Operacional / Comercial</option>
+                                        <option value="sistema">Ferramenta de Sistema (Core)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="linha-dupla">
+                                <div><label>Título de Exibição</label><input type="text" id="modTitulo" placeholder="Ex: Dashboard Financeiro"></div>
+                                <div><label>Ícone (Google Fonts)</label><input type="text" id="modIcon" placeholder="Ex: account_balance"></div>
+                            </div>
+                            <div class="linha-dupla">
+                                <div><label>Cor do Ícone</label>
+                                    <select id="modCor">
+                                        <option value="icon-blue">Azul (Padrão)</option>
+                                        <option value="icon-copper">Cobre / Laranja</option>
+                                        <option value="icon-admin">Verde (Admin)</option>
+                                        <option value="icon-master">Vermelho (Master)</option>
+                                    </select>
+                                </div>
+                                <div><label>URL (Pasta/Arquivo)</label><input type="text" id="modUrl" placeholder="Ex: modulo-financeiro/index.html"></div>
+                            </div>
+                            <label>Descrição Breve</label>
+                            <input type="text" id="modDesc" placeholder="Ex: Gestão de borderôs e liquidações.">
+                        </div>
+
+                        <div id="form-redes" class="form-section">
+                            <label>Nome da Rede</label><input type="text" id="redeNome" class="maiusculo">
+                            
+                            <div class="linha-dupla">
+                                <div><label>Código Interno</label><input type="text" id="redeCodigo" placeholder="Ex: 5610"></div>
+                                <div>
+                                    <label>Vendedor Responsável</label>
+                                    <label>Gerente Responsável</label>
+                                    <select id="redeVendedor">
+                                        <option value="">Selecione um Gerente...</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="linha-dupla">
+                                <div>
+                                    <label>Indicação</label>
+                                    <select id="redeIndicacao">
+                                        <option value="">Selecione um Vendedor...</option>
+                                    </select>
+                                </div>
+                                <div></div>
+                            </div>
+
+                            <div style="background: rgba(16, 185, 129, 0.05); padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                                <h4 style="margin: 0 0 15px 0; color: #10b981; display: flex; align-items: center; gap: 8px;">
+                                    <span class="material-symbols-rounded">payments</span> Comissionamento da Rede
+                                </h4>
+                                
+                                <div class="linha-dupla">
+                                    <div>
+                                        <label>Taxa de Manutenção Fatura (R$)</label>
+                                        <input type="text" id="redeTaxaManutencao" placeholder="R$ 0,00" oninput="aplicarMascaraMoeda(this)">
+                                    </div>
+                                    <div>
+                                        <label>Comissão sobre a Taxa (%)</label>
+                                        <div style="display: flex; align-items: center;">
+                                            <input type="number" id="redePctComissaoFatura" placeholder="0" step="0.1" style="border-radius: 8px 0 0 8px; border-right: none;">
+                                            <span style="background: var(--bg-body); border: 1px solid var(--borda); padding: 8px 12px; border-radius: 0 8px 8px 0; color: var(--cor-texto);">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-top: 15px;">
+                                    <label>Comissão sobre a Venda de Plásticos (%)</label>
+                                    <div style="display: flex; align-items: center; max-width: 50%;">
+                                        <input type="number" id="redePctComissaoPlastico" placeholder="0" step="0.1" style="border-radius: 8px 0 0 8px; border-right: none;">
+                                        <span style="background: var(--bg-body); border: 1px solid var(--borda); padding: 8px 12px; border-radius: 0 8px 8px 0; color: var(--cor-texto);">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="form-lojas" class="form-section">
+                            <div class="hierarquia-box"><label style="margin-top:0;">Vincular a qual Rede?</label><select id="lojaRede"><option value="">Selecione...</option></select></div>
+                            <label>Identificação da Loja (Nome Fantasia)</label><input type="text" id="lojaNome" class="maiusculo">
+                            
+                            <div class="linha-dupla">
+                                <div><label>Código Interno</label><input type="text" id="lojaCodigo" placeholder="Ex: 56100001"></div>
+                                <div><label>CNPJ da Loja</label><input type="text" id="lojaCnpj" oninput="aplicarMascaraCNPJ(this)" placeholder="00.000.000/0000-00"></div>
+                            </div>
+                            <div class="linha-dupla">
+                                <div><label>Bairro</label><input type="text" id="lojaBairro" placeholder="Ex: Centro"></div>
+                                <div><label>Cidade / UF</label><input type="text" id="lojaCidade" placeholder="Ex: Belém / PA"></div>
+                            </div>
+                            
+                            <div class="switch-container" style="margin-top: 15px;">
+                                <span style="font-size: 13px; font-weight: bold; color: var(--cor-titulo);">Aplicar Comissão Diferenciada?</span>
+                                <input type="checkbox" id="checkComissaoLoja" onchange="toggleComissaoLoja()" style="width: auto; transform: scale(1.5);">
+                            </div>
+                            <div id="boxComissaoLoja" class="escondido" style="margin-top: 15px;"><label style="color: var(--f1a-copper);">Comissão Específica (R$)</label><input type="text" id="lojaComissao" placeholder="R$ 0,00" oninput="aplicarMascaraMoeda(this)" style="border-color: var(--f1a-copper);"></div>
+                        </div>
+
+                        <div style="display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap;">
+                            <button class="btn-salvar" id="btnSalvarCadastroGeral" onclick="salvarCadastro()" style="background: var(--f1a-blue); width: auto; padding: 12px 30px; margin: 0;">
+                                <span class="material-symbols-rounded">save</span> Salvar Dados Estruturais
+                            </button>
+                            <button class="btn-salvar" id="btnExcluirCadastroGeral" onclick="excluirCadastroAtual()" style="display: none; background: transparent; border: 1px solid #ef4444; color: #ef4444; width: auto; padding: 12px 30px; margin: 0;">
+                                <span class="material-symbols-rounded">delete</span> Excluir Cadastro
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="master-tools" id="ferramentasMaster">
+                    <h3 style="color: #ef4444; margin-top: 0; display: flex; align-items: center; gap: 8px;"><span class="material-symbols-rounded">construction</span> Módulo Developer (Master)</h3>
+                    <p style="color: var(--cor-texto); font-size: 13px;">Estas ferramentas afetam o banco de dados global. Cuidado!</p>
+                    <div style="display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap;">
+                        <button class="btn-salvar" style="background: #10b981; width: auto; padding: 12px 20px; margin: 0;" onclick="injetarMocks()">
+                            <span class="material-symbols-rounded">rocket_launch</span> Criar Ambiente de Testes
+                        </button>
+                        <button class="btn-salvar" style="background: #ef4444; width: auto; padding: 12px 20px; margin: 0;" onclick="resetarSistema()">
+                            <span class="material-symbols-rounded">delete_forever</span> Resetar Banco de Dados
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div id="modalImportacao" class="modal-overlay escondido" style="z-index: 1000;">
+        <div class="modal-caixa" style="max-width: 500px;">
+            <div class="modal-header" style="background: var(--bg-painel);">
+                <h3 id="tituloModalImportacao">Importar Lote (TXT/CSV)</h3>
+                <button class="btn-fechar" onclick="fecharModalImportacao()"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <div class="modal-body">
+                <div id="boxMasterImportacao" class="hierarquia-box" style="display: none; border-color: var(--f1a-copper); background: rgba(230, 145, 56, 0.05);">
+                    <label style="color: var(--f1a-copper); font-weight: 800; margin-top: 0;">🏢 Importar para qual Empresa?</label>
+                    <select id="masterEmpresaImport" style="border-color: var(--f1a-copper); font-weight: bold;">
+                        <option value="">Carregando...</option>
+                    </select>
+                </div>
+                <div class="box-importacao-info">
+                    <h4><span class="material-symbols-rounded">smart_toy</span> Robô de Importação</h4>
+                    <div id="layoutPlanilhaExemplo" class="layout-planilha" style="white-space: normal;">
+                        Aguarde...
+                    </div>
+                </div>
+                <div style="border: 2px dashed var(--f1a-blue); padding: 20px; border-radius: 8px; text-align: center; background: rgba(0,71,255,0.02); margin-bottom: 20px;">
+                    <span class="material-symbols-rounded" style="font-size: 40px; color: var(--f1a-blue);">upload_file</span>
+                    <p style="font-weight: bold; color: var(--cor-titulo); margin: 10px 0;">Selecione o arquivo .TXT ou .CSV</p>
+                    <input type="file" id="arquivoCsvImportacao" accept=".txt,.csv" style="display: block; width: 100%; margin: 0 auto;">
+                </div>
+                <button id="btnProcessarImportacao" class="btn-salvar" onclick="iniciarProcessamentoCsv()" style="background: #10b981; margin: 0; width: 100%;">
+                    <span class="material-symbols-rounded">play_arrow</span> Processar Arquivo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script src="core.js?v=1"></script>
+    <script src="ui.js?v=1"></script>
+    <script src="cadastros.js?v=1"></script>
+
+    <script>
+        window.toggleSidebarF1A = function() {
+            const sidebar = document.getElementById('sidebarF1A');
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('aberta');
+                document.getElementById('overlayMobile').classList.toggle('ativa');
+            } else {
+                sidebar.classList.toggle('retraida');
+            }
+        }
+
+        window.toggleDropdownPerfil = function(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('dropdownPerfilLocal');
+            if (menu) menu.classList.toggle('escondido');
+        };
+        
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('dropdownPerfilLocal');
+            if (menu && !menu.classList.contains('escondido')) menu.classList.add('escondido');
+        });
+    </script>
+</body>
+</html>

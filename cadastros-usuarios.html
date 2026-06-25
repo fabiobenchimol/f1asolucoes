@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gestão de Equipe - F1A Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        .escondido { display: none !important; }
+
+        .sidebar { transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow-x: hidden; white-space: nowrap; }
+        .sidebar.retraida { width: 75px; }
+        .sidebar.retraida .sidebar-logo img { display: none; }
+        .sidebar.retraida .sidebar-logo::after { content: 'F1A'; color: white; font-weight: 900; font-size: 18px; }
+        .sidebar.retraida .nav-item { justify-content: center; padding: 15px 0; }
+        .sidebar.retraida .nav-item span.material-symbols-rounded { margin-right: 0; font-size: 24px; }
+        .sidebar.retraida .nav-texto { display: none; }
+        .sidebar.retraida .nav-item.ativo { border-radius: 8px; border-left: none; background: rgba(0, 71, 255, 0.2); border: 1px solid rgba(0, 71, 255, 0.5); margin: 0 10px; }
+        
+        .btn-menu-toggle { background: transparent; border: none; color: white !important; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 5px; border-radius: 8px; transition: 0.2s; }
+        .btn-menu-toggle:hover { background: rgba(255,255,255,0.1); }
+
+        .header .header-title { color: #ffffff; }
+        .header .header-left .btn-icon,
+        .header .header-right #btnTemaGlobal { color: #ffffff; }
+        .header .header-left .btn-icon .material-symbols-rounded,
+        .header .header-right #btnTemaGlobal .material-symbols-rounded { color: #ffffff !important; }
+        .menu-perfil-flutuante { position: absolute; top: 55px; right: 0; background: #0f172a; border: 1px solid rgba(148, 163, 184, 0.25); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); width: 220px; z-index: 9999; padding: 10px; overflow: hidden; }
+        .menu-perfil-flutuante a { display: flex; align-items: center; padding: 12px 15px; color: #f8fafc; text-decoration: none; font-size: 14px; transition: background 0.2s ease; border-radius: 8px; }
+
+        .view-panel { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .form-header-inpage { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--borda); }
+        .btn-voltar { background: transparent; border: 1px solid var(--borda); padding: 8px 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 5px; color: var(--cor-texto); font-weight: bold; transition: 0.2s; }
+        .btn-voltar:hover { background: var(--bg-body); border-color: var(--f1a-blue); color: var(--f1a-blue); }
+
+        .tabela-compacta th { padding: 10px !important; font-size: 11px !important; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tabela-compacta td { padding: 8px 10px !important; font-size: 12px !important; line-height: 1.3 !important; }
+        .tabela-compacta .status-badge { font-size: 10px !important; padding: 4px 8px !important; }
+        .tabela-compacta td strong { font-size: 13px !important; }
+
+        .custom-dropdown { position: relative; width: 100%; margin-bottom: 15px; }
+        .dropdown-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: var(--bg-body); border: 1px solid var(--borda); border-radius: 8px; cursor: pointer; color: var(--cor-titulo); font-size: 13px; font-weight: bold; transition: 0.2s; min-height: 42px; line-height: 1.3; }
+        .dropdown-header:hover { border-color: var(--f1a-blue); }
+        .dropdown-body { display: none; position: absolute; top: calc(100% + 5px); left: 0; width: 100%; min-width: 280px; background: var(--bg-painel); border: 1px solid var(--borda); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 280px; overflow-y: auto; z-index: 9999; padding: 10px; }
+        .dropdown-body.open { display: block; animation: fadeIn 0.2s ease; }
+        .dropdown-body label { display: flex; align-items: center; gap: 10px; padding: 8px 10px; font-size: 12px; color: var(--cor-titulo); cursor: pointer; transition: 0.2s; margin: 0; word-break: break-word; line-height: 1.4; border-radius: 6px; text-transform: none; font-weight: 600; }
+        .dropdown-body label span { flex: 1; }
+        .dropdown-body label:hover { background: rgba(0, 71, 255, 0.05); color: var(--f1a-blue); }
+        .dropdown-body input[type="checkbox"] { width: 18px !important; height: 18px !important; padding: 0 !important; margin: 0 !important; flex-shrink: 0 !important; accent-color: var(--f1a-blue); cursor: pointer; box-shadow: none !important; }
+        .check-todos { font-weight: 800 !important; color: var(--f1a-blue) !important; border-bottom: 1px dashed var(--borda); margin-bottom: 8px !important; padding-bottom: 10px !important; text-transform: uppercase !important; }
+    </style>
+</head>
+<body style="display: none;" id="corpoPagina">
+
+    <div id="overlayMobile" class="overlay-mobile" onclick="toggleSidebarF1A()"></div>
+
+    <aside class="sidebar" id="sidebarF1A">
+        <div class="sidebar-logo" style="cursor: pointer;" onclick="window.location.href='lobby.html'">
+            <img src="assets/logo_f1a.png" id="logoSidebar" alt="Logo F1A">
+        </div>
+        <nav class="nav-links">
+            <a href="cadastros.html" class="nav-item">
+                <span class="material-symbols-rounded">domain</span><span class="nav-texto">Estrutura & SaaS</span>
+            </a>
+            <a href="#" class="nav-item ativo">
+                <span class="material-symbols-rounded">group</span><span class="nav-texto">Gestão de Equipe</span>
+            </a>
+            <div class="nav-divisor"></div>
+            <a href="lobby.html" class="nav-item">
+                <span class="material-symbols-rounded">arrow_back</span><span class="nav-texto">Sair do Módulo</span>
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <button class="btn-icon" onclick="toggleSidebarF1A()"><span class="material-symbols-rounded">menu</span></button>
+                <h2 class="header-title">Gestão de Equipe (IAM)</h2>
+            </div>
+            <div class="header-right">
+                <button class="btn-icon" id="btnTemaGlobal" onclick="alternarTemaGlobal()" title="Alternar Tema"><span class="material-symbols-rounded">dark_mode</span></button>
+                <div class="user-profile" onclick="toggleDropdownPerfil(event)" style="cursor: pointer; position: relative; display: flex; align-items: center; gap: 12px; background: #0f172a; padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid rgba(148, 163, 184, 0.25); box-shadow: 0 2px 8px rgba(0,0,0,0.18); transition: border 0.3s;">
+                    <div class="user-avatar" id="iniciaisUsuario" style="width: 32px; height: 32px; border-radius: 50%; background: var(--f1a-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px;">--</div>
+                    <div class="user-info">
+                        <span class="user-name" id="nomeUsuario" style="display: block; font-size: 13px; font-weight: 800; color: #f8fafc;">Carregando...</span>
+                        <span class="user-role" id="cargoUsuario" style="display: block; font-size: 11px; color: #cbd5e1; font-weight: 600;">Aguarde</span>
+                    </div>
+                    <span class="material-symbols-rounded" style="color: #cbd5e1; font-size: 18px;">expand_more</span>
+                    
+                    <div class="menu-perfil-flutuante escondido" id="dropdownPerfilLocal">
+                        <a href="#" onclick="if(typeof alterarNomeExibicao === 'function') alterarNomeExibicao()" class="dropdown-item" style="color: #f8fafc; font-size: 13px; font-weight: 600;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
+                            <span class="material-symbols-rounded" style="margin-right: 12px; font-size: 18px; color: var(--f1a-blue);">edit</span> Alterar Nome
+                        </a>
+                        <div style="height: 1px; background: rgba(148, 163, 184, 0.18); margin: 5px 0;"></div>
+                        <a href="#" onclick="sair()" class="dropdown-item" style="color: #ef4444; font-size: 13px; font-weight: 700;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'">
+                            <span class="material-symbols-rounded" style="margin-right: 12px; font-size: 18px;">logout</span> Sair do Sistema
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="mesa-container" style="background: transparent; box-shadow: none; padding: 0; border: none;">
+                
+                <div id="viewLista" class="view-panel">
+                    <div class="acoes-tabela" style="padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; border-radius: 12px; margin-bottom: 20px; background: var(--bg-painel); box-shadow: var(--shadow); border: 1px solid var(--borda);">
+                        <div style="font-size: 15px; font-weight: 800; color: var(--cor-titulo); text-transform: uppercase; display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                            <span class="material-symbols-rounded" style="color: var(--f1a-blue);">group</span> Todos os Usuários
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; flex: 1;">
+                            
+                            <select id="filtroDropdownEmpresa" onchange="filtrarTabelaEquipe()" style="border: 1px solid var(--borda); background: var(--bg-body); border-radius: 8px; padding: 0 12px; height: 38px; color: var(--cor-titulo); font-size: 13px; max-width: 200px; font-weight: bold;">
+                                <option value="">Todas as Empresas</option>
+                            </select>
+
+                            <select id="filtroDropdownEquipe" onchange="filtrarTabelaEquipe()" style="border: 1px solid var(--borda); background: var(--bg-body); border-radius: 8px; padding: 0 12px; height: 38px; color: var(--cor-titulo); font-size: 13px; max-width: 150px; font-weight: bold;">
+                                <option value="">Todos os Perfis</option>
+                                <option value="Administrador">Administradores</option>
+                                <option value="Gerente">Gerentes</option>
+                                <option value="Vendedor">Vendedores</option>
+                                <option value="Cliente Final">Clientes Finais</option>
+                            </select>
+
+                            <div style="display: flex; align-items: center; background: var(--bg-body); border: 1px solid var(--borda); border-radius: 8px; padding: 0 12px; height: 38px; flex: 1; min-width: 200px; max-width: 300px;">
+                                <span class="material-symbols-rounded" style="color: var(--cor-texto); font-size: 20px; margin-right: 8px;">search</span>
+                                <input type="text" placeholder="Buscar usuário..." id="inputBuscaEquipe" onkeyup="if(typeof filtrarTabelaEquipe === 'function') filtrarTabelaEquipe()" style="border: none; background: transparent; outline: none; width: 100%; color: var(--cor-titulo); font-size: 13px; margin: 0; padding: 0;">
+                            </div>
+
+                            <button class="btn-nova-proposta" onclick="acaoNovoUsuario()" style="margin: 0; white-space: nowrap; height: 38px; padding: 0 15px; width: auto; display: flex; align-items: center; gap: 5px; background: var(--f1a-blue); font-size: 13px; font-weight: bold;">
+                                <span class="material-symbols-rounded" style="font-size: 18px;">person_add</span> Cadastrar Novo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="tabela-container" id="areaTabela" style="background: var(--bg-painel); border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 50px; overflow: hidden; overflow-x: auto;">
+                        <table class="tabela-dados tabela-compacta" style="width: 100%; border-collapse: collapse; min-width: 800px;">
+                            <thead id="cabecalhoTabela" style="background: var(--bg-body);">
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Username</th>
+                                    <th>Perfil</th>
+                                    <th>Empresa(s) / Vínculos de Acesso</th>
+                                    <th>Status</th>
+                                    <th style="text-align: center;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="corpoTabela">
+                                <tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--cor-texto);">Carregando equipe...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="viewFormulario" class="view-panel escondido" style="background: var(--bg-painel); border-radius: 12px; box-shadow: var(--shadow); padding: 25px; margin-bottom: 50px; border: 1px solid var(--borda);">
+                    
+                    <div class="form-header-inpage">
+                        <div>
+                            <h3 id="tituloModalUsuario" style="margin: 0; font-size: 18px; color: var(--f1a-blue); display: flex; align-items: center; gap: 8px;">
+                                <span class="material-symbols-rounded">person_add</span> Cadastrar Usuário
+                            </h3>
+                            <p style="margin: 5px 0 0 0; font-size: 12px; color: var(--cor-texto);">Defina os dados, a categoria e os vínculos geográficos do colaborador.</p>
+                        </div>
+                        <button class="btn-voltar" onclick="fecharModalUsuario()">
+                            <span class="material-symbols-rounded" style="font-size: 20px;">arrow_back</span> Voltar à Lista
+                        </button>
+                    </div>
+
+                    <div class="modal-body" style="padding: 0;">
+                        <input type="hidden" id="editUsuarioId"> 
+
+                        <div style="background: rgba(0,71,255,0.03); padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid rgba(0,71,255,0.15);">
+                            <h4 style="margin: 0 0 15px 0; color: var(--f1a-blue); display: flex; align-items: center; gap: 8px;">
+                                <span class="material-symbols-rounded">badge</span> Dados Pessoais e de Acesso
+                            </h4>
+                            
+                            <label>Perfil de Acesso / Categoria</label>
+                            <select id="usuPerfil" onchange="aplicarRegrasDeVinculoForm()" style="font-weight: bold; color: var(--f1a-blue); margin-bottom: 15px;">
+                                <option value="admin">Administrador (Controle de Operações)</option>
+                                <option value="gerente">Gerente (Gestor de Redes)</option>
+                                <option value="vendedor" selected>Vendedor (Operador de Lojas)</option>
+                                <option value="cliente_final">Cliente Final</option>
+                            </select>
+
+                            <label>Nome Completo</label>
+                            <input type="text" id="usuNome" class="maiusculo" placeholder="Nome do colaborador">
+                            
+                            <div class="linha-dupla">
+                                <div><label>CPF</label><input type="text" id="usuCpf" oninput="aplicarMascaraCPFAqui(this)" placeholder="000.000.000-00"></div>
+                                <div><label>WhatsApp / Telefone</label><input type="text" id="usuTelefone" placeholder="(00) 00000-0000"></div>
+                            </div>
+
+                            <div class="linha-dupla">
+                                <div><label>Nome de Usuário (Para Login)</label><input type="text" id="usuUsername" placeholder="Ex: joaosilva" style="text-transform: lowercase;"></div>
+                                <div id="boxSenhaCriacao">
+                                    <label>Senha Inicial Provisória</label>
+                                    <input type="text" id="usuSenha" placeholder="Ex: Mudar@123">
+                                </div>
+                            </div>
+                            <p id="avisoPrimeiroAcesso" style="margin: 5px 0 0 0; font-size: 11px; color: var(--f1a-copper);">
+                                * No primeiro login, o sistema exigirá que o usuário cadastre um e-mail de segurança e mude esta senha.
+                            </p>
+                        </div>
+
+                        <div id="secaoVinculoOperacional" style="background: var(--bg-body); padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid var(--borda);">
+                            <h4 style="margin: 0 0 10px 0; color: var(--cor-titulo); display: flex; align-items: center; gap: 8px;">
+                                <span class="material-symbols-rounded">share_location</span> Níveis de Acesso e Vínculos
+                            </h4>
+                            <p style="font-size: 12px; color: var(--f1a-copper); margin-top: 0; margin-bottom: 20px;">
+                                Se marcar <strong>"Selecionar Todas"</strong>, o usuário terá acesso imediato e a qualquer nova loja ou rede criada no futuro!
+                            </p>
+                            
+                            <div class="linha-dupla">
+                                <div>
+                                    <label>1. Empresas Permitidas</label>
+                                    <div class="custom-dropdown" id="dropdownEmpresasCont">
+                                        <div class="dropdown-header" onclick="toggleDropdownMenu('bodyEmpresas')">
+                                            <span id="labelDropdownEmpresas">Carregando...</span>
+                                            <span class="material-symbols-rounded">expand_more</span>
+                                        </div>
+                                        <div class="dropdown-body" id="bodyEmpresas">
+                                            <label class="check-todos"><input type="checkbox" id="checkTodasEmpresas" onchange="toggleTodosCheckbox('Empresas')"> <span>Selecionar Todas as Empresas</span></label>
+                                            <div id="listaEmpresasCheckbox"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label>2. Redes Permitidas</label>
+                                    <div class="custom-dropdown" id="dropdownRedesCont">
+                                        <div class="dropdown-header" onclick="toggleDropdownMenu('bodyRedes')">
+                                            <span id="labelDropdownRedes">Aguardando Empresa...</span>
+                                            <span class="material-symbols-rounded">expand_more</span>
+                                        </div>
+                                        <div class="dropdown-body" id="bodyRedes">
+                                            <label class="check-todos"><input type="checkbox" id="checkTodasRedes" onchange="toggleTodosCheckbox('Redes')"> <span>Selecionar Todas as Redes</span></label>
+                                            <div id="listaRedesCheckbox"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="boxLojaVinculo" style="margin-top: 10px;">
+                                <label>3. Lojas Físicas Permitidas</label>
+                                <div class="custom-dropdown" id="dropdownLojasCont">
+                                    <div class="dropdown-header" onclick="toggleDropdownMenu('bodyLojas')">
+                                        <span id="labelDropdownLojas">Aguardando Redes...</span>
+                                        <span class="material-symbols-rounded">expand_more</span>
+                                    </div>
+                                    <div class="dropdown-body" id="bodyLojas">
+                                        <label class="check-todos"><input type="checkbox" id="checkTodasLojas" onchange="toggleTodosCheckbox('Lojas')"> <span>Selecionar Todas as Lojas</span></label>
+                                        <div id="listaLojasCheckbox"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="secaoModulosLicenca" class="escondido" style="background: rgba(139, 92, 246, 0.04); padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid rgba(139, 92, 246, 0.2);">
+                            <h4 style="margin: 0 0 10px 0; color: #8b5cf6; display: flex; align-items: center; gap: 8px;">
+                                <span class="material-symbols-rounded">extension</span> Licenciamento de Módulos F1A
+                            </h4>
+                            <p style="font-size: 12px; color: var(--cor-texto); margin-top: 0; margin-bottom: 15px;">
+                                Defina quais módulos comerciais este colaborador poderá acessar no Lobby. Os IDs são gravados em <strong>modulosAcesso</strong>.
+                            </p>
+                            <label>Módulos Liberados</label>
+                            <div class="custom-dropdown" id="dropdownModulosCont">
+                                <div class="dropdown-header" onclick="toggleDropdownMenu('bodyModulos')">
+                                    <span id="labelDropdownModulos">Carregando módulos...</span>
+                                    <span class="material-symbols-rounded">expand_more</span>
+                                </div>
+                                <div class="dropdown-body" id="bodyModulos">
+                                    <label class="check-todos"><input type="checkbox" id="checkTodasModulos" onchange="toggleTodosCheckbox('Modulos')"> <span>Selecionar Todos os Módulos</span></label>
+                                    <div id="listaModulosCheckbox"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 20px;">
+                            <label style="font-weight: bold; display: flex; align-items: center; gap: 5px;">
+                                <span class="material-symbols-rounded" style="font-size: 18px;">toggle_on</span> Status da Conta
+                            </label>
+                            <select id="usuStatus" style="font-weight: bold;">
+                                <option value="ativo" style="color: #10b981;">🟢 Conta ATIVA - Acesso Liberado</option>
+                                <option value="bloqueado" style="color: #ef4444;">🔴 Conta BLOQUEADA - Sem Acesso</option>
+                            </select>
+                        </div>
+
+                        <div style="display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap;">
+                            <button class="btn-salvar" id="btnSalvarUsuario" onclick="salvarUsuario()" style="background: var(--f1a-blue); width: auto; padding: 12px 30px; margin: 0;">
+                                <span class="material-symbols-rounded">save</span> Salvar Usuário
+                            </button>
+                            <button type="button" class="btn-salvar" id="btnResetarAcesso" onclick="resetarAcessoUsuario()" style="display: none; background: transparent; border: 1px solid var(--f1a-copper); color: var(--f1a-copper); width: auto; padding: 12px 30px; margin: 0;" title="Obriga o usuário a configurar a conta novamente no próximo login">
+                                <span class="material-symbols-rounded">lock_reset</span> Resetar Acesso
+                            </button>
+                            <button class="btn-salvar" id="btnExcluirUsuario" onclick="excluirUsuarioAtual()" style="display: none; background: transparent; border: 1px solid #ef4444; color: #ef4444; width: auto; padding: 12px 30px; margin: 0;">
+                                <span class="material-symbols-rounded">person_remove</span> Excluir Conta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script src="core.js?v=1"></script>
+    <script src="ui.js?v=1"></script>
+    <script src="cadastros-usuarios.js?v=1"></script>
+
+    <script>
+        window.toggleSidebarF1A = function() {
+            const sidebar = document.getElementById('sidebarF1A');
+            if (window.innerWidth <= 768) { sidebar.classList.toggle('aberta'); document.getElementById('overlayMobile').classList.toggle('ativa'); } 
+            else { sidebar.classList.toggle('retraida'); }
+        }
+        window.toggleDropdownPerfil = function(event) {
+            event.stopPropagation(); const menu = document.getElementById('dropdownPerfilLocal'); if (menu) menu.classList.toggle('escondido');
+        };
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('dropdownPerfilLocal'); if (menu && !menu.classList.contains('escondido')) menu.classList.add('escondido');
+            
+            // Fecha os custom dropdowns se clicar fora deles
+            if (!event.target.closest('.custom-dropdown')) {
+                document.querySelectorAll('.dropdown-body').forEach(el => el.classList.remove('open'));
+            }
+        });
+        function aplicarMascaraCPFAqui(input) {
+            let v = input.value.replace(/\D/g, ""); if (v.length > 11) v = v.substring(0, 11);
+            v = v.replace(/(\d{3})(\d)/, "$1.$2"); v = v.replace(/(\d{3})(\d)/, "$1.$2"); v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2"); input.value = v;
+        }
+    </script>
+</body>
+</html>

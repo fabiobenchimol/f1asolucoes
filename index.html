@@ -1,476 +1,538 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Documentos - CEOCARD</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Login - F1A Soluções</title>
     
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.11/docxtemplater.js"></script>
-    <script src="https://unpkg.com/pizzip@3.1.4/dist/pizzip.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <style>
+        /* =========================================================
+           RESET E VARIÁVEIS INFINITE BLUE
+        ========================================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: 'Outfit', sans-serif;
+            background: #eef2f6; 
+            overflow-x: hidden;
+        }
+
         :root {
-            --bg-pagina: #e2e8f0; 
-            --bg-cartao: #ffffff;
-            --cor-titulo: #2c3e50;
-            --cor-texto: #4a5568; 
-            --bg-input: #f8fafc;
-            --borda-input: #cbd5e0; 
-            --texto-input: #2d3748;
-            --bg-caixa-pers: #fffaf5;
-            --borda-caixa-pers: #fbd38d;
-            --bg-botao-busca: #2c3e50;
-            --bg-botao-busca-hover: #1a252f;
+            --f1a-blue: #0047FF;
+            --f1a-blue-dark: #002db3;
+            --f1a-blue-gradient: linear-gradient(135deg, #0047FF 0%, #001a66 100%);
+            --white: #ffffff;
+            --text-main: #1e293b;
+            --text-soft: #64748b;
+            --border: #e2e8f0;
+            --input-bg: #f8fafc;
+            --shadow-premium: 0 25px 50px -12px rgba(0, 30, 100, 0.15);
+            --radius-xl: 24px;
+            --radius-lg: 16px;
         }
 
-        body.dark-mode {
-            --bg-pagina: #121212; 
-            --bg-cartao: #1e1e1e; 
-            --cor-titulo: #ffffff;
-            --cor-texto: #a0aec0;
-            --bg-input: #2d3748;
-            --borda-input: #4a5568;
-            --texto-input: #f7fafc;
-            --bg-caixa-pers: #2d261e;
-            --borda-caixa-pers: #9c4221;
-            --bg-botao-busca: #4a5568;
-            --bg-botao-busca-hover: #2d3748;
-        }
-
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; 
-            padding: 20px; 
-            background-color: var(--bg-pagina); 
-            color: var(--cor-texto); 
-            transition: background-color 0.4s ease; 
-        }
-        
-        .wrapper { max-width: 750px; margin: 0 auto; }
-        
-        .container { 
-            background: var(--bg-cartao); 
-            padding: 40px 30px; 
-            border-radius: 12px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
-            border-top: 5px solid #e65c00;
-            transition: background-color 0.4s ease, box-shadow 0.4s ease;
-        }
-
-        .logo-app { display: block; margin: 0 auto 30px auto; max-width: 180px; height: auto; transition: opacity 0.3s ease; }
-
-        .cabecalho-titulo {
-            position: relative;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        h2 { 
-            color: var(--cor-titulo); 
-            margin: 0; 
-            font-weight: 800; 
-            transition: color 0.4s; 
-        }
-
-        .theme-switch-wrapper {
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
+        body {
             display: flex;
             align-items: center;
-        }
-
-        .theme-switch {
-            display: inline-block;
-            width: 54px;
-            height: 28px;
+            justify-content: center;
             position: relative;
         }
 
-        .theme-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
+        .bg-glow {
+            position: absolute;
+            width: 60vw; height: 60vw;
+            background: radial-gradient(circle, rgba(0, 71, 255, 0.05) 0%, transparent 70%);
+            top: -20%; left: -10%;
+            z-index: 0;
+            pointer-events: none;
         }
 
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #cbd5e0;
-            transition: .4s;
-            border-radius: 34px; 
+        /* =========================================================
+           CARD DE LOGIN (SPLIT LAYOUT)
+        ========================================================== */
+        .login-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
         }
 
-        .slider:before {
-            position: absolute;
+        .login-card {
+            width: 100%;
+            display: flex;
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-premium);
+            overflow: hidden;
+            min-height: 600px;
+        }
+
+        /* =========================================================
+           PAINEL ESQUERDO (MARCA E IDENTIDADE)
+        ========================================================== */
+        .left-panel {
+            width: 45%;
+            background: var(--f1a-blue-gradient);
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            color: var(--white);
+        }
+
+        .left-panel::before {
             content: "";
-            height: 20px;
-            width: 20px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            position: absolute;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            top: -50px; left: -50px;
+            border-radius: 50%;
         }
 
-        input:checked + .slider {
-            background-color: #e65c00; 
+        .left-panel::after {
+            content: "";
+            position: absolute;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(0, 71, 255, 0.4) 0%, transparent 70%);
+            bottom: -150px; right: -100px;
+            border-radius: 50%;
         }
 
-        input:checked + .slider:before {
-            transform: translateX(26px); 
+        .logo {
+            width: 160px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
         }
 
-        h3 { color: #e65c00; font-size: 16px; margin-top: 35px; border-bottom: 2px solid var(--borda-input); padding-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .company { position: relative; z-index: 2; }
         
-        label { font-weight: 600; display: block; margin-top: 15px; font-size: 13px; color: var(--cor-texto); text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.4s; }
-        
-        input[type="text"], input[type="date"], select { 
-            width: 100%; 
-            padding: 14px; 
-            margin-top: 6px; 
-            border: 1.5px solid var(--borda-input); 
-            border-radius: 8px; 
-            box-sizing: border-box; 
-            background-color: var(--bg-input); 
-            font-size: 15px; 
-            color: var(--texto-input);
-            transition: all 0.3s ease; 
-        }
-        
-        input[type="text"]:focus, input[type="date"]:focus, select:focus { 
-            border-color: #e65c00; 
-            background-color: var(--bg-cartao); 
-            outline: none; 
-            box-shadow: 0 0 0 3px rgba(230, 92, 0, 0.15);
-        }
-        
-        .maiusculo { text-transform: uppercase; }
-        
-        .linha-dupla { display: flex; gap: 15px; align-items: flex-end; }
-        .linha-dupla div { flex: 1; }
-        
-        .btn-buscar { 
-            background-color: var(--bg-botao-busca); 
-            color: white; 
-            border: none; 
-            padding: 14px; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            width: 100%; 
-            margin-top: 5px; 
-            transition: all 0.3s;
-        }
-        .btn-buscar:hover { background-color: var(--bg-botao-busca-hover); transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .company h1 { font-size: 32px; font-weight: 800; margin-bottom: 5px; letter-spacing: -0.5px; }
+        .company span { color: #93c5fd; font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
-        #caixaPersonalizada { 
-            display: none; 
-            background-color: var(--bg-caixa-pers); 
-            padding: 25px; 
-            border: 1.5px solid var(--borda-caixa-pers); 
-            border-radius: 10px; 
-            margin-top: 20px; 
-            transition: background-color 0.4s, border-color 0.4s;
-        }
-        
-        .escondido { display: none; }
+        .left-divider { width: 60px; height: 4px; border-radius: 4px; background: #60a5fa; margin: 30px 0; position: relative; z-index: 2; }
+        .left-description { position: relative; z-index: 2; color: rgba(255, 255, 255, 0.85); font-size: 15px; line-height: 1.6; max-width: 260px; }
 
-        button.btn-principal { 
-            width: 100%; 
-            padding: 18px; 
-            margin-top: 40px; 
-            background: linear-gradient(135deg, #ff7e14, #e65c00); 
-            color: white; 
-            border: none; 
-            border-radius: 8px; 
-            font-size: 16px; 
-            font-weight: 700; 
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer; 
-            transition: all 0.3s; 
-            box-shadow: 0 4px 15px rgba(230, 92, 0, 0.3);
+        /* =========================================================
+           PAINEL DIREITO (FORMULÁRIOS)
+        ========================================================== */
+        .right-panel {
+            width: 55%;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: var(--white);
+            position: relative;
         }
-        button.btn-principal:hover { 
-            background: linear-gradient(135deg, #e65c00, #cc5200); 
-            transform: translateY(-3px); 
-            box-shadow: 0 6px 20px rgba(230, 92, 0, 0.4);
+
+        .form-title { color: var(--text-main); font-size: 32px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px; }
+        .form-subtitle { color: var(--text-soft); font-size: 15px; margin-bottom: 40px; font-weight: 400; line-height: 1.4; }
+
+        .form-section { display: none; animation: fadeIn 0.4s ease; }
+        .form-section.ativo { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* =========================================================
+           INPUTS PREMIUM
+        ========================================================== */
+        .input-group { margin-bottom: 20px; }
+        .input-wrapper { position: relative; }
+
+        .input-wrapper input {
+            width: 100%; height: 56px;
+            border-radius: var(--radius-lg);
+            border: 2px solid transparent;
+            background: var(--input-bg);
+            padding-left: 50px; padding-right: 45px;
+            font-size: 15px; color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s ease; outline: none;
+        }
+
+        .input-wrapper input::placeholder { color: #94a3b8; font-weight: 400; }
+        .input-wrapper input:focus { background: var(--white); border-color: var(--f1a-blue); box-shadow: 0 4px 15px rgba(0, 71, 255, 0.08); }
+
+        .input-icon { position: absolute; top: 50%; left: 18px; transform: translateY(-50%); color: #94a3b8; font-size: 22px; transition: color 0.3s ease; }
+        .input-wrapper input:focus ~ .input-icon, .input-wrapper input:focus ~ .toggle-password { color: var(--f1a-blue); }
+
+        .toggle-password { position: absolute; top: 50%; right: 18px; transform: translateY(-50%); cursor: pointer; color: #94a3b8; display: flex; align-items: center; justify-content: center; transition: color 0.3s ease; }
+
+        /* =========================================================
+           AÇÕES E BOTÕES
+        ========================================================== */
+        .form-options { display: flex; justify-content: flex-end; margin-top: 5px; margin-bottom: 30px; }
+        .forgot-password { color: var(--f1a-blue); font-size: 13px; font-weight: 700; text-decoration: none; transition: opacity 0.2s; }
+        .forgot-password:hover { opacity: 0.7; }
+
+        .login-button {
+            width: 100%; height: 56px;
+            border: none; border-radius: var(--radius-lg);
+            background: var(--f1a-blue-gradient); color: var(--white);
+            font-size: 16px; font-weight: 800; font-family: 'Outfit', sans-serif;
+            cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 71, 255, 0.25);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .login-button:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(0, 71, 255, 0.35); }
+        .login-button:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        
+        .btn-cancelar {
+            width: 100%; height: 56px; margin-top: 15px;
+            border: 2px solid var(--border); border-radius: var(--radius-lg);
+            background: transparent; color: var(--text-soft);
+            font-size: 15px; font-weight: 700; font-family: 'Outfit', sans-serif;
+            cursor: pointer; transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-cancelar:hover { border-color: #ef4444; color: #ef4444; background: rgba(239, 68, 68, 0.05); }
+
+        .erro {
+            display: none; margin-bottom: 20px; padding: 12px 15px;
+            border-radius: 12px; background: #fef2f2; border: 1px solid #fecaca;
+            color: #dc2626; font-size: 13px; font-weight: 700;
+            align-items: center; gap: 8px;
+        }
+
+        .footer { position: absolute; bottom: 20px; width: 100%; text-align: center; color: var(--text-soft); font-size: 12px; font-weight: 600; z-index: 10; }
+
+        @media(max-width: 900px) {
+            .login-card { flex-direction: column; min-height: auto; }
+            .left-panel { width: 100%; padding: 50px 30px; border-radius: var(--radius-xl) var(--radius-xl) 0 0; }
+            .left-panel::after, .left-panel::before { display: none; }
+            .logo { width: 130px; margin-bottom: 20px; }
+            .company h1 { font-size: 26px; }
+            .right-panel { width: 100%; padding: 40px 30px; border-radius: 24px 24px var(--radius-xl) var(--radius-xl); margin-top: -20px; z-index: 5; }
+            .form-title { font-size: 26px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="wrapper">
-        <div class="container">
-            
-            <img src="Ativo_12Logo_Ceocard.png" alt="Logo CEOCARD" class="logo-app" id="logoApp">
+    <div class="bg-glow"></div>
 
-            <div class="cabecalho-titulo">
-                <h2>Sistema de Emissão</h2>
+    <div class="login-wrapper">
+        <div class="login-card">
+
+            <div class="left-panel">
+                <img src="assets/logo_f1a.png" alt="F1A Soluções" class="logo">
+                <div class="company">
+                    <h1>F1A Soluções</h1>
+                    <span>Portal do Colaborador</span>
+                </div>
+                <div class="left-divider"></div>
+                <div class="left-description">
+                    Soluções inteligentes para resultados extraordinários. Acesso restrito à equipe.
+                </div>
+            </div>
+
+            <div class="right-panel">
                 
-                <div class="theme-switch-wrapper" title="Alternar Modo Escuro">
-                    <label class="theme-switch" for="checkboxTema">
-                        <input type="checkbox" id="checkboxTema" onchange="alternarTema()">
-                        <div class="slider"></div>
-                    </label>
+                <div id="blocoLogin" class="form-section ativo">
+                    <h2 class="form-title">Acesse sua conta</h2>
+                    <p class="form-subtitle">Informe suas credenciais para continuar.</p>
+
+                    <form onsubmit="entrar(event)">
+                        
+                        <div id="msgErro" class="erro">
+                            <span class="material-symbols-rounded" style="font-size: 18px;">error</span>
+                            <span id="txtErro">Dados incorretos. Tente novamente.</span>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <span class="material-symbols-rounded input-icon">person</span>
+                                <input type="text" id="email" placeholder="Seu Username ou E-mail" autocomplete="username" required>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <span class="material-symbols-rounded input-icon">lock</span>
+                                <input type="password" id="senha" placeholder="Sua senha" autocomplete="current-password" required>
+                                <div class="toggle-password" onclick="toggleSenha('senha', 'eyeIcon')">
+                                    <span class="material-symbols-rounded" id="eyeIcon">visibility</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-options">
+                            <a href="#" class="forgot-password" onclick="recuperarSenha()">Esqueci minha senha</a>
+                        </div>
+
+                        <button type="submit" id="btnAcessar" class="login-button">
+                            Entrar
+                            <span class="material-symbols-rounded" style="font-size: 20px;">arrow_forward</span>
+                        </button>
+                    </form>
                 </div>
+
+                <div id="blocoPrimeiroAcesso" class="form-section">
+                    <h2 class="form-title" style="color: var(--f1a-blue);">Bem-vindo! 👋</h2>
+                    <p class="form-subtitle">Como este é seu primeiro acesso, precisamos que você cadastre um e-mail de recuperação e crie sua senha pessoal.</p>
+
+                    <form onsubmit="finalizarPrimeiroAcesso(event)">
+                        
+                        <div id="msgErroSetup" class="erro">
+                            <span class="material-symbols-rounded" style="font-size: 18px;">error</span>
+                            <span id="txtErroSetup">As senhas não coincidem.</span>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <span class="material-symbols-rounded input-icon">mail</span>
+                                <input type="email" id="novoEmail" placeholder="Seu E-mail de Recuperação" required>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <span class="material-symbols-rounded input-icon">key</span>
+                                <input type="password" id="novaSenha" placeholder="Crie uma nova senha (mín. 6 dígitos)" required>
+                                <div class="toggle-password" onclick="toggleSenha('novaSenha', 'eyeIconSetup1')">
+                                    <span class="material-symbols-rounded" id="eyeIconSetup1">visibility</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <span class="material-symbols-rounded input-icon">lock_reset</span>
+                                <input type="password" id="confirmaSenha" placeholder="Confirme a nova senha" required>
+                                <div class="toggle-password" onclick="toggleSenha('confirmaSenha', 'eyeIconSetup2')">
+                                    <span class="material-symbols-rounded" id="eyeIconSetup2">visibility</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btnFinalizarSetup" class="login-button" style="margin-top: 10px;">
+                            Salvar e Acessar
+                            <span class="material-symbols-rounded" style="font-size: 20px;">check_circle</span>
+                        </button>
+
+                        <button type="button" class="btn-cancelar" onclick="cancelarSetup()">
+                            <span class="material-symbols-rounded" style="font-size: 20px;">logout</span> Sair da Conta
+                        </button>
+                    </form>
+                </div>
+
             </div>
-            
-            <label>Selecione o Documento:</label>
-            <select id="modeloContrato" onchange="adaptarTela()">
-                <option value="Contrato_ceocard.docx">Contrato de Prestação de Serviços</option>
-                <option value="Recibo.docx">Recibo de Pagamento</option>
-            </select>
-
-            <h3>Dados do Cliente</h3>
-            
-            <div class="linha-dupla">
-                <div style="flex: 2;">
-                    <label>CPF / CNPJ:</label>
-                    <input type="text" id="cnpj" placeholder="Digite para buscar..." maxlength="18" oninput="aplicarMascaraCpfCnpj(this)">
-                </div>
-                <div style="flex: 1;">
-                    <button class="btn-buscar" onclick="buscarDadosCNPJ()">🔍 Buscar</button>
-                </div>
-            </div>
-
-            <label>Nome do Cliente (Contratante):</label>
-            <input type="text" id="cliente" class="maiusculo" placeholder="Ex: EMPRESA FICTÍCIA LTDA">
-
-            <div id="dadosEndereco">
-                <div class="linha-dupla">
-                    <div><label>Cidade:</label><input type="text" id="cidade" placeholder="Ex: Ananindeua"></div>
-                    <div><label>UF:</label><input type="text" id="uf" class="maiusculo" placeholder="Ex: PA" maxlength="2"></div>
-                </div>
-
-                <div class="linha-dupla">
-                    <div><label>CEP:</label><input type="text" id="cep" placeholder="00000-000" maxlength="9" oninput="aplicarMascaraCEP(this)"></div>
-                    <div><label>Data do Documento:</label><input type="date" id="dataEscolhida"></div>
-                </div>
-            </div>
-            
-            <div id="dataRecibo" class="escondido">
-                <label>Data do Recibo:</label>
-                <input type="date" id="dataEscolhidaRecibo">
-            </div>
-
-            <h3>Configuração dos Cartões</h3>
-            <label>Escolha o Pacote:</label>
-            <select id="pacoteCartoes" onchange="verificarPacote()">
-                <option value="0">Selecione...</option>
-                <option value="500">500 unidades (R$ 17,00/un) - Total: R$ 8.500,00</option>
-                <option value="1000">1.000 unidades (R$ 13,00/un) - Total: R$ 13.000,00</option>
-                <option value="2000">2.000 unidades (R$ 11,00/un) - Total: R$ 22.000,00</option>
-                <option value="personalizado">Personalizado (Digitar Manualmente)</option>
-            </select>
-
-            <div id="caixaPersonalizada">
-                <label style="color: #e65c00; text-align: center; margin-top: 0; margin-bottom: 15px; font-size: 15px;">PACOTE PERSONALIZADO</label>
-                <div class="linha-dupla">
-                    <div>
-                        <label>Quantidade de Cartões:</label>
-                        <input type="text" id="qtdCartoes" placeholder="Ex: 350">
-                    </div>
-                    <div>
-                        <label>Valor Total (R$):</label>
-                        <input type="text" id="valorTotal" placeholder="Ex: 5.500,00">
-                    </div>
-                </div>
-            </div>
-
-            <button class="btn-principal" onclick="gerarDocumento()">Gerar Documento</button>
         </div>
     </div>
 
+    <div class="footer">
+        F1A Soluções • Todos os direitos reservados.
+    </div>
+
     <script>
-        window.onload = function() {
-            const hoje = new Date();
-            const ano = hoje.getFullYear();
-            const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-            const dia = String(hoje.getDate()).padStart(2, '0');
-            const dataPadrao = `${ano}-${mes}-${dia}`;
-            
-            document.getElementById('dataEscolhida').value = dataPadrao;
-            document.getElementById('dataEscolhidaRecibo').value = dataPadrao;
+        // CONFIGURAÇÕES DO BANCO
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZdBXKCfp3JboXC95Hbt7H-Tp7ezXOTUE",
+            authDomain: "projeto-ceocard.firebaseapp.com",
+            projectId: "projeto-ceocard",
+            storageBucket: "projeto-ceocard.firebasestorage.app",
+            messagingSenderId: "322820070422",
+            appId: "1:322820070422:web:86c81c58bb930891a86937",
+            measurementId: "G-WNSJH7F7R5"
         };
 
-        // --- FUNÇÃO ATUALIZADA: Agora ela troca a logo também! ---
-        function alternarTema() {
-            const corpoPagina = document.body;
-            const logo = document.getElementById("logoApp");
-            
-            corpoPagina.classList.toggle("dark-mode");
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        let currentUserForSetup = null; // Guarda a sessão temporariamente para o setup
 
-            // Se o modo noturno ativou, troca para a logo branca
-            if (corpoPagina.classList.contains("dark-mode")) {
-                
-                // ======== ATENÇÃO AQUI ========
-                // Substitua "Logo_Branca_Ceocard.png" pelo nome exato do arquivo da sua logo escura no GitHub
-                logo.src = "Ativo_10Logo_Ceocard.png"; 
-                
+        // UTILITÁRIO: MOSTRAR/OCULTAR SENHA
+        function toggleSenha(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.innerText = "visibility_off";
             } else {
-                // Se voltou para o modo claro, volta a logo original
-                logo.src = "Ativo_12Logo_Ceocard.png";
+                input.type = "password";
+                icon.innerText = "visibility";
             }
         }
 
-        function validarCampos() {
-            const documento = document.getElementById("modeloContrato").value;
-            const cliente = document.getElementById("cliente").value.trim();
-            const pacote = document.getElementById("pacoteCartoes").value;
-            
-            if (cliente === "") return "Por favor, preencha o Nome do Cliente.";
-            if (pacote === "0") return "Por favor, selecione um Pacote de Cartões.";
-            
-            if (documento === "Contrato_ceocard.docx") {
-                const cnpj = document.getElementById("cnpj").value.trim();
-                const cidade = document.getElementById("cidade").value.trim();
-                const uf = document.getElementById("uf").value.trim();
-                
-                if (cnpj === "") return "Para gerar um contrato, o CPF/CNPJ é obrigatório.";
-                if (cidade === "") return "Para gerar um contrato, preencha a Cidade.";
-                if (uf === "") return "Para gerar um contrato, preencha a UF.";
-            }
-            
-            if (pacote === "personalizado") {
-                const qtd = document.getElementById("qtdCartoes").value.trim();
-                const valor = document.getElementById("valorTotal").value.trim();
-                if (qtd === "") return "Você escolheu o pacote Personalizado. Por favor, preencha a Quantidade de Cartões.";
-                if (valor === "") return "Você escolheu o pacote Personalizado. Por favor, preencha o Valor Total.";
-            }
-            return null; 
-        }
-
-        function adaptarTela() {
-            const documentoEscolhido = document.getElementById("modeloContrato").value;
-            const divEndereco = document.getElementById("dadosEndereco");
-            const divDataRecibo = document.getElementById("dataRecibo");
-
-            if (documentoEscolhido === "Recibo.docx") {
-                divEndereco.classList.add("escondido");
-                divDataRecibo.classList.remove("escondido");
-            } else {
-                divEndereco.classList.remove("escondido");
-                divDataRecibo.classList.add("escondido");
-            }
-        }
-
-        async function buscarDadosCNPJ() {
-            let cnpjDigitado = document.getElementById('cnpj').value.replace(/\D/g, "");
-            if (cnpjDigitado.length !== 14) { alert("Por favor, digite um CNPJ completo para buscar."); return; }
-            document.getElementById('cliente').value = "Buscando dados na Receita...";
+        // =======================================================
+        // FLUXO DE ROTEAMENTO (VERIFICA O STATUS NO BANCO)
+        // =======================================================
+        async function rotearUsuario(user) {
+            const btn = document.getElementById("btnAcessar");
             try {
-                const resposta = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjDigitado}`);
-                if (!resposta.ok) throw new Error("CNPJ não encontrado");
-                const dados = await resposta.json();
-                
-                document.getElementById('cliente').value = dados.razao_social;
-                document.getElementById('cidade').value = dados.municipio;
-                document.getElementById('uf').value = dados.uf;
-                let cep = dados.cep ? dados.cep.toString() : "";
-                if(cep.length === 8) cep = cep.substring(0,5) + "-" + cep.substring(5);
-                document.getElementById('cep').value = cep;
-                
-            } catch (erro) {
-                alert("Não foi possível encontrar esse CNPJ.");
-                document.getElementById('cliente').value = "";
-            }
-        }
+                const doc = await db.collection("usuarios").doc(user.uid).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    
+                    if (data.status === "bloqueado") {
+                        alert("Seu acesso foi suspenso. Entre em contato com a administração F1A.");
+                        await firebase.auth().signOut();
+                        if (btn) { btn.disabled = false; btn.innerHTML = `Entrar <span class="material-symbols-rounded">arrow_forward</span>`; }
+                        return;
+                    }
 
-        function aplicarMascaraCEP(campo) { let valor = campo.value.replace(/\D/g, ""); valor = valor.replace(/^(\d{5})(\d)/, "$1-$2"); campo.value = valor; }
-        function aplicarMascaraCpfCnpj(campo) {
-            let valor = campo.value.replace(/\D/g, ""); 
-            if (valor.length <= 11) { valor = valor.replace(/(\d{3})(\d)/, "$1.$2"); valor = valor.replace(/(\d{3})(\d)/, "$1.$2"); valor = valor.replace(/(\d{3})(\d{1,2})$/, "$1-$2"); } 
-            else { valor = valor.replace(/^(\d{2})(\d)/, "$1.$2"); valor = valor.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3"); valor = valor.replace(/\.(\d{3})(\d)/, ".$1/$2"); valor = valor.replace(/(\d{4})(\d)/, "$1-$2"); }
-            campo.value = valor; 
-        }
-
-        function verificarPacote() {
-            const escolha = document.getElementById("pacoteCartoes").value;
-            const caixa = document.getElementById("caixaPersonalizada");
-            if (escolha === "personalizado") { caixa.style.display = "block"; } else { caixa.style.display = "none"; }
-        }
-
-        function formatarDataPorExtenso(dataDoCalendario) {
-            if (!dataDoCalendario) return "";
-            const partes = dataDoCalendario.split('-'); 
-            const ano = partes[0]; const mesNumero = parseInt(partes[1]) - 1; const dia = partes[2];
-            const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
-            return dia + " de " + meses[mesNumero] + " de " + ano;
-        }
-
-        async function gerarDocumento() {
-            const erroValidacao = validarCampos();
-            if (erroValidacao !== null) {
-                alert("Atenção: " + erroValidacao); 
-                return; 
-            }
-
-            const caminhoArquivo = document.getElementById('modeloContrato').value;
-            const nomeSelecionadoMenu = document.getElementById('modeloContrato').options[document.getElementById('modeloContrato').selectedIndex].text;
-
-            try {
-                const resposta = await fetch(caminhoArquivo);
-                if (!resposta.ok) { alert("Erro: O arquivo modelo (" + caminhoArquivo + ") não foi encontrado."); return; }
-
-                const conteudo = await resposta.arrayBuffer();
-                const zip = new PizZip(conteudo);
-                const documento = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true, delimiters: { start: '{', end: '}' } });
-
-                const valCliente = document.getElementById('cliente').value.toUpperCase();
-                const valCidade = document.getElementById('cidade').value;
-                const valUF = document.getElementById('uf').value.toUpperCase();
-                const valCEP = document.getElementById('cep').value;
-                const valCNPJ = document.getElementById('cnpj').value;
-                
-                let dataSelecionada = "";
-                if (caminhoArquivo === "Recibo.docx") {
-                    dataSelecionada = document.getElementById('dataEscolhidaRecibo').value;
+                    // INTERCEPTADOR DE PRIMEIRO ACESSO
+                    if (data.primeiroAcesso === true) {
+                        currentUserForSetup = user;
+                        document.getElementById("blocoLogin").classList.remove("ativo");
+                        document.getElementById("blocoPrimeiroAcesso").classList.add("ativo");
+                        if (btn) { btn.disabled = false; btn.innerHTML = `Entrar <span class="material-symbols-rounded">arrow_forward</span>`; }
+                        return;
+                    }
+                    
+                    window.location.href = "lobby.html";
                 } else {
-                    dataSelecionada = document.getElementById('dataEscolhida').value;
+                    alert("Usuário F1A não encontrado na base de dados.");
+                    await firebase.auth().signOut();
+                    if (btn) { btn.disabled = false; btn.innerHTML = `Entrar <span class="material-symbols-rounded">arrow_forward</span>`; }
                 }
-                const valDataExtenso = formatarDataPorExtenso(dataSelecionada);
-
-                let pacoteQtd = ""; let pacoteValor = ""; let pacoteValorTotal = ""; 
-                let pacoteQtdExtenso = ""; let pacoteValorExtenso = ""; let pacoteValorTotalExtenso = "";
-                const escolhaPacote = document.getElementById("pacoteCartoes").value;
-                
-                if (escolhaPacote === "500") {
-                    pacoteQtd = "500"; pacoteQtdExtenso = "quinhentos"; pacoteValor = "17,00"; pacoteValorExtenso = "dezessete reais"; pacoteValorTotal = "8.500,00"; pacoteValorTotalExtenso = "oito mil e quinhentos reais";
-                } else if (escolhaPacote === "1000") {
-                    pacoteQtd = "1.000"; pacoteQtdExtenso = "um mil"; pacoteValor = "13,00"; pacoteValorExtenso = "treze reais"; pacoteValorTotal = "13.000,00"; pacoteValorTotalExtenso = "treze mil reais";
-                } else if (escolhaPacote === "2000") {
-                    pacoteQtd = "2.000"; pacoteQtdExtenso = "dois mil"; pacoteValor = "11,00"; pacoteValorExtenso = "onze reais"; pacoteValorTotal = "22.000,00"; pacoteValorTotalExtenso = "vinte e dois mil reais";
-                } else if (escolhaPacote === "personalizado") {
-                    pacoteQtd = document.getElementById('qtdCartoes').value;
-                    pacoteValorTotal = document.getElementById('valorTotal').value;
-                    pacoteQtdExtenso = ""; pacoteValorExtenso = ""; pacoteValorTotalExtenso = "";
-                    try {
-                        let qtdLimpa = parseInt(pacoteQtd.replace(/\D/g, '')); let totalLimpo = parseFloat(pacoteValorTotal.replace(/\./g, '').replace(',', '.'));
-                        if (qtdLimpa > 0 && !isNaN(totalLimpo)) pacoteValor = (totalLimpo / qtdLimpa).toFixed(2).replace('.', ',');
-                    } catch(e) { pacoteValor = "0,00"; }
-                }
-
-                documento.render({
-                    cliente: valCliente, cidade: valCidade, UF: valUF, CEP: valCEP, CNPJ: valCNPJ, data: valDataExtenso, 
-                    qtd_cartoes: pacoteQtd, qtd_extenso: pacoteQtdExtenso, valor_cartao: pacoteValor, valor_extenso: pacoteValorExtenso, valor_total: pacoteValorTotal, valor_total_extenso: pacoteValorTotalExtenso
-                });
-
-                const arquivoGerado = documento.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
-                saveAs(arquivoGerado, nomeSelecionadoMenu + "_" + valCliente + ".docx");
-
-            } catch (erro) {
-                console.error("Erro completo:", erro);
-                alert("Erro ao processar o arquivo Word! Motivo: " + (erro.message || "Verifique se todas as chaves {} estão fechadas corretamente no documento original."));
+            } catch (error) {
+                console.error("Erro no roteamento:", error);
+                if (btn) { btn.disabled = false; btn.innerHTML = `Entrar <span class="material-symbols-rounded">arrow_forward</span>`; }
             }
         }
+
+        // =======================================================
+        // FUNÇÃO PRINCIPAL DE LOGIN
+        // =======================================================
+        function entrar(event) {
+            event.preventDefault();
+            const btn = document.getElementById("btnAcessar");
+            const msgErro = document.getElementById("msgErro");
+            const txtErro = document.getElementById("txtErro");
+            
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<span class="material-symbols-rounded" style="animation: spin 1s linear infinite;">sync</span> Autenticando...`;
+            }
+            msgErro.style.display = "none";
+
+            let inputUser = document.getElementById("email").value.trim().toLowerCase();
+            const senha = document.getElementById("senha").value;
+
+            // INTELIGÊNCIA: Se o usuário digitar apenas "joaosilva", o robô completa com o domínio de segurança
+            if (!inputUser.includes("@")) {
+                inputUser = inputUser + "@sistemaf1a.com.br";
+            }
+
+            firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+                .then(() => firebase.auth().signInWithEmailAndPassword(inputUser, senha))
+                .then((credencial) => rotearUsuario(credencial.user))
+                .catch((error) => {
+                    console.error(error);
+                    txtErro.innerText = "Credenciais inválidas. Verifique os dados digitados.";
+                    msgErro.style.display = "flex";
+                    if (btn) { btn.disabled = false; btn.innerHTML = `Entrar <span class="material-symbols-rounded">arrow_forward</span>`; }
+                });
+        }
+
+        // =======================================================
+        // FUNÇÃO DE TROCA DE SENHA OBRIGATÓRIA (PRIMEIRO ACESSO)
+        // =======================================================
+        async function finalizarPrimeiroAcesso(event) {
+            event.preventDefault();
+            const btn = document.getElementById("btnFinalizarSetup");
+            const msgErro = document.getElementById("msgErroSetup");
+            const txtErro = document.getElementById("txtErroSetup");
+
+            const novoEmail = document.getElementById("novoEmail").value.trim();
+            const novaSenha = document.getElementById("novaSenha").value;
+            const confirmaSenha = document.getElementById("confirmaSenha").value;
+
+            msgErro.style.display = "none";
+
+            if (novaSenha !== confirmaSenha) {
+                txtErro.innerText = "As senhas digitadas não coincidem.";
+                msgErro.style.display = "flex"; return;
+            }
+
+            if (novaSenha.length < 6) {
+                txtErro.innerText = "A nova senha precisa ter pelo menos 6 dígitos.";
+                msgErro.style.display = "flex"; return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = `<span class="material-symbols-rounded" style="animation: spin 1s linear infinite;">sync</span> Gravando Perfil...`;
+
+            try {
+                // 1. Atualiza senha no Firebase Auth
+                await currentUserForSetup.updatePassword(novaSenha);
+                
+                // 2. Remove a trava de "primeiroAcesso" do Banco de Dados
+                await db.collection("usuarios").doc(currentUserForSetup.uid).update({
+                    primeiroAcesso: false,
+                    emailRecuperacao: novoEmail,
+                    dataPrimeiroAcesso: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // 3. Redireciona com sucesso
+                window.location.href = "lobby.html";
+            } catch (error) {
+                console.error("Erro no Setup:", error);
+                if(error.code === 'auth/email-already-in-use') txtErro.innerText = "Este e-mail de recuperação já está sendo utilizado.";
+                else txtErro.innerText = "Erro ao atualizar perfil. Tente novamente.";
+                
+                msgErro.style.display = "flex";
+                btn.disabled = false;
+                btn.innerHTML = `Salvar e Acessar <span class="material-symbols-rounded">check_circle</span>`;
+            }
+        }
+
+        function cancelarSetup() {
+            firebase.auth().signOut().then(() => { window.location.reload(); });
+        }
+
+        // =======================================================
+        // RECUPERAÇÃO DE SENHA (ESQUECI A SENHA)
+        // =======================================================
+        window.recuperarSenha = function() {
+            const inputEmail = document.getElementById("email");
+            if (!inputEmail || !inputEmail.value.trim()) { return alert("Por favor, digite seu E-mail de Recuperação no campo acima e clique em 'Esqueci minha senha' novamente."); }
+            
+            let emailDigitado = inputEmail.value.trim();
+            if(!emailDigitado.includes("@")) { return alert("Para recuperar a senha, você precisa digitar o seu e-mail de segurança verdadeiro."); }
+
+            if (confirm(`Deseja receber um link de redefinição de senha no e-mail:\n\n${emailDigitado}?`)) {
+                firebase.auth().sendPasswordResetEmail(emailDigitado)
+                    .then(() => alert(`Um link para criar uma nova senha foi enviado com sucesso para:\n\n${emailDigitado}`))
+                    .catch((error) => {
+                        if (error.code === "auth/user-not-found") alert("Não encontramos este e-mail cadastrado.");
+                        else if (error.code === "auth/invalid-email") alert("Formato de e-mail inválido.");
+                        else alert("Erro ao enviar o link: " + error.message);
+                    });
+            }
+        };
+
+        // Escuta o Auth (Se já estiver logado e não for o primeiro acesso, entra direto)
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user && !currentUserForSetup) {
+                const btn = document.getElementById("btnAcessar");
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = `<span class="material-symbols-rounded" style="animation: spin 1s linear infinite;">sync</span> Redirecionando...`;
+                }
+                rotearUsuario(user);
+            }
+        });
     </script>
 </body>
 </html>

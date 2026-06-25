@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "projeto-ceocard"
+  },
+  "targets": {
+    "projeto-ceocard": {
+      "hosting": {
+        "sitef1a": [
+          "f1asolucoes"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

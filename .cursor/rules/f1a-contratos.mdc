@@ -1,0 +1,362 @@
+---
+description: Regras do módulo Contratos da plataforma F1A
+globs:
+  - "**/modulo-contratos/**"
+alwaysApply: false
+---
+
+# F1A Contratos
+
+Você é especialista no módulo Contratos da plataforma F1A.
+
+Este módulo é responsável por:
+
+- Contratos
+- Recibos
+- Templates DOCX
+- Consulta CNPJ
+- Geração Documental
+- Formalização Comercial
+
+---
+
+# Conceito Central
+
+O módulo Contratos não é um CRUD tradicional.
+
+Ele é um motor de geração documental.
+
+Fluxo oficial:
+
+Cliente
+↓
+Consulta CNPJ
+↓
+Preenchimento
+↓
+Contrato
+↓
+Recibo
+↓
+Formalização
+
+---
+
+# Bibliotecas Oficiais
+
+Utilizadas pelo sistema:
+
+```javascript
+Docxtemplater
+PizZip
+FileSaver
+```
+
+Nunca substituir sem necessidade.
+
+---
+
+# Templates Oficiais
+
+Identificados:
+
+```text
+Contrato_ceocard.docx
+Recibo.docx
+```
+
+Preservar compatibilidade.
+
+---
+
+# Regra Crítica
+
+Nunca alterar placeholders existentes sem revisão completa.
+
+---
+
+# Placeholders Oficiais
+
+Identificados:
+
+```text
+{cliente}
+
+{fantasia}
+
+{cidade}
+{UF}
+
+{CNPJ}
+
+{taxa_manutencao}
+
+{valor_cartao}
+
+{qtd_cartoes}
+```
+
+---
+
+# Geração de Contratos
+
+Fluxo:
+
+Template DOCX
+↓
+Dados Cliente
+↓
+Substituição Placeholders
+↓
+Download DOCX
+
+---
+
+# Geração de Recibos
+
+Fluxo:
+
+Template DOCX
+↓
+Dados Financeiros
+↓
+Substituição
+↓
+Download DOCX
+
+---
+
+# Consulta CNPJ
+
+Integrações identificadas:
+
+```text
+BrasilAPI
+
+publica.cnpj.ws
+```
+
+---
+
+# Fluxo de Consulta
+
+CNPJ
+↓
+API
+↓
+Razão Social
+↓
+Fantasia
+↓
+Cidade
+↓
+UF
+↓
+CEP
+
+---
+
+# Estratégia de Fallback
+
+Fluxo recomendado:
+
+BrasilAPI
+↓
+Erro
+↓
+publica.cnpj.ws
+
+Nunca remover fallback.
+
+---
+
+# Campos Obtidos
+
+```javascript
+razaoSocial
+
+nomeFantasia
+
+cidade
+estado
+
+cep
+
+cnpj
+```
+
+---
+
+# Formalização Comercial
+
+O módulo participa da monetização CEOCARD.
+
+Campos relevantes:
+
+```javascript
+taxaManutencao
+
+valorCartao
+
+qtdCartoes
+```
+
+---
+
+# Integração com CRM
+
+Relacionamento:
+
+CRM
+↓
+Cliente
+↓
+Contrato
+
+Nunca quebrar essa ligação.
+
+---
+
+# Integração com ADM Cartão
+
+Relacionamento:
+
+Rede
+↓
+Loja
+↓
+Taxa de Manutenção
+↓
+Contrato
+
+---
+
+# Integração com Pagamentos
+
+Relacionamento:
+
+Contrato
+↓
+Receita
+↓
+Comissão
+
+---
+
+# Multiempresa
+
+Obrigatório.
+
+Toda operação deve respeitar:
+
+```javascript
+empresaId
+
+visaoEmpresaAtiva
+```
+
+---
+
+# Auditoria
+
+Registrar:
+
+```javascript
+usuario
+
+data
+
+documentoGerado
+```
+
+Sempre que possível.
+
+---
+
+# Nome dos Arquivos
+
+Preservar nomenclaturas oficiais.
+
+Evitar:
+
+```text
+arquivo.docx
+contrato-final.docx
+```
+
+Preferir:
+
+```text
+Contrato_CEOCARD_Cliente.docx
+
+Recibo_Cliente.docx
+```
+
+---
+
+# UI
+
+Utilizar:
+
+- formulários oficiais
+- cards oficiais
+- toast oficial
+
+---
+
+# Toast
+
+Obrigatório:
+
+```javascript
+mostrarToast(
+    mensagem,
+    tipo
+)
+```
+
+---
+
+# Segurança
+
+Validar:
+
+- CNPJ
+- campos obrigatórios
+- placeholders existentes
+
+antes da geração.
+
+---
+
+# Regras do Agente
+
+Ao alterar o módulo Contratos:
+
+✓ preservar templates DOCX
+
+✓ preservar placeholders
+
+✓ preservar integração BrasilAPI
+
+✓ preservar fallback publica.cnpj.ws
+
+✓ preservar geração de recibos
+
+✓ preservar geração de contratos
+
+✓ preservar integração CRM
+
+✓ preservar integração ADM Cartão
+
+✓ preservar integração Pagamentos
+
+✓ preservar multiempresa
+
+Nunca quebrar compatibilidade dos DOCX.
+
+Nunca remover placeholders existentes.
+
+Nunca alterar fluxo de geração documental sem necessidade.
+
+Nunca remover fallback de consulta CNPJ.

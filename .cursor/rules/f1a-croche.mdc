@@ -1,0 +1,478 @@
+---
+description: Regras do módulo Crochê (Ponto de Ouro) da plataforma F1A
+globs:
+  - "**/croche/**"
+alwaysApply: false
+---
+
+# F1A Crochê (Ponto de Ouro)
+
+Você é especialista no módulo Ponto de Ouro da plataforma F1A.
+
+Este módulo é um sistema de gestão artesanal baseado em:
+
+- Materiais
+- Projetos
+- Produção
+- Cronometragem
+- Precificação
+- Portfólio
+- Dashboard
+
+---
+
+# Conceito Central
+
+O módulo auxilia artesãos na gestão completa da produção.
+
+Fluxo oficial:
+
+Material
+↓
+Projeto
+↓
+Produção
+↓
+Cronometragem
+↓
+Precificação
+↓
+Portfólio
+↓
+Venda
+
+---
+
+# Coleções Oficiais
+
+## croche_materiais
+
+Controle de estoque.
+
+Campos conhecidos:
+
+```javascript
+nome
+
+categoria
+
+preco
+
+qtdRendimento
+
+ultimaEntrada
+ultimaUtilizacao
+
+usuarioId
+```
+
+---
+
+# Objetivo
+
+Controlar:
+
+- matéria-prima
+- custos
+- rendimento
+- histórico
+
+---
+
+# croche_projetos
+
+Coleção principal.
+
+Campos identificados:
+
+```javascript
+usuarioId
+
+nomeProjeto
+
+categoria
+
+status
+
+tempoTotalMinutos
+
+segundosAcumulados
+
+timerInicioMs
+
+materiaisUsados
+
+imagemUrl
+
+precoSugerido
+
+margemLucro
+
+criadoEm
+atualizadoEm
+```
+
+---
+
+# Status Oficiais
+
+Valores válidos:
+
+```text
+andamento
+crochetando
+concluido
+```
+
+Nunca alterar.
+
+Nunca renomear.
+
+Nunca traduzir.
+
+---
+
+# Fluxo Oficial
+
+Novo Projeto
+↓
+andamento
+↓
+crochetando
+↓
+concluido
+
+---
+
+# Cronômetro Persistente
+
+Funcionalidade crítica.
+
+Campos:
+
+```javascript
+timerInicioMs
+
+segundosAcumulados
+```
+
+Objetivo:
+
+Permitir continuidade mesmo após:
+
+- fechar navegador
+- atualizar página
+- trocar dispositivo
+
+---
+
+# Regra Crítica
+
+Nunca substituir cronômetro por solução temporária.
+
+Nunca reiniciar tempo automaticamente.
+
+---
+
+# Materiais Utilizados
+# Cadastro de Materiais
+
+Arquitetura oficial:
+
+Materiais
+↓
+Botão Novo Material
+↓
+Modal Overlay
+↓
+Firestore
+↓
+Atualização automática da Grid
+
+Não utilizar páginas dedicadas para cadastro.
+
+O arquivo:
+
+/croche/cadastro.html
+
+é considerado legado.
+
+Não criar dependências.
+
+Não criar redirecionamentos.
+
+Não utilizar em novos desenvolvimentos.
+
+Todo cadastro de material deve ocorrer dentro de:
+
+/croche/materiais.html
+
+utilizando modal padrão F1A.
+Estrutura:
+
+```javascript
+materiaisUsados
+```
+
+Representa consumo produtivo.
+
+---
+
+# Precificação Inteligente
+
+Fluxo oficial:
+
+Materiais
++
+Tempo
++
+Valor Hora
++
+Margem
+=
+Preço Sugerido
+
+---
+
+# Fórmula Conceitual
+
+```text
+Custo Materiais
++
+Custo Produção
++
+Margem de Lucro
+=
+Preço Final
+```
+
+Preservar conceito.
+
+---
+
+# Portfólio
+
+Campos:
+
+```javascript
+imagemUrl
+```
+
+Utilizado para:
+
+- galeria
+- mural
+- histórico
+
+---
+
+# Compressão de Imagem
+
+Fluxo identificado:
+
+Imagem
+↓
+Canvas
+↓
+Resize
+↓
+JPEG
+↓
+Base64
+↓
+Firestore
+
+---
+
+# Configuração Identificada
+
+```text
+600x600
+70% qualidade
+```
+
+Preservar compatibilidade.
+
+---
+
+# Dashboard
+
+Indicadores esperados:
+
+- Projetos Totais
+- Projetos Concluídos
+- Tempo Produzido
+- Receita Estimada
+- Portfólio
+
+---
+
+# Categorias
+
+Permitir múltiplas categorias.
+
+Evitar valores fixos hardcoded.
+
+---
+
+# Usuário Proprietário
+# Regra Obrigatória de Materiais
+
+Todo documento salvo em:
+
+croche_materiais
+
+deve conter:
+
+```javascript
+usuarioId
+Todo registro pertence a:
+
+```javascript
+usuarioId
+```
+
+Nunca exibir projetos de terceiros sem autorização.
+
+---
+
+# Multiempresa
+
+Embora o módulo seja individual, manter compatibilidade com:
+
+```javascript
+empresaId
+```
+
+quando aplicável.
+
+---
+
+# UI
+
+# Padrão Visual F1A
+
+Cabeçalho deve seguir referência:
+
+/modulo-crm/clientes.html
+
+Obrigatório:
+
+- empresa ativa
+- avatar
+- nome
+- cargo
+- dropdown perfil
+- alternância de tema
+
+Sidebar:
+
+- nav-texto
+- retração
+- sair do módulo
+
+Evitar componentes visuais paralelos.
+
+O módulo possui identidade complementar.
+
+Pode utilizar:
+
+```css
+--premium-gold
+
+--croche-rose
+```
+
+Mas deve permanecer compatível com:
+
+Infinity Blue
+
+---
+
+# Tema
+
+Nunca criar sistema de tema próprio.
+
+Sempre utilizar o Core.
+
+---
+
+# Toast
+
+Obrigatório:
+
+```javascript
+mostrarToast(
+    mensagem,
+    tipo
+)
+```
+
+---
+
+# Auditoria
+
+Registrar:
+
+```javascript
+usuario
+data
+acao
+```
+
+para alterações críticas.
+
+---
+
+# Integração com Firebase
+
+Utilizar:
+
+- Firestore
+- Auth
+
+Seguindo padrões do Core.
+
+---
+
+# Segurança
+
+Nunca permitir:
+
+- acesso a projetos de outro usuário
+- edição sem autenticação
+- exclusões silenciosas
+
+---
+
+# Regras do Agente
+
+Ao alterar o módulo Crochê:
+
+✓ preservar cronômetro persistente
+
+✓ preservar cálculo de precificação
+
+✓ preservar consumo de materiais
+
+✓ preservar portfólio
+
+✓ preservar compressão de imagens
+
+✓ preservar status oficiais
+
+✓ preservar histórico
+
+✓ preservar compatibilidade com Core
+
+✓ preservar compatibilidade com Firebase
+
+✓ preservar compatibilidade visual
+
+Nunca remover o cronômetro.
+
+Nunca alterar o cálculo de preço sem validação.
+
+Nunca quebrar a persistência de produção.
+
+Nunca perder rastreabilidade dos materiais utilizados.

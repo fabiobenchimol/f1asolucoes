@@ -1,0 +1,862 @@
+---
+description: Regras Firebase e Firestore da Plataforma F1A
+globs:
+alwaysApply: true
+---
+
+# F1A Firebase Architecture
+
+Você é um especialista na arquitetura Firebase da plataforma F1A.
+
+Sua responsabilidade é preservar a estrutura de dados existente.
+
+NUNCA invente novas coleções sem necessidade.
+
+SEMPRE procure reutilizar as coleções existentes.
+
+---
+
+# Regra Absoluta
+
+Firebase é inicializado exclusivamente pelo Core.
+
+NUNCA executar:
+
+```javascript
+firebase.initializeApp()
+```
+
+dentro de módulos.
+
+---
+
+# Serviços Utilizados
+
+A plataforma utiliza:
+
+```text
+Firebase Authentication
+Firestore Database
+Firebase Hosting
+```
+
+---
+
+# Padrão de Operação
+
+Criar:
+
+```javascript
+addDoc()
+```
+
+ou
+
+```javascript
+db.collection().add()
+```
+
+Consultar:
+
+```javascript
+getDocs()
+```
+
+ou
+
+```javascript
+db.collection().get()
+```
+
+Atualizar:
+
+```javascript
+updateDoc()
+```
+
+ou
+
+```javascript
+doc.update()
+```
+
+Excluir:
+
+```javascript
+deleteDoc()
+```
+
+ou
+
+```javascript
+doc.delete()
+```
+
+---
+
+# Timestamp Oficial
+
+Sempre utilizar:
+
+```javascript
+firebase.firestore.FieldValue.serverTimestamp()
+```
+
+Nunca utilizar:
+
+```javascript
+new Date()
+Date.now()
+```
+
+como fonte principal de auditoria.
+
+---
+
+# Coleções Globais
+
+## usuarios
+
+Responsável pelos usuários do sistema.
+
+Campos conhecidos:
+
+```javascript
+uid
+nome
+email
+
+perfil
+status
+
+empresaId
+redeId
+lojaId
+
+modulosAcesso
+ferramentasAcesso
+
+primeiroAcesso
+emailRecuperacao
+
+criadoEm
+atualizadoEm
+```
+
+---
+
+# Perfis
+
+Valores válidos:
+
+```text
+master
+admin
+gerente
+vendedor
+```
+
+---
+
+# Status Usuário
+
+```text
+ativo
+bloqueado
+```
+
+---
+
+## empresas
+
+Cadastro das empresas clientes.
+
+Campos conhecidos:
+
+```javascript
+razaoSocial
+nomeFantasia
+cnpj
+
+planoId
+
+status
+
+dataAtivacao
+dataValidade
+
+criadoEm
+```
+
+---
+
+# Status Empresa
+
+```text
+ativa
+bloqueada
+cancelada
+```
+
+---
+
+## planos
+
+Planos SaaS.
+
+Campos:
+
+```javascript
+nome
+valor
+
+limiteAdmins
+limiteGerentes
+limiteVendedores
+```
+
+---
+
+## redes
+
+Estrutura intermediária.
+
+Campos:
+
+```javascript
+empresaId
+
+nome
+codigo
+
+gerenteId
+indicacaoVendedorId
+```
+
+---
+
+## lojas
+
+Estrutura operacional.
+
+Campos:
+
+```javascript
+empresaId
+redeId
+
+nome
+codigo
+
+cnpj
+
+cidade
+bairro
+```
+
+---
+
+## modulos_f1a
+
+Catálogo oficial de módulos.
+
+Campos:
+
+```javascript
+id
+titulo
+descricao
+
+url
+icon
+cor
+
+tipo
+```
+
+---
+
+# Tipos de Módulo
+
+```text
+comercial
+sistema
+operacional
+```
+
+---
+
+# CRM
+
+## crm_modelos_msg
+
+Modelos de mensagens.
+
+Campos:
+
+```javascript
+nome
+tipo
+texto
+usuarioId
+```
+
+---
+
+## crm_lojas
+
+Base CRM.
+
+Campos:
+
+```javascript
+codigo
+nome
+usuarioId
+```
+
+---
+
+## crm_remessas
+
+Controle de campanhas.
+
+Campos:
+
+```javascript
+nome
+tipo
+modeloUsado
+
+status
+filaEnvios
+
+criadoEm
+```
+
+---
+
+## crm_comissoes_historico
+
+Histórico de comissões.
+
+---
+
+## crm_comissoes_plasticos_vendas
+
+Vendas de plásticos.
+
+---
+
+## crm_comissoes_faturas_importadas
+
+Base importada.
+
+---
+
+# ADM CARTÃO
+
+## adm_fornecedores
+
+Campos:
+
+```javascript
+razaoSocial
+nomeFantasia
+cnpj
+
+telefone
+email
+```
+
+---
+
+## adm_produtos
+
+Campos:
+
+```javascript
+marca
+modelo
+```
+
+---
+
+## adm_entradas
+
+Campos:
+
+```javascript
+fornecedorId
+numeroNF
+
+rastreio
+
+produtos
+
+dataEntrada
+```
+
+---
+
+## adm_estoque
+
+Campos:
+
+```javascript
+serial
+produtoId
+
+status
+```
+
+---
+
+# Status Estoque
+
+```text
+disponivel
+alugada
+```
+
+---
+
+## adm_saidas
+
+Campos:
+
+```javascript
+maquinetaId
+lojaId
+
+dataSaida
+```
+
+---
+
+## adm_remessas
+
+Controle logístico.
+
+---
+
+## adm_cronograma_bim
+
+Controle operacional.
+
+---
+
+## cartao_redes
+
+Redes vinculadas.
+
+---
+
+## cartao_lojas
+
+Lojas vinculadas.
+
+Campos:
+
+```javascript
+redeId
+custoAluguel
+```
+
+---
+
+# CONTRATOS
+
+O módulo trabalha principalmente com:
+
+```text
+Templates DOCX
+BrasilAPI
+publica.cnpj.ws
+```
+
+Possui pouca dependência de Firestore.
+
+---
+
+# FINANCEIRO
+
+Compatibilidade obrigatória:
+
+```text
+financeiro
+modulo_financeiro
+```
+
+---
+
+# PAGAMENTOS
+
+## propostas
+
+Coleção principal.
+
+Campos conhecidos:
+
+```javascript
+empresaId
+gerenteId
+vendedorId
+
+status
+
+historico
+
+criadoEm
+```
+
+---
+
+# Status Propostas
+
+```text
+pendente
+aprovada
+recusada
+agendada
+paga
+cancelada
+```
+
+---
+
+## remessas
+
+Borderôs.
+
+Campos:
+
+```javascript
+codigo
+identificador
+
+dataVencimento
+
+status
+
+empresaId
+gerenteId
+
+historico
+```
+
+---
+
+# Status Borderô
+
+```text
+aberta
+paga
+```
+
+---
+
+# Histórico Oficial
+
+Utilizar:
+
+```javascript
+firebase.firestore.FieldValue.arrayUnion()
+```
+
+---
+
+# VISITAS
+
+## visitas_agenda
+
+Campos:
+
+```javascript
+promotoraId
+
+data
+turno
+
+lojaId
+
+horaInicio
+horaFim
+
+status
+
+cartoesAprovados
+
+checkinFoto
+checkoutFoto
+
+checkinGpsLat
+checkinGpsLng
+
+checkoutGpsLat
+checkoutGpsLng
+```
+
+---
+
+# Status Visitas
+
+```text
+pendente
+andamento
+concluido
+```
+
+---
+
+## visitas_config_metas
+
+Campos:
+
+```javascript
+horasSemana
+horasMes
+
+cartoesBase
+
+tipoTransporte
+
+gatilhosBonus
+
+ajudaDeCusto
+```
+
+---
+
+# CROCHÊ
+
+## croche_materiais
+
+Campos:
+
+```javascript
+nome
+categoria
+
+preco
+
+qtdRendimento
+
+ultimaEntrada
+ultimaUtilizacao
+
+usuarioId
+```
+
+---
+
+## croche_projetos
+
+Campos:
+
+```javascript
+usuarioId
+
+nomeProjeto
+categoria
+
+status
+
+tempoTotalMinutos
+segundosAcumulados
+timerInicioMs
+
+materiaisUsados
+
+imagemUrl
+
+precoSugerido
+margemLucro
+
+criadoEm
+atualizadoEm
+```
+
+---
+
+# Status Projetos
+
+```text
+andamento
+crochetando
+concluido
+```
+
+---
+
+# Multiempresa
+
+Toda coleção corporativa deve suportar:
+
+```javascript
+empresaId
+```
+
+---
+
+# Compatibilidade Legada
+
+Sempre aceitar:
+
+```javascript
+empresaId
+redeId
+lojaId
+```
+
+como:
+
+```text
+string
+ou
+array
+```
+
+---
+
+# Regras do Agente
+
+Antes de criar uma nova coleção:
+
+1. Verifique se já existe uma coleção equivalente.
+2. Verifique integração com empresaId.
+3. Verifique integração com redeId.
+4. Verifique integração com lojaId.
+5. Verifique integração com permissões.
+6. Verifique impacto em relatórios.
+7. Verifique impacto em Master Vision.
+
+Nunca fragmentar dados sem necessidade.
+
+Priorize reutilização da arquitetura existente.
+
+# ATUALIZAÇÃO DE ARQUITETURA — REDES E LOJAS
+
+## Fonte Oficial de Dados
+
+A arquitetura oficial da plataforma F1A utiliza:
+
+* empresas
+* redes
+* lojas
+
+como fonte principal de relacionamento organizacional.
+
+Hierarquia oficial:
+
+empresa
+└── rede
+└── loja
+
+---
+
+## Coleção: redes
+
+Coleção oficial de redes da plataforma.
+
+Utilizada por:
+
+* cadastros.html
+* gestão de usuários
+* CRM
+* ADM Cartão
+* relatórios
+* dashboards
+
+Campos conhecidos:
+
+```javascript
+{
+  empresaId: "",
+  nome: "",
+  codigo: "",
+  gerenteId: "",
+  indicacaoVendedorId: ""
+}
+```
+
+---
+
+## Coleção: lojas
+
+Coleção oficial de lojas da plataforma.
+
+Utilizada por:
+
+* cadastros.html
+* gestão de usuários
+* CRM
+* ADM Cartão
+* relatórios
+* dashboards
+
+Campos conhecidos:
+
+```javascript
+{
+  empresaId: "",
+  redeId: "",
+  nome: "",
+  codigo: "",
+  cnpj: "",
+  cidade: "",
+  bairro: ""
+}
+```
+
+---
+
+## Regra Obrigatória
+
+Antes de criar novas coleções relacionadas a Redes ou Lojas, verificar obrigatoriamente se a informação já existe em:
+
+* redes
+* lojas
+
+Não criar coleções paralelas para a mesma finalidade.
+
+Exemplos que NÃO devem ser utilizados como fonte principal quando a informação já existir na arquitetura oficial:
+
+* cartao_redes
+* cartao_lojas
+* crm_redes
+* crm_lojas
+
+Essas coleções devem ser consideradas legadas ou específicas de módulos antigos.
+
+---
+
+## Regra para Novos Desenvolvimentos
+
+Todo novo módulo deve utilizar preferencialmente:
+
+empresaId
+redeId
+lojaId
+
+como estrutura de relacionamento.
+
+Sempre reutilizar:
+
+* empresas
+* redes
+* lojas
+
+antes de propor novas estruturas de dados.
+
+---
+
+## Compatibilidade Legada
+
+Ao alterar funcionalidades existentes:
+
+* preservar compatibilidade com registros antigos;
+* implementar fallback quando necessário;
+* evitar migrações obrigatórias de dados.
+
+A compatibilidade retroativa é obrigatória salvo instrução explícita do arquiteto da plataforma.

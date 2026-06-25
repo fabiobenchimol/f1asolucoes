@@ -1,0 +1,1798 @@
+/* ============================================================================
+   MÓDULO: PONTO DE OURO (CROCHÊ)
+   ARQUIVO: croche.css
+   OBJETIVO: Estilos locais para o módulo de precificação e portfólio artesanal
+   ============================================================================ */
+
+/* 1. VARIÁVEIS LOCAIS (Identidade Premium Artesanal) */
+:root {
+    --premium-gold: #d4af37;
+    --premium-gold-hover: #bda036;
+    --premium-gold-light: rgba(212, 175, 55, 0.15);
+    --croche-rose: #e8a5a5; /* Um tom suave para contrastes delicados */
+}
+
+/* 2. TIPOGRAFIA EXCLUSIVA DO MÓDULO */
+/* A fonte Outfit dá um ar moderno, mas arredondado e amigável */
+.content-area {
+    font-family: 'Outfit', sans-serif;
+}
+
+/* 3. BOTÕES INTUITIVOS E GRANDES (Acessibilidade) */
+.btn-premium {
+    background: linear-gradient(135deg, var(--premium-gold), #bda036);
+    color: #ffffff;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.btn-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+}
+
+/* Botão secundário para ações como "Pausar Cronômetro" ou "Cancelar" */
+.btn-secundario-croche {
+    background: var(--bg-body);
+    color: var(--cor-titulo);
+    border: 2px solid var(--borda);
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-secundario-croche:hover {
+    border-color: var(--cor-texto);
+}
+
+/* 4. CARDS DE RESUMO (DASHBOARD) */
+.card-stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: var(--bg-painel);
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid var(--borda);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: var(--shadow);
+}
+
+.stat-card:hover { 
+    transform: translateY(-5px); 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--premium-gold-light);
+    color: var(--premium-gold);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.stat-icon span { font-size: 28px; }
+
+.stat-value { font-size: 26px; font-weight: 800; color: var(--cor-titulo); }
+.stat-label { font-size: 13px; color: var(--cor-texto); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* 5. MURAL DE PROJETOS (PORTFÓLIO) */
+.mural-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.mural-item {
+    background: var(--bg-painel);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--borda);
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.mural-item:hover { 
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12); 
+    transform: translateY(-3px);
+}
+
+.mural-thumb {
+    width: 100%;
+    height: 220px;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--bg-body);
+    position: relative;
+}
+
+/* Etiqueta de Preço flutuante na imagem */
+.badge-preco {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 14px;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.mural-info { 
+    padding: 20px; 
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.mural-title { 
+    font-weight: 800; 
+    font-size: 18px;
+    color: var(--cor-titulo); 
+    margin-bottom: 8px; 
+}
+
+.mural-meta { 
+    font-size: 13px; 
+    color: var(--cor-texto); 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    font-weight: 600;
+}
+
+.mural-meta-tempo {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--f1a-blue);
+}
+
+/* 6. INPUTS E FORMULÁRIOS INTUITIVOS (Para as próximas telas) */
+.form-croche {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group-croche label {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--cor-titulo);
+    margin-bottom: 8px;
+}
+
+.form-group-croche input, 
+.form-group-croche select, 
+.form-group-croche textarea {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: 2px solid var(--borda);
+    background: var(--bg-body);
+    color: var(--cor-titulo);
+    font-size: 15px;
+    font-weight: 500;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.form-group-croche input:focus, 
+.form-group-croche select:focus, 
+.form-group-croche textarea:focus {
+    outline: none;
+    border-color: var(--premium-gold);
+}
+
+/* Campo de Moeda Específico (Destacado) */
+.input-moeda {
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    color: var(--f1a-blue) !important;
+    text-align: right;
+}
+
+/* 7. CRONÔMETRO DE PROJETO (Para a tela de Projetos) */
+.cronometro-display {
+    font-size: 48px;
+    font-weight: 900;
+    font-family: monospace;
+    color: var(--cor-titulo);
+    text-align: center;
+    padding: 30px;
+    background: var(--bg-body);
+    border-radius: 20px;
+    border: 2px solid var(--premium-gold);
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+}
+
+/* ============================================================================
+   8. ÁREA DE UPLOAD DE FOTOS (PROJETOS)
+   ============================================================================ */
+.area-upload-imagem {
+    border: 2px dashed var(--premium-gold);
+    border-radius: 12px;
+    background: var(--bg-body);
+    height: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    overflow: hidden;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.area-upload-imagem:hover {
+    background: var(--premium-gold-light);
+    border-color: var(--premium-gold-hover);
+}
+
+.icon-placeholder {
+    font-size: 48px;
+    color: var(--premium-gold);
+    opacity: 0.6;
+    transition: opacity 0.3s;
+}
+
+.area-upload-imagem:hover .icon-placeholder {
+    opacity: 1;
+}
+
+.img-fluid.rounded {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Garante que a foto preencha o espaço sem distorcer */
+    border-radius: 10px;
+}
+
+#wsCardImagem {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+#lblSelecionarFoto {
+    box-sizing: border-box;
+    max-width: 100%;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* ============================================================================
+   9. TELA DE PROJETOS (GRID, TOPBAR E WORKSPACE)
+   ============================================================================ */
+.projetos-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+}
+
+.projetos-titulo h3 {
+    margin: 0;
+    color: var(--cor-titulo);
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: -.7px;
+}
+
+.projetos-titulo p {
+    margin: 5px 0 0;
+    color: var(--cor-texto);
+    font-size: 13px;
+    max-width: 700px;
+}
+
+.projetos-cta {
+    min-height: 50px;
+    border-radius: 14px;
+    padding: 14px 18px;
+}
+
+.projetos-filtros.filtros-container {
+    display: grid;
+    grid-template-columns: minmax(220px, 2fr) minmax(160px, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.projetos-filtros.filtros-container input,
+.projetos-filtros .filtro-categoria-btn {
+    padding: 14px 16px !important;
+    border-radius: 14px !important;
+    background: var(--bg-painel) !important;
+    border: 1px solid var(--borda) !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,.10);
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--cor-titulo);
+    box-sizing: border-box;
+}
+
+.filtro-categoria-wrapper {
+    position: relative;
+}
+
+.filtro-categoria-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.filtro-categoria-btn .material-symbols-rounded {
+    font-size: 20px;
+    color: var(--cor-texto);
+}
+
+.dropdown-filtro-categoria {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: var(--bg-painel);
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    box-shadow: 0 18px 40px rgba(0,0,0,.18);
+    z-index: 500;
+    padding: 8px;
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+.filtro-cat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--cor-titulo);
+    transition: background .15s ease;
+}
+
+.filtro-cat-item:hover {
+    background: rgba(212, 175, 55, .08);
+}
+
+.filtro-cat-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--f1a-blue);
+    cursor: pointer;
+}
+
+.filtro-cat-divisor {
+    height: 1px;
+    background: var(--borda);
+    margin: 4px 8px;
+}
+
+.projetos-card {
+    background: var(--bg-painel);
+    border-radius: 22px;
+    border: 1px solid var(--borda);
+    box-shadow: 0 22px 50px rgba(0,0,0,.16);
+    overflow: hidden;
+}
+
+.projetos-card .tabela-dados {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+.projetos-card .tabela-dados thead th {
+    background: linear-gradient(180deg, rgba(212,175,55,.12), rgba(212,175,55,.04));
+    color: var(--cor-titulo);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--borda);
+}
+
+.projetos-card .sortable-header {
+    cursor: pointer;
+    user-select: none;
+    transition: opacity .2s;
+    white-space: nowrap;
+}
+
+.projetos-card .sortable-header:hover {
+    opacity: .85;
+}
+
+.projetos-card .sort-icon {
+    font-size: 13px;
+    margin-left: 2px;
+    opacity: .35;
+}
+
+.projetos-card .tabela-dados td {
+    vertical-align: middle !important;
+    padding: 11px 14px !important;
+    font-size: 12px !important;
+    border-bottom: 1px solid var(--borda);
+}
+
+.projetos-card .tabela-dados tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.linha-projeto-clicavel {
+    cursor: pointer;
+    transition: background-color .18s ease, box-shadow .18s ease;
+}
+
+.linha-projeto-clicavel:hover {
+    background: rgba(212, 175, 55, 0.08) !important;
+    box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.12);
+}
+
+.projeto-nome-celula {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.projeto-thumb-mini {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.projeto-nome {
+    font-weight: 800;
+    color: var(--cor-titulo);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.projeto-nome::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--premium-gold), #f59e0b);
+    box-shadow: 0 0 0 3px rgba(212,175,55,.12);
+    flex: 0 0 auto;
+}
+
+.btn-editar-nome-grid,
+.btn-editar-nome-projeto {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px;
+    border-radius: 8px !important;
+    background: rgba(0, 71, 255, .08) !important;
+    border: 1px solid var(--borda) !important;
+    color: var(--f1a-blue) !important;
+    flex-shrink: 0;
+    opacity: 0.7;
+    transition: opacity .18s ease, border-color .18s ease;
+}
+
+.btn-editar-nome-grid:hover,
+.btn-editar-nome-projeto:hover {
+    opacity: 1;
+    border-color: rgba(0, 71, 255, .35) !important;
+}
+
+.btn-editar-nome-grid .material-symbols-rounded,
+.btn-editar-nome-projeto .material-symbols-rounded {
+    font-size: 16px !important;
+}
+
+.linha-projeto-clicavel:hover .btn-editar-nome-grid {
+    opacity: 1;
+}
+
+.status-projeto-badge {
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+@media (max-width: 768px) {
+    .projetos-filtros.filtros-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.btn-excluir-projeto {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.4);
+    line-height: 1;
+    min-height: 44px;
+    padding: 12px 20px;
+}
+
+.btn-excluir-projeto .material-symbols-rounded {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.btn-excluir-projeto span:not(.material-symbols-rounded) {
+    line-height: 1;
+    font-weight: 600;
+}
+
+/* Workspace — card superior do projeto */
+.ws-projeto-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    background: var(--bg-painel);
+    padding: 15px 20px;
+    border-radius: 16px;
+    border: 1px solid var(--borda);
+}
+
+.ws-projeto-header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 1;
+    min-width: 0;
+}
+
+.ws-projeto-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    flex: 1;
+}
+
+.ws-projeto-voltar {
+    flex-shrink: 0;
+}
+
+.ws-projeto-voltar .material-symbols-rounded {
+    font-size: 28px;
+}
+
+.ws-projeto-titulo-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+
+.ws-projeto-titulo-row h2 {
+    margin: 0;
+    color: var(--cor-titulo);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ws-projeto-titulo-row .btn-editar-nome-projeto .material-symbols-rounded {
+    font-size: 20px;
+}
+
+.ws-projeto-status {
+    background: rgba(212, 175, 55, 0.2);
+    color: var(--premium-gold);
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    text-transform: uppercase;
+    display: inline-block;
+    align-self: flex-start;
+}
+
+.ws-projeto-acoes {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.ws-btn-concluir {
+    background: #10b981;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+/* Abas do workspace de projetos */
+.ws-tabs-nav {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding: 4px;
+    background: var(--bg-painel);
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    overflow-x: auto;
+}
+
+.ws-tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    color: var(--cor-texto);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+}
+
+.ws-tab-btn .material-symbols-rounded {
+    font-size: 18px;
+}
+
+.ws-tab-btn:hover {
+    color: var(--cor-titulo);
+    background: var(--bg-body);
+}
+
+.ws-tab-btn.ativo {
+    background: var(--f1a-blue);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 71, 255, 0.28);
+}
+
+.ws-anotacoes-card {
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+}
+
+.ws-anotacoes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.ws-anotacoes-header h4 {
+    margin: 0;
+    color: var(--cor-titulo);
+}
+
+.ws-anotacoes-hint {
+    margin: 0 0 14px;
+    color: var(--cor-texto);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.ws-anotacoes-status {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--cor-texto);
+    min-height: 1em;
+}
+
+.ws-anotacoes-status.salvando {
+    color: var(--premium-gold);
+}
+
+.ws-anotacoes-status.salvo {
+    color: #10b981;
+}
+
+.ws-anotacoes-status.erro {
+    color: #ef4444;
+}
+
+.ws-textarea-anotacoes {
+    flex: 1;
+    width: 100%;
+    min-height: 320px;
+    resize: vertical;
+    padding: 16px 18px;
+    border-radius: 14px;
+    border: 1px solid var(--borda);
+    background: var(--bg-body);
+    color: var(--cor-titulo);
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.6;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ws-textarea-anotacoes:focus {
+    outline: none;
+    border-color: var(--f1a-blue);
+    box-shadow: 0 0 0 3px rgba(0, 71, 255, 0.12);
+}
+
+.ws-textarea-anotacoes:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* 10. MODOS DE PRECIFICAÇÃO */
+.modal-modo-precificacao {
+    max-width: 520px;
+    padding: 30px;
+}
+
+.modal-modo-desc {
+    margin: 0 0 20px;
+    color: var(--cor-texto);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.modo-precificacao-opcoes {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.modo-precificacao-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    width: 100%;
+    padding: 18px 20px;
+    border: 2px solid var(--borda);
+    border-radius: 14px;
+    background: var(--bg-body);
+    color: var(--cor-titulo);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    font-family: inherit;
+}
+
+.modo-precificacao-card:hover {
+    border-color: rgba(212, 175, 55, 0.55);
+    background: rgba(212, 175, 55, 0.06);
+    box-shadow: 0 4px 14px rgba(212, 175, 55, 0.12);
+    transform: translateY(-1px);
+}
+
+.modo-precificacao-icone {
+    font-size: 28px;
+    color: var(--premium-gold);
+    margin-bottom: 4px;
+}
+
+.modo-precificacao-titulo {
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.modo-precificacao-sub {
+    font-size: 13px;
+    color: var(--cor-texto);
+    font-weight: 500;
+}
+
+.calc-modo-badge {
+    display: inline-block;
+    margin-bottom: 16px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: var(--premium-gold-light);
+    color: var(--premium-gold);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.calc-modo-badge-sm {
+    margin: 6px 0 0;
+    font-size: 10px;
+}
+
+.calc-grid-precificacao {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: stretch;
+    padding: 18px;
+}
+
+.calc-item {
+    min-width: 130px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: var(--bg-body);
+    border: 1px solid var(--borda);
+}
+
+.calc-label {
+    display: block;
+    font-size: 12px;
+    color: var(--cor-texto);
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.calc-valor {
+    display: block;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--cor-titulo);
+}
+
+.calc-valor-lucro {
+    color: #10b981;
+}
+
+.calc-item-destaque {
+    background: var(--premium-gold);
+    color: #fff;
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: none;
+    min-width: 150px;
+}
+
+.calc-label-destaque {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+.calc-valor-destaque {
+    display: block;
+    font-size: 26px;
+    font-weight: 900;
+    color: #fff;
+}
+
+.grp-campos-modo {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* Workspace — materiais: toque mobile + modal acima da página */
+.ws-card-materiais {
+    overflow: visible;
+    position: relative;
+}
+
+.ws-materiais-header {
+    position: relative;
+    z-index: 3;
+}
+
+#btnAddMaterialWorkspace.btn-add-material-ws {
+    position: relative;
+    z-index: 4;
+    pointer-events: auto;
+    flex-shrink: 0;
+}
+
+#listaMateriaisProjeto {
+    position: relative;
+    z-index: 1;
+}
+
+#modalAddMaterial.modal-overlay {
+    z-index: 10050;
+    pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+    /* Workspace — card superior compacto (mobile) */
+    .ws-projeto-header {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        grid-template-rows: auto auto auto;
+        gap: 8px 10px;
+        padding: 10px 12px;
+        margin-bottom: 14px;
+        align-items: center;
+    }
+
+    .ws-projeto-header-left {
+        display: contents;
+    }
+
+    .ws-projeto-info {
+        display: contents;
+    }
+
+    .ws-projeto-voltar {
+        grid-column: 1;
+        grid-row: 1;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+    }
+
+    .ws-projeto-voltar .material-symbols-rounded {
+        font-size: 24px;
+    }
+
+    .ws-projeto-titulo-row {
+        grid-column: 2 / 4;
+        grid-row: 1;
+        min-width: 0;
+    }
+
+    .ws-projeto-titulo-row h2 {
+        font-size: 17px;
+        white-space: normal;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .ws-projeto-status {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        justify-self: start;
+        font-size: 10px;
+        padding: 2px 7px;
+    }
+
+    .ws-projeto-acoes {
+        grid-column: 1 / -1;
+        grid-row: 3;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .ws-projeto-acoes .btn-excluir-projeto,
+    .ws-projeto-acoes .ws-btn-concluir {
+        width: 100%;
+        min-height: 40px;
+        height: 40px;
+        padding: 0 10px;
+        margin: 0;
+        justify-content: center;
+        font-size: 12px;
+        border-radius: 10px;
+        box-sizing: border-box;
+    }
+
+    .ws-projeto-acoes .btn-excluir-projeto .material-symbols-rounded,
+    .ws-projeto-acoes .ws-btn-concluir .material-symbols-rounded {
+        font-size: 18px;
+    }
+
+    .ws-projeto-acoes .btn-excluir-projeto span:not(.material-symbols-rounded),
+    .ws-projeto-acoes .ws-btn-concluir span:not(.material-symbols-rounded) {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Calculadora de preço — espaçamento uniforme (mobile) */
+    .card-secao:has(.calc-grid-precificacao) {
+        padding: 16px;
+        box-sizing: border-box;
+    }
+
+    .calc-grid-precificacao {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .calc-grid-precificacao .calc-item:not(.calc-item-destaque) {
+        min-width: 0;
+        width: 100%;
+        max-width: 100%;
+        min-height: 72px;
+        height: 100%;
+        padding: 10px 12px;
+        margin: 0;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .calc-grid-precificacao .calc-label {
+        font-size: 10px;
+        line-height: 1.2;
+        margin-bottom: 4px;
+    }
+
+    .calc-grid-precificacao .calc-valor {
+        font-size: 16px;
+        line-height: 1.2;
+    }
+
+    #wsBlocoCustoMaterial { grid-column: 1; grid-row: 1; }
+    #wsBlocoOutrosCustos { grid-column: 2; grid-row: 1; }
+    #wsBlocoCustoTotal { grid-column: 1; grid-row: 2; }
+    #wsBlocoLucro { grid-column: 2; grid-row: 2; }
+    #wsBlocoPrecoFinal { grid-column: 1 / -1; grid-row: 3; }
+
+    #wsBlocoMaoObra,
+    #wsBlocoHoraReal {
+        grid-column: span 1;
+        max-width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    #wsBlocoPrecoFinal {
+        max-width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .calc-grid-precificacao .calc-item-destaque {
+        min-width: 0;
+        width: 100%;
+        max-width: 100%;
+        padding: 10px 12px;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    .calc-grid-precificacao .calc-valor-destaque {
+        font-size: 22px;
+    }
+
+    .ws-card-materiais {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ws-card-materiais .ws-materiais-header {
+        flex-wrap: wrap;
+        gap: 10px;
+        flex-shrink: 0;
+        isolation: isolate;
+        transform: translateZ(0);
+        z-index: 10;
+        background: var(--bg-body);
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+    }
+
+    #btnAddMaterialWorkspace.btn-add-material-ws {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: rgba(0, 71, 255, 0.15);
+        min-height: 44px;
+        height: auto;
+        width: auto;
+        min-width: 44px;
+        padding: 8px 12px;
+        z-index: 11;
+        position: relative;
+        pointer-events: auto;
+        cursor: pointer;
+    }
+
+    #listaMateriaisProjeto {
+        flex: 1 1 auto;
+        min-height: 0;
+        z-index: 1;
+        position: relative;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+    }
+
+    #modalAddMaterial .modal-content {
+        max-height: calc(100dvh - 32px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Materiais — tabela com toque na linha (interim antes dos cards) */
+    .materiais-ordenacao-mobile {
+        display: block;
+    }
+
+    .filtros-container {
+        grid-template-columns: 1fr;
+    }
+
+    .materiais-card .tabela-container {
+        display: block;
+    }
+
+    .materiais-mobile-lista {
+        display: none;
+    }
+
+    .materiais-card .tabela-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .materiais-card .col-acoes,
+    .materiais-card thead .col-acoes {
+        display: none;
+    }
+
+    .materiais-card .tabela-dados tbody tr.material-linha-mobile {
+        cursor: pointer;
+        -webkit-tap-highlight-color: rgba(0, 71, 255, 0.12);
+        touch-action: manipulation;
+    }
+
+    .materiais-card .tabela-dados tbody tr.material-linha-mobile:active {
+        background-color: rgba(0, 71, 255, 0.06);
+    }
+
+    body.dark-mode .materiais-card .tabela-dados tbody tr.material-linha-mobile:active {
+        background-color: rgba(0, 71, 255, 0.12);
+    }
+
+    .material-card-mobile {
+        background: var(--bg-body);
+        border: 1px solid var(--borda);
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        border-left: 4px solid var(--f1a-blue);
+    }
+
+    body.dark-mode .material-card-mobile {
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+    }
+
+    .material-card-mobile-nome {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--cor-titulo);
+        line-height: 1.3;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .material-card-mobile-nome::before {
+        content: '';
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--f1a-blue), #3b82f6);
+        box-shadow: 0 0 0 4px rgba(0, 71, 255, 0.12);
+        flex: 0 0 auto;
+    }
+
+    .material-card-mobile-dados {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .material-card-mobile-linha {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+    }
+
+    .material-card-mobile-linha dt {
+        margin: 0;
+        font-weight: 700;
+        color: var(--cor-texto);
+    }
+
+    .material-card-mobile-linha dt::after {
+        content: ':';
+    }
+
+    .material-card-mobile-linha dd {
+        margin: 0;
+        font-weight: 700;
+        color: var(--cor-titulo);
+        text-align: right;
+    }
+
+    .material-card-mobile-acoes.acao-principal {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 44px;
+        border-radius: 12px !important;
+    }
+
+    .material-card-mobile-acoes {
+        width: 100%;
+        min-height: 44px;
+        margin-top: 4px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 71, 255, 0.35);
+        background: linear-gradient(
+            135deg,
+            rgba(0, 71, 255, 0.14),
+            rgba(0, 71, 255, 0.06)
+        );
+        color: var(--cor-titulo);
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        -webkit-tap-highlight-color: rgba(0, 71, 255, 0.15);
+        touch-action: manipulation;
+    }
+
+    .material-card-mobile-acoes .material-symbols-rounded {
+        font-size: 20px;
+        color: var(--f1a-blue);
+    }
+
+    .material-card-mobile-acoes:hover,
+    .material-card-mobile-acoes:focus-visible {
+        border-color: var(--f1a-blue);
+        background: rgba(0, 71, 255, 0.18);
+        box-shadow: 0 4px 14px rgba(0, 71, 255, 0.18);
+        outline: none;
+    }
+
+    .material-card-mobile-vazio {
+        text-align: center;
+        padding: 36px 20px;
+        color: var(--cor-texto);
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    /* Projetos — listagem em cards (mobile first) */
+    .projetos-ordenacao-mobile {
+        display: block;
+    }
+
+    .projetos-card .tabela-container {
+        display: none;
+    }
+
+    .projetos-mobile-lista {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 14px;
+    }
+
+    .projeto-card-mobile {
+        position: relative;
+        background: var(--bg-body);
+        border: 1px solid var(--borda);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        border-left: 4px solid var(--f1a-blue);
+        cursor: pointer;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+        -webkit-tap-highlight-color: rgba(0, 71, 255, 0.12);
+        touch-action: manipulation;
+    }
+
+    body.dark-mode .projeto-card-mobile {
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+    }
+
+    .projeto-card-mobile:active {
+        transform: scale(0.985);
+    }
+
+    .projeto-card-mobile--crochetando {
+        border-left-color: #ec4899;
+        background: rgba(236, 72, 153, 0.04);
+    }
+
+    .projeto-card-mobile-imagem {
+        width: 100%;
+        height: 140px;
+        overflow: hidden;
+        background: var(--bg-painel);
+        border-bottom: 1px solid var(--borda);
+    }
+
+    .projeto-card-mobile-imagem img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .projeto-card-mobile-corpo {
+        position: relative;
+        padding: 16px 44px 16px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .projeto-card-mobile-nome {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--cor-titulo);
+        line-height: 1.3;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .projeto-card-mobile-nome::before {
+        content: '';
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--f1a-blue), #3b82f6);
+        box-shadow: 0 0 0 4px rgba(0, 71, 255, 0.12);
+        flex: 0 0 auto;
+    }
+
+    .projeto-card-mobile--crochetando .projeto-card-mobile-nome::before {
+        background: linear-gradient(135deg, #ec4899, #f472b6);
+        box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.15);
+    }
+
+    .projeto-card-mobile-dados {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .projeto-card-mobile-linha {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+    }
+
+    .projeto-card-mobile-linha dt {
+        margin: 0;
+        font-weight: 700;
+        color: var(--cor-texto);
+    }
+
+    .projeto-card-mobile-linha dt::after {
+        content: ':';
+    }
+
+    .projeto-card-mobile-linha dd {
+        margin: 0;
+        font-weight: 700;
+        color: var(--cor-titulo);
+        text-align: right;
+    }
+
+    .projeto-card-mobile-linha--preco dd {
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--premium-gold);
+    }
+
+    .projeto-card-mobile-status {
+        font-size: 10px;
+    }
+
+    .projeto-card-mobile-seta {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 22px;
+        color: var(--f1a-blue);
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    .projeto-card-mobile-corpo .projeto-card-mobile-seta {
+        top: 50%;
+    }
+
+    .projeto-card-mobile--crochetando .projeto-card-mobile-seta {
+        color: #ec4899;
+    }
+
+    .projeto-card-mobile-vazio {
+        text-align: center;
+        padding: 36px 20px;
+        color: var(--cor-texto);
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    /* Início — layout mobile compacto */
+    #containerSeletorVisaoEmpresa {
+        display: none !important;
+    }
+
+    .inicio-painel-topo {
+        flex-wrap: nowrap !important;
+        gap: 12px;
+        margin-bottom: 20px;
+        align-items: center;
+    }
+
+    .inicio-painel-texto {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .inicio-painel-texto h3 {
+        font-size: 16px;
+    }
+
+    .inicio-painel-texto p {
+        font-size: 12px;
+        line-height: 1.35;
+    }
+
+    .inicio-btn-novo-projeto {
+        flex-shrink: 0;
+        padding: 8px 12px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    .inicio-btn-novo-projeto .material-symbols-rounded {
+        font-size: 18px;
+    }
+
+    .card-stats-container {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        padding: 12px;
+        gap: 6px;
+        border-radius: 14px;
+    }
+
+    .stat-card:hover {
+        transform: none;
+    }
+
+    .stat-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+    }
+
+    .stat-icon span {
+        font-size: 20px;
+    }
+
+    .stat-value {
+        font-size: 18px;
+    }
+
+    .stat-label {
+        font-size: 10px;
+    }
+
+    .mural-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .mural-thumb {
+        height: 120px;
+    }
+
+    .mural-info {
+        padding: 8px;
+    }
+
+    .mural-title {
+        font-size: 13px;
+        margin-bottom: 2px;
+    }
+
+    .mural-meta {
+        font-size: 10px;
+    }
+}
+
+/* Materiais — desktop mantém tabela; cards ocultos */
+.materiais-ordenacao-mobile {
+    display: none;
+}
+
+.materiais-mobile-lista {
+    display: none;
+}
+
+/* ============================================================================
+   MATERIAIS — MODAL CADASTRO (HEADER / BODY / FOOTER)
+   ============================================================================ */
+.modal-content.modal-material {
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+}
+
+.modal-material .modal-header {
+    flex-shrink: 0;
+    position: relative;
+    top: auto;
+    margin: 0;
+    z-index: 1;
+}
+
+.modal-material .form-material-modal {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    gap: 0;
+}
+
+.modal-material .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    max-height: none;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 12px 8px 24px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+.modal-material .modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-material .modal-body::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.45);
+    border-radius: 999px;
+}
+
+.modal-material .modal-footer {
+    flex-shrink: 0;
+    padding: 12px 24px 20px;
+    border-top: 1px solid var(--borda);
+    background: var(--bg-painel);
+}
+
+.modal-material .form-croche {
+    gap: 16px;
+    margin-bottom: 0;
+}
+
+.modal-material .modal-footer .btn-premium {
+    width: 100%;
+    justify-content: center;
+}
+
+.modal-material .btn-fechar {
+    background: none;
+    border: none;
+    color: var(--cor-texto);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+}
+
+.modal-material .area-upload-material {
+    transition: opacity 0.2s ease;
+}
+
+.modal-material .area-upload-material.upload-processando {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.input-file-oculto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* ============================================================================
+   MATERIAIS — HISTÓRICO COMPACTO
+   ============================================================================ */
+.historico-lista {
+    max-height: 420px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+.historico-lista::-webkit-scrollbar {
+    width: 6px;
+}
+
+.historico-lista::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.45);
+    border-radius: 999px;
+}
+
+.historico-item {
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: var(--bg-body);
+}
+
+.historico-item-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.historico-item-data {
+    font-size: 12px;
+    color: var(--cor-texto);
+    font-weight: 600;
+    white-space: nowrap;
+    margin-left: auto;
+}
+
+.historico-item-dados {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 12px;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.historico-item-dados span {
+    color: var(--cor-titulo);
+    font-weight: 600;
+}
+
+.historico-item-dados .historico-label {
+    color: var(--cor-texto);
+    font-weight: 600;
+}
+
+.badge-mov-entrada {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: rgba(16, 185, 129, .15);
+    border: 1px solid rgba(16, 185, 129, .45);
+    color: #10b981;
+}
+
+.badge-mov-saida {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: rgba(239, 68, 68, .12);
+    border: 1px solid rgba(239, 68, 68, .45);
+    color: #ef4444;
+}
+
+@media (max-width: 768px) {
+    .modal-material .modal-body {
+        padding: 16px 8px 8px 16px;
+    }
+
+    .modal-material .modal-footer {
+        padding: 12px 16px 16px;
+    }
+
+    .historico-item-dados {
+        grid-template-columns: 1fr;
+        gap: 3px;
+    }
+}
+
+/* Projetos — desktop mantém tabela; cards ocultos */
+@media (min-width: 769px) {
+    .projetos-ordenacao-mobile {
+        display: none;
+    }
+
+    .projetos-mobile-lista {
+        display: none;
+    }
+}

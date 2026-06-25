@@ -1,0 +1,390 @@
+---
+description: Regras do módulo CRM da plataforma F1A
+globs:
+  - "**/modulo-crm/**"
+alwaysApply: false
+---
+
+# F1A CRM
+
+Você é especialista no módulo CRM da plataforma F1A.
+
+O CRM do F1A não é apenas um cadastro de clientes.
+
+Ele é um ecossistema composto por:
+
+- Clientes
+- Remessas
+- Disparador
+- Modelos de Mensagem
+- Comissões
+- Cobrança
+- Campanhas
+
+---
+
+# Objetivo do CRM
+
+Gerenciar relacionamento com clientes.
+
+Fluxo principal:
+
+Cliente
+↓
+Remessa
+↓
+Disparo
+↓
+Acompanhamento
+↓
+Acordo
+↓
+Comissão
+
+---
+
+# Coleções Oficiais
+
+## crm_modelos_msg
+
+Responsável pelos modelos utilizados nos disparos.
+
+Campos conhecidos:
+
+```javascript
+nome
+tipo
+texto
+usuarioId
+```
+
+---
+
+# Tipos de Modelo
+
+```text
+cobranca
+relacionamento
+```
+
+---
+
+# crm_lojas
+
+Base operacional do CRM.
+
+Campos:
+
+```javascript
+codigo
+nome
+usuarioId
+```
+
+---
+
+# crm_remessas
+
+Campanhas de envio.
+
+Campos conhecidos:
+
+```javascript
+nome
+tipo
+modeloUsado
+
+status
+
+filaEnvios
+
+criadoEm
+```
+
+---
+
+# crm_comissoes_historico
+
+Histórico consolidado.
+
+Nunca apagar registros.
+
+---
+
+# crm_comissoes_plasticos_vendas
+
+Controle de plásticos vendidos.
+
+---
+
+# crm_comissoes_faturas_importadas
+
+Base utilizada para cálculo de manutenção.
+
+---
+
+# Multiempresa
+
+Toda operação deve respeitar:
+
+```javascript
+empresaId
+```
+
+e
+
+```javascript
+visaoEmpresaAtiva
+```
+
+---
+
+# Fluxo de Campanhas
+
+Importação
+↓
+Criação de Remessa
+↓
+Fila
+↓
+Disparo
+↓
+Retorno
+↓
+Fechamento
+
+---
+
+# Status Operacionais
+
+Status identificados:
+
+```text
+pendente
+enviado
+acordo
+falha
+```
+
+Nunca alterar.
+
+Nunca traduzir.
+
+Nunca substituir.
+
+---
+
+# Regras de Disparo
+
+O CRM utiliza:
+
+Modelos
+↓
+Fila
+↓
+WhatsApp
+↓
+Registro
+
+Toda evolução deve preservar essa estrutura.
+
+---
+
+# Registro de Acordos
+
+Quando houver acordo:
+
+Registrar:
+
+```javascript
+status
+dataAcordo
+observacao
+usuarioResponsavel
+```
+
+Sempre manter histórico.
+
+---
+
+# Registro de Falhas
+
+Registrar:
+
+```javascript
+status
+motivoFalha
+dataFalha
+```
+
+---
+
+# Comissões
+
+O CRM possui duas modalidades principais.
+
+---
+
+## Comissão de Manutenção
+
+Base:
+
+```text
+Faturas Importadas
+```
+
+Origem:
+
+```text
+crm_comissoes_faturas_importadas
+```
+
+---
+
+## Comissão de Venda de Plásticos
+
+Base:
+
+```text
+Plásticos Vendidos
+```
+
+Origem:
+
+```text
+crm_comissoes_plasticos_vendas
+```
+
+---
+
+# Integração com ADM Cartão
+
+Relacionamentos:
+
+Rede
+↓
+Loja
+↓
+Fatura
+↓
+Comissão
+
+Nunca quebrar essa ligação.
+
+---
+
+# Histórico
+
+Toda apuração deve ser registrada em:
+
+```text
+crm_comissoes_historico
+```
+
+---
+
+# Dashboard CRM
+
+Indicadores esperados:
+
+- Clientes
+- Pendentes
+- Enviados
+- Acordos
+- Falhas
+
+---
+
+# Permissões
+
+Antes de exibir dados:
+
+Validar:
+
+```javascript
+modulosAcesso
+```
+
+CRM somente pode ser acessado por usuários autorizados.
+
+---
+
+# Master Vision
+
+Suportado.
+
+Ao existir:
+
+```javascript
+f1a_simulated_uid
+```
+
+Operar no contexto simulado.
+
+---
+
+# UI
+
+Utilizar:
+
+- Tabelas oficiais
+- Cards oficiais
+- Toast oficial
+- Dropdown oficial
+
+Não criar componentes paralelos.
+
+---
+
+# Toast
+
+Obrigatório:
+
+```javascript
+mostrarToast(
+    mensagem,
+    tipo
+)
+```
+
+---
+
+# Auditoria
+
+Sempre registrar:
+
+```javascript
+usuario
+data
+acao
+```
+
+Em operações críticas.
+
+---
+
+# Regras do Agente
+
+Ao alterar o CRM:
+
+✓ preservar status oficiais
+
+✓ preservar histórico
+
+✓ preservar campanhas
+
+✓ preservar remessas
+
+✓ preservar cálculos de comissão
+
+✓ preservar integração com ADM Cartão
+
+✓ preservar multiempresa
+
+✓ preservar Master Vision
+
+Nunca alterar a estrutura das coleções sem necessidade real.
+
+Nunca remover históricos.
+
+Nunca substituir status oficiais.

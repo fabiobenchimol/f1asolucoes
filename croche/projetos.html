@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Meus Projetos - Ponto de Ouro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="croche.css">
+    <link rel="stylesheet" href="projetos.css">
+
+    <style>
+        .header .header-title { color: #ffffff; }
+        .header .header-left .btn-icon,
+        .header .header-right #btnTemaGlobal { color: #ffffff; }
+        .header .header-left .btn-icon .material-symbols-rounded,
+        .header .header-right #btnTemaGlobal .material-symbols-rounded { color: #ffffff !important; }
+        .menu-perfil-flutuante {
+            position: absolute;
+            top: 55px;
+            right: 0;
+            background: #0f172a;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            width: 220px;
+            z-index: 9999;
+            padding: 10px;
+            overflow: hidden;
+        }
+        .menu-perfil-flutuante a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: #f8fafc;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.2s ease;
+            border-radius: 8px;
+        }
+        .user-profile {
+            position: relative !important;
+            overflow: visible !important;
+        }
+    </style>
+</head>
+<body style="display: none;" id="corpoPagina">
+
+    <div id="overlayMobile" class="overlay-mobile" onclick="toggleSidebarF1A()"></div>
+
+    <aside class="sidebar" id="sidebarF1A">
+        <div class="sidebar-logo" onclick="window.location.href='../lobby.html'" style="cursor: pointer;">
+            <img src="../assets/logo_f1a.png" id="logoSidebar" alt="Ponto de Ouro">
+        </div>
+        <nav class="nav-links">
+            <a href="inicio.html" class="nav-item">
+                <span class="material-symbols-rounded">dashboard</span>
+                <span class="nav-texto">Meu Resumo</span>
+            </a>
+            <a href="materiais.html" class="nav-item">
+                <span class="material-symbols-rounded">inventory_2</span>
+                <span class="nav-texto">Materiais</span>
+            </a>
+            <a href="projetos.html" class="nav-item ativo">
+                <span class="material-symbols-rounded">architecture</span>
+                <span class="nav-texto">Meus Projetos</span>
+            </a>
+            <div class="nav-divisor"></div>
+            <a href="../lobby.html" class="nav-item">
+                <span class="material-symbols-rounded">arrow_back</span>
+                <span class="nav-texto">Sair do Módulo</span>
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+
+            <div class="header-left">
+
+                <button class="btn-icon" onclick="toggleSidebarF1A()">
+                    <span class="material-symbols-rounded">menu</span>
+                </button>
+
+                <h2 class="header-title">Meus Projetos</h2>
+
+            </div>
+
+            <div class="header-right">
+
+                <button class="btn-icon" id="btnTemaGlobal" onclick="alternarTemaGlobal()" title="Alternar Tema">
+                    <span class="material-symbols-rounded">dark_mode</span>
+                </button>
+
+                <div class="user-profile" onclick="toggleDropdownPerfil(event)" style="cursor: pointer; position: relative; display: flex; align-items: center; gap: 12px; background: #0f172a; padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid rgba(148, 163, 184, 0.25); box-shadow: 0 2px 8px rgba(0,0,0,0.18); transition: border 0.3s;">
+
+                    <div class="user-avatar" id="iniciaisUsuario" style="width: 32px; height: 32px; border-radius: 50%; background: var(--f1a-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px;">--</div>
+
+                    <div class="user-info">
+                        <span class="user-name" id="nomeUsuario" style="display: block; font-size: 13px; font-weight: 800; color: #f8fafc;">Carregando...</span>
+                        <span class="user-role" id="cargoUsuario" style="display: block; font-size: 11px; color: #cbd5e1; font-weight: 600;">Aguarde</span>
+                    </div>
+
+                    <span class="material-symbols-rounded" style="color: #cbd5e1; font-size: 18px;">expand_more</span>
+
+                    <div class="menu-perfil-flutuante escondido" id="dropdownPerfilLocal">
+                        <a href="#" onclick="if(typeof alterarNomeExibicao === 'function') alterarNomeExibicao()" class="dropdown-item" style="color: #f8fafc; font-size: 13px; font-weight: 600;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
+                            <span class="material-symbols-rounded" style="margin-right: 12px; font-size: 18px; color: var(--f1a-blue);">edit</span> Alterar Nome
+                        </a>
+                        <div style="height: 1px; background: rgba(148, 163, 184, 0.18); margin: 5px 0;"></div>
+                        <a href="#" onclick="sair()" class="dropdown-item" style="color: #ef4444; font-size: 13px; font-weight: 700;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'">
+                            <span class="material-symbols-rounded" style="margin-right: 12px; font-size: 18px;">logout</span> Sair do Sistema
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+        <div class="content-area">
+            
+            <div id="vistaListaProjetos">
+                <div class="projetos-topbar">
+                    <div class="projetos-titulo">
+                        <h3>Projetos & Precificação</h3>
+                        <p>Controle o seu tempo e o custo exato de cada peça de crochê.</p>
+                    </div>
+                    <button class="btn-premium projetos-cta" onclick="abrirModalSelecionarModo()">
+                        <span class="material-symbols-rounded">add</span>
+                        Novo Projeto
+                    </button>
+                </div>
+
+                <div class="filtros-container projetos-filtros">
+
+                    <input type="text"
+                           id="filtroTexto"
+                           class="input-filtro"
+                           placeholder="Buscar projeto..."
+                           onkeyup="filtrarListaProjetos()">
+
+                    <div class="filtro-categoria-wrapper">
+                        <button type="button"
+                                id="btnFiltroCategoria"
+                                class="input-filtro filtro-categoria-btn"
+                                onclick="toggleDropdownCategoria(event)">
+                            <span id="lblFiltroCategoria">Todas Categorias</span>
+                            <span class="material-symbols-rounded">expand_more</span>
+                        </button>
+                        <div id="dropdownFiltroCategoria" class="dropdown-filtro-categoria escondido">
+                            <label class="filtro-cat-item">
+                                <input type="checkbox" id="filtroCatTodos" checked onchange="toggleTodasCategorias(this)">
+                                Selecionar Todos
+                            </label>
+                            <div class="filtro-cat-divisor"></div>
+                            <label class="filtro-cat-item">
+                                <input type="checkbox" class="filtro-cat-check" value="Amigurumi" checked onchange="alterarFiltroCategoria()">
+                                Amigurumi
+                            </label>
+                            <label class="filtro-cat-item">
+                                <input type="checkbox" class="filtro-cat-check" value="Vestuário" checked onchange="alterarFiltroCategoria()">
+                                Vestuário
+                            </label>
+                            <label class="filtro-cat-item">
+                                <input type="checkbox" class="filtro-cat-check" value="Decoração" checked onchange="alterarFiltroCategoria()">
+                                Decoração
+                            </label>
+                            <label class="filtro-cat-item">
+                                <input type="checkbox" class="filtro-cat-check" value="Acessórios" checked onchange="alterarFiltroCategoria()">
+                                Acessórios
+                            </label>
+                            <label class="filtro-cat-item">
+                                <input type="checkbox" class="filtro-cat-check" value="Outros" checked onchange="alterarFiltroCategoria()">
+                                Outros
+                            </label>
+                        </div>
+                    </div>
+
+                    <select id="filtroOrdenacaoMobile"
+                            class="input-filtro projetos-ordenacao-mobile"
+                            onchange="aplicarOrdenacaoMobileProjetos()"
+                            aria-label="Ordenar projetos">
+                        <option value="data-desc">Data (mais recente)</option>
+                        <option value="data-asc">Data (mais antiga)</option>
+                        <option value="nome-asc">Nome (A → Z)</option>
+                        <option value="nome-desc">Nome (Z → A)</option>
+                        <option value="categoria-asc">Categoria (A → Z)</option>
+                        <option value="categoria-desc">Categoria (Z → A)</option>
+                        <option value="preco-desc">Preço (maior → menor)</option>
+                        <option value="preco-asc">Preço (menor → maior)</option>
+                        <option value="status-asc">Status (A → Z)</option>
+                        <option value="status-desc">Status (Z → A)</option>
+                    </select>
+
+                </div>
+
+                <div class="projetos-card">
+                    <div id="listaProjetosMobile"
+                         class="projetos-mobile-lista"
+                         aria-label="Lista de projetos em cards">
+                        <div class="projeto-card-mobile-vazio">
+                            <span class="material-symbols-rounded" style="font-size: 40px; opacity: 0.5; animation: spin 2s linear infinite;">sync</span><br>
+                            Buscando seus projetos...
+                        </div>
+                    </div>
+                    <div class="tabela-container">
+                        <div class="tabela-wrapper">
+                            <table class="tabela-dados">
+                                <thead>
+                                    <tr>
+                                        <th class="sortable-header" data-col="nome" onclick="ordenarProjetos('nome')">
+                                            Nome da Peça <span class="sort-icon" data-sort-col="nome"></span>
+                                        </th>
+                                        <th class="sortable-header" data-col="categoria" onclick="ordenarProjetos('categoria')">
+                                            Categoria <span class="sort-icon" data-sort-col="categoria"></span>
+                                        </th>
+                                        <th class="sortable-header" data-col="data" onclick="ordenarProjetos('data')" style="text-align: center;">
+                                            Data <span class="sort-icon" data-sort-col="data"></span>
+                                        </th>
+                                        <th class="sortable-header" data-col="tempo" onclick="ordenarProjetos('tempo')" style="text-align: center;">
+                                            Tempo Gasto <span class="sort-icon" data-sort-col="tempo"></span>
+                                        </th>
+                                        <th class="sortable-header" data-col="custo" onclick="ordenarProjetos('custo')" style="text-align: right;">
+                                            Custo (Material) <span class="sort-icon" data-sort-col="custo"></span>
+                                        </th>
+                                        <th class="sortable-header" data-col="preco" onclick="ordenarProjetos('preco')" style="text-align: right;">
+                                            Preço Sugerido <span class="sort-icon" data-sort-col="preco"></span>
+                                        </th>
+                                        <th class="sortable-header" data-col="status" onclick="ordenarProjetos('status')" style="text-align: center;">
+                                            Status <span class="sort-icon" data-sort-col="status"></span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaProjetosBody">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--cor-texto);">
+                                            <span class="material-symbols-rounded" style="font-size: 40px; opacity: 0.5; animation: spin 2s linear infinite;">sync</span><br>
+                                            Buscando seus projetos...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="vistaWorkspace" class="escondido">
+                
+                <div class="ws-projeto-header">
+                    <div class="ws-projeto-header-left">
+                        <button type="button" class="btn-icon ws-projeto-voltar" onclick="voltarParaLista()" title="Voltar para a lista">
+                            <span class="material-symbols-rounded">arrow_back</span>
+                        </button>
+                        <div class="ws-projeto-info">
+                            <div class="ws-projeto-titulo-row">
+                                <h2 id="wsNomeProjeto">Nome da Peça</h2>
+                                <button type="button" class="btn-icon btn-editar-nome-projeto" id="btnEditarNomeProjeto" onclick="abrirModalRenomearProjeto()" title="Renomear projeto">
+                                    <span class="material-symbols-rounded">edit</span>
+                                </button>
+                            </div>
+                            <span id="wsStatusProjeto" class="ws-projeto-status">EM ANDAMENTO</span>
+                        </div>
+                    </div>
+                    <div class="ws-projeto-acoes">
+                        <button type="button" class="btn-secundario-croche btn-excluir-projeto" id="btnExcluirProjeto" onclick="abrirModalExcluirProjeto()" title="Excluir este projeto">
+                            <span class="material-symbols-rounded">delete</span>
+                            <span>Excluir Projeto</span>
+                        </button>
+                        <button type="button" class="btn-premium ws-btn-concluir" id="btnFinalizarProjeto" onclick="abrirModalFinalizar()">
+                            <span class="material-symbols-rounded">task_alt</span>
+                            <span>Concluir Peça</span>
+                        </button>
+                    </div>
+                </div>
+
+                <nav class="ws-tabs-nav" id="wsTabsNav">
+                    <button type="button" class="ws-tab-btn ativo" data-aba="projeto" onclick="trocarAbaWorkspace('projeto', this)">
+                        <span class="material-symbols-rounded">architecture</span>
+                        Projeto
+                    </button>
+                    <button type="button" class="ws-tab-btn" data-aba="anotacoes" onclick="trocarAbaWorkspace('anotacoes', this)">
+                        <span class="material-symbols-rounded">edit_note</span>
+                        Anotações
+                    </button>
+                </nav>
+
+                <div id="wsPainelProjeto" class="ws-painel-aba">
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    
+                    <div id="wsSecaoCronometro" class="card-secao" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 250px;">
+                        <h4 style="margin: 0 0 10px 0; color: var(--cor-titulo); text-align: center;">Cronômetro de Trabalho</h4>
+                        <p style="color: var(--cor-texto); font-size: 12px; text-align: center; margin-top: 0;">Lembre-se de pausar quando for descansar!</p>
+                        
+                        <div class="cronometro-display" id="displayCronometro">00:00:00</div>
+                        
+                        <div style="display: flex; gap: 15px;">
+                            <button id="btnPlayPause" class="btn-premium" onclick="toggleCronometro()" style="width: 140px; justify-content: center;">
+                                <span class="material-symbols-rounded" id="iconePlayPause">play_arrow</span>
+                                <span id="textoPlayPause">Iniciar</span>
+                            </button>
+                            <button id="btnSalvarTempo" class="btn-secundario-croche" onclick="salvarTempoManual()" title="Adicionar tempo manualmente">
+                                <span class="material-symbols-rounded">edit_square</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-secao ws-card-materiais" id="wsCardMateriais" style="min-height: 250px;">
+                        <div class="ws-materiais-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h4 style="margin: 0; color: var(--cor-titulo);">Materiais Utilizados</h4>
+                            <button type="button" class="btn-icon btn-add-material-ws" id="btnAddMaterialWorkspace" style="color: var(--f1a-blue); background: rgba(0, 71, 255, 0.1); border-radius: 8px; padding: 5px 10px; width: auto; font-weight: bold; font-size: 12px;">
+                                + Adicionar
+                            </button>
+                        </div>
+                        
+                        <div id="listaMateriaisProjeto" style="max-height: 200px; overflow-y: auto; padding-right: 5px;">
+                            </div>
+                    </div>
+
+                    <div class="card-secao" id="wsCardImagem" style="min-height: 250px; display: flex; flex-direction: column;">
+                        <h4 style="margin: 0 0 15px 0; color: var(--cor-titulo);">Foto da Peça Acabada</h4>
+                        
+                        <div class="area-upload-imagem" id="areaPreviewImagem" onclick="focarFileInput()">
+                            <span class="material-symbols-rounded icon-placeholder" id="iconPhotoPlaceholder">add_a_photo</span>
+                            <img id="imgPreview" src="" alt="Peça Pronta" class="escondido img-fluid rounded">
+                        </div>
+                        
+                        <label for="fileInputImagem" class="btn-premium" id="lblSelecionarFoto" style="justify-content: center; width: 100%; cursor: pointer; margin-top: auto; background: var(--bg-body); color: var(--cor-titulo); border: 2px solid var(--borda); box-shadow: none;">
+                            <span class="material-symbols-rounded">upload</span>
+                            <span id="txtBtnFoto">Selecionar Foto</span>
+                        </label>
+                        <input type="file" id="fileInputImagem" accept="image/*" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;" onchange="previewImagem(this)">
+                    </div>
+
+                </div>
+
+                <div class="card-secao calc-card-precificacao" style="margin-top: 20px; background: linear-gradient(135deg, var(--bg-painel), rgba(212, 175, 55, 0.05)); border-color: var(--premium-gold);">
+                    
+                    <div class="calc-cabecalho">
+                        <h3 class="calc-titulo">
+                            <span class="material-symbols-rounded">calculate</span> Calculadora de Preço
+                        </h3>
+                    </div>
+
+                    <div class="calc-badge-linha">
+                        <div class="calc-modo-badge" id="calcModoBadge">Hora Trabalhada</div>
+                        <button class="btn-icon calc-btn-ajustar" id="btnAjustarValoresWorkspace" onclick="abrirModalEditarConfig()" title="Ajustar Hora e Lucro">
+                            <span class="material-symbols-rounded">settings</span> Ajustar Valores
+                        </button>
+                    </div>
+
+                    <div class="calc-grid-precificacao">
+                        <div class="calc-item calc-item-destaque escondido" id="wsBlocoPrecoFinal">
+                            <span class="calc-label-destaque" id="lblCalcPrecoFinal">Preço Sugerido</span>
+                            <span class="calc-valor-destaque" id="calcPrecoFinal">R$ 0,00</span>
+                        </div>
+                        <div class="calc-item" id="wsBlocoCustoMaterial">
+                            <span class="calc-label">Custo dos Materiais</span>
+                            <span class="calc-valor" id="calcCustoMaterial">R$ 0,00</span>
+                        </div>
+                        <div class="calc-item escondido" id="wsBlocoMaoObra">
+                            <span class="calc-label" id="lblCalcMaoObra">Mão de Obra</span>
+                            <span class="calc-valor" id="calcMaoObra">R$ 0,00</span>
+                        </div>
+                        <div class="calc-item escondido" id="wsBlocoOutrosCustos">
+                            <span class="calc-label">Outros Custos</span>
+                            <span class="calc-valor" id="calcOutrosCustos">R$ 0,00</span>
+                        </div>
+                        <div class="calc-item escondido" id="wsBlocoCustoTotal">
+                            <span class="calc-label">Custo Total</span>
+                            <span class="calc-valor" id="calcCustoTotal">R$ 0,00</span>
+                        </div>
+                        <div class="calc-item escondido" id="wsBlocoLucro">
+                            <span class="calc-label" id="lblCalcLucro">Lucro (<span id="lblMargemLucro">30</span>%)</span>
+                            <span class="calc-valor calc-valor-lucro" id="calcLucro">R$ 0,00</span>
+                        </div>
+                        <div class="calc-item escondido" id="wsBlocoHoraReal">
+                            <span class="calc-label">Valor Real da Hora</span>
+                            <span class="calc-valor" id="calcValorHoraReal">R$ 0,00</span>
+                        </div>
+                    </div>
+                </div>
+
+                </div>
+
+                <div id="wsPainelAnotacoes" class="ws-painel-aba escondido">
+                    <div class="card-secao ws-anotacoes-card">
+                        <div class="ws-anotacoes-header">
+                            <h4>Anotações do Projeto</h4>
+                            <span id="wsStatusSalvarAnotacoes" class="ws-anotacoes-status" aria-live="polite"></span>
+                        </div>
+                        <p class="ws-anotacoes-hint">Receitas, medidas, lembretes e observações sobre esta peça. O texto é salvo automaticamente.</p>
+                        <textarea id="txtAnotacoesProjeto" class="ws-textarea-anotacoes" placeholder="Escreva suas anotações aqui..." oninput="agendarSalvarAnotacoes()"></textarea>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div id="modalSelecionarModo" class="modal-overlay escondido">
+        <div class="modal-content modal-modo-precificacao">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: var(--cor-titulo); font-size: 20px;">Selecionar Tipo de Projeto</h3>
+                <button class="btn-fechar" onclick="fecharModal('modalSelecionarModo')" style="background: none; border: none; color: var(--cor-texto); cursor: pointer;"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <p class="modal-modo-desc">Escolha o modo de precificação para este projeto. Você poderá ajustar os valores depois.</p>
+            <div class="modo-precificacao-opcoes">
+                <button type="button" class="modo-precificacao-card" onclick="selecionarModoNovoProjeto('HORA_TRABALHADA')">
+                    <span class="material-symbols-rounded modo-precificacao-icone">schedule</span>
+                    <span class="modo-precificacao-titulo">Hora Trabalhada</span>
+                    <span class="modo-precificacao-sub">Materiais + mão de obra + lucro</span>
+                </button>
+                <button type="button" class="modo-precificacao-card" onclick="selecionarModoNovoProjeto('MEU_PRECO')">
+                    <span class="material-symbols-rounded modo-precificacao-icone">sell</span>
+                    <span class="modo-precificacao-titulo">Meu Preço</span>
+                    <span class="modo-precificacao-sub">Defina o preço e veja o lucro</span>
+                </button>
+                <button type="button" class="modo-precificacao-card" onclick="selecionarModoNovoProjeto('MEU_PRECO_TEMPO')">
+                    <span class="material-symbols-rounded modo-precificacao-icone">timer</span>
+                    <span class="modo-precificacao-titulo">Meu Preço x Tempo</span>
+                    <span class="modo-precificacao-sub">Preço desejado com cronômetro</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalNovoProjeto" class="modal-overlay escondido">
+        <div class="modal-content" style="max-width: 450px; padding: 30px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <div>
+                    <h3 style="margin: 0; color: var(--cor-titulo); font-size: 20px;">Iniciar Novo Projeto</h3>
+                    <span class="calc-modo-badge calc-modo-badge-sm" id="projModoBadge">Hora Trabalhada</span>
+                </div>
+                <button class="btn-fechar" onclick="fecharModal('modalNovoProjeto')" style="background: none; border: none; color: var(--cor-texto); cursor: pointer;"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <form id="formNovoProjeto" class="form-croche" onsubmit="salvarNovoProjeto(event)">
+                <input type="hidden" id="projModoPrecificacao" value="HORA_TRABALHADA">
+                <div class="form-group-croche">
+                    <label>Nome da Peça</label>
+                    <input type="text" id="projNome" placeholder="Ex: Amigurumi Ursinho" required>
+                </div>
+                <div class="form-group-croche">
+                    <label>Categoria</label>
+                    <select id="projCategoria" required>
+                        <option value="Amigurumi">Amigurumi</option>
+                        <option value="Vestuário">Vestuário</option>
+                        <option value="Decoração">Decoração</option>
+                        <option value="Acessórios">Acessórios</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+                <div id="grpCamposHoraTrabalhada" class="grp-campos-modo">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group-croche">
+                            <label>Valor da Hora (R$)</label>
+                            <input type="text" id="projValorHora" class="input-moeda" placeholder="15,00" oninput="aplicarMascaraMoeda(this)">
+                        </div>
+                        <div class="form-group-croche">
+                            <label>Margem de Lucro (%)</label>
+                            <input type="number" id="projMargem" value="30" min="0">
+                        </div>
+                    </div>
+                </div>
+                <div id="grpCamposMeuPreco" class="grp-campos-modo escondido">
+                    <div class="form-group-croche">
+                        <label>Preço de Venda Desejado (R$)</label>
+                        <input type="text" id="projPrecoVendaMP" class="input-moeda" placeholder="80,00" oninput="aplicarMascaraMoeda(this)">
+                    </div>
+                </div>
+                <div id="grpCamposMeuPrecoTempo" class="grp-campos-modo escondido">
+                    <div class="form-group-croche">
+                        <label>Preço de Venda Desejado (R$)</label>
+                        <input type="text" id="projPrecoVendaMPT" class="input-moeda" placeholder="80,00" oninput="aplicarMascaraMoeda(this)">
+                    </div>
+                </div>
+                <button type="submit" class="btn-premium" id="btnCriarProjeto" style="width: 100%; justify-content: center; margin-top: 10px;">Criar e Começar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalAddMaterial" class="modal-overlay escondido">
+        <div class="modal-content" style="max-width: 450px; padding: 30px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h3 style="margin: 0; color: var(--cor-titulo); font-size: 20px;">Adicionar Material</h3>
+                <button class="btn-fechar" onclick="fecharModal('modalAddMaterial')" style="background: none; border: none; color: var(--cor-texto); cursor: pointer;"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <form id="formAddMaterial" class="form-croche" onsubmit="salvarMaterialNoProjeto(event)">
+                <div class="form-group-croche">
+                    <label>Selecione o Material</label>
+                    <select id="matSelect" required onchange="atualizarHintMedida()">
+                        <option value="">Carregando estoque...</option>
+                    </select>
+                </div>
+                <div id="matEstoqueDisponivel" class="escondido" style="margin-bottom: 16px; padding: 12px 14px; background: var(--bg-body); border-radius: 10px; border: 1px solid var(--borda); border-left: 4px solid var(--f1a-blue);">
+                    <div id="matNomeEstoque" style="font-weight: 700; color: var(--cor-titulo); font-size: 14px; margin-bottom: 4px;"></div>
+                    <div id="matQtdDisponivel" style="font-size: 13px; color: var(--cor-texto); font-weight: 600;"></div>
+                </div>
+                <div class="form-group-croche">
+                    <label>Quantidade Utilizada (<span id="lblMedidaHint">...</span>)</label>
+                    <input type="number" step="0.01" id="matQtdUsada" placeholder="Ex: 50" required oninput="limparErroValidacaoEstoque()">
+                </div>
+                <div id="matErroEstoque" class="escondido" style="color: #ef4444; font-size: 13px; margin-bottom: 12px; font-weight: 600;"></div>
+                <button type="submit" class="btn-premium" style="width: 100%; justify-content: center;">Adicionar ao Custo</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalEditarConfig" class="modal-overlay escondido">
+        <div class="modal-content" style="max-width: 400px; padding: 30px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <div>
+                    <h3 style="margin: 0; color: var(--cor-titulo); font-size: 20px;">Ajustar Valores</h3>
+                    <span class="calc-modo-badge calc-modo-badge-sm" id="editModoBadge">Hora Trabalhada</span>
+                </div>
+                <button class="btn-fechar" onclick="fecharModal('modalEditarConfig')" style="background: none; border: none; color: var(--cor-texto); cursor: pointer;"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <form id="formEditarConfig" class="form-croche" onsubmit="salvarConfigProjeto(event)">
+                <div id="grpEditHoraTrabalhada" class="grp-campos-modo">
+                    <div class="form-group-croche">
+                        <label>Valor da sua Hora (R$)</label>
+                        <input type="text" id="projEditValorHora" class="input-moeda" oninput="aplicarMascaraMoeda(this)">
+                    </div>
+                    <div class="form-group-croche">
+                        <label>Margem de Lucro (%)</label>
+                        <input type="number" id="projEditMargem" min="0" max="500">
+                    </div>
+                    <div class="form-group-croche">
+                        <label>Outros Custos (R$)</label>
+                        <input type="text" id="projEditOutrosCustosHT" class="input-moeda" oninput="aplicarMascaraMoeda(this)">
+                    </div>
+                </div>
+                <div id="grpEditMeuPreco" class="grp-campos-modo escondido">
+                    <div class="form-group-croche">
+                        <label>Preço de Venda Desejado (R$)</label>
+                        <input type="text" id="projEditPrecoVenda" class="input-moeda" oninput="aplicarMascaraMoeda(this)">
+                    </div>
+                    <div class="form-group-croche">
+                        <label>Outros Custos (R$)</label>
+                        <input type="text" id="projEditOutrosCustosMP" class="input-moeda" oninput="aplicarMascaraMoeda(this)">
+                    </div>
+                </div>
+                <div id="grpEditMeuPrecoTempo" class="grp-campos-modo escondido">
+                    <div class="form-group-croche">
+                        <label>Preço de Venda Desejado (R$)</label>
+                        <input type="text" id="projEditPrecoVendaMPT" class="input-moeda" oninput="aplicarMascaraMoeda(this)">
+                    </div>
+                    <div class="form-group-croche">
+                        <label>Outros Custos (R$)</label>
+                        <input type="text" id="projEditOutrosCustosMPT" class="input-moeda" oninput="aplicarMascaraMoeda(this)">
+                    </div>
+                </div>
+                <button type="submit" class="btn-premium" style="width: 100%; justify-content: center; margin-top: 10px;">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalRenomearProjeto" class="modal-overlay escondido">
+        <div class="modal-content" style="max-width: 400px; padding: 30px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h3 style="margin: 0; color: var(--cor-titulo); font-size: 20px;">Renomear Projeto</h3>
+                <button class="btn-fechar" onclick="fecharModal('modalRenomearProjeto')" style="background: none; border: none; color: var(--cor-texto); cursor: pointer;"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <form id="formRenomearProjeto" class="form-croche" onsubmit="salvarRenomearProjeto(event)">
+                <div class="form-group-croche">
+                    <label>Nome da Peça</label>
+                    <input type="text" id="projRenomearNome" placeholder="Ex: Amigurumi Ursinho" required>
+                </div>
+                <button type="submit" class="btn-premium" id="btnSalvarRenomearProjeto" style="width: 100%; justify-content: center; margin-top: 10px;">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalExcluirProjeto" class="modal-overlay escondido">
+        <div class="modal-content" style="max-width: 450px; padding: 30px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: #ef4444; font-size: 20px; display: flex; align-items: center; gap: 8px;">
+                    <span class="material-symbols-rounded">warning</span> Excluir Projeto
+                </h3>
+                <button type="button" class="btn-fechar" onclick="fecharModal('modalExcluirProjeto')" style="background: none; border: none; color: var(--cor-texto); cursor: pointer;"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <p id="txtConfirmacaoExclusao" style="margin: 0 0 25px 0; color: var(--cor-texto); font-size: 14px; line-height: 1.5;"></p>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <button type="button" class="btn-secundario-croche" onclick="fecharModal('modalExcluirProjeto')" style="flex: 1; justify-content: center; min-width: 120px;">Cancelar</button>
+                <button type="button" class="btn-premium" id="btnConfirmarExclusaoProjeto" onclick="confirmarExclusaoProjeto()" style="flex: 1; justify-content: center; min-width: 120px; background: #ef4444; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);">
+                    <span class="material-symbols-rounded">delete</span> Excluir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalZoom" class="modal-overlay escondido" onclick="fecharZoom()" style="background: rgba(0,0,0,0.8);">
+        <img id="imgZoomed" src="" alt="Zoom" style="max-width: 90%; max-height: 90%; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); cursor: zoom-out;">
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script src="../core.js?v=1"></script>
+    <script src="../ui.js?v=1"></script>
+    <script src="projetos.js?v=1"></script>
+</body>
+</html>

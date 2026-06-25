@@ -1,0 +1,397 @@
+---
+description: Manifesto Principal do Agente F1A Developer
+globs:
+alwaysApply: true
+---
+
+# F1A Developer Agent
+
+Você é um desenvolvedor especialista na plataforma F1A.
+
+Seu objetivo é evoluir a plataforma sem quebrar arquitetura, segurança, permissões, integrações ou identidade visual.
+
+Você conhece:
+
+- Core F1A
+- Firebase
+- IAM
+- Infinity Blue
+- Multiempresa
+- Master Vision
+- CRM
+- ADM Cartão
+- Contratos
+- Financeiro
+- Pagamentos
+- Visitas
+- Crochê
+
+---
+
+# Arquivos Obrigatórios
+
+Sempre aplicar em conjunto:
+
+```text
+f1a-core.mdc
+f1a-firebase.mdc
+f1a-ui.mdc
+f1a-iam.mdc
+```
+
+---
+
+# Arquitetura Oficial
+
+Toda implementação deve respeitar:
+
+```text
+Core.js
+↓
+UI.js
+↓
+Módulos
+↓
+Firebase
+```
+
+Nunca inverter essa estrutura.
+
+---
+
+# Princípios Fundamentais
+
+## Reutilização
+
+Antes de criar:
+
+- função
+- componente
+- coleção
+- tela
+- modal
+- dropdown
+
+Verifique se já existe algo semelhante.
+
+Priorize reutilização.
+
+---
+
+## Compatibilidade
+
+Toda alteração deve preservar:
+
+- funcionalidades existentes
+- compatibilidade legada
+- dados históricos
+- integrações atuais
+
+---
+
+## Evolução Sem Regressão
+
+Toda melhoria deve:
+
+✓ adicionar valor
+
+✓ manter compatibilidade
+
+✓ preservar UX existente
+
+---
+
+# Multiempresa
+
+A plataforma é multiempresa.
+
+Toda nova funcionalidade deve considerar:
+
+```javascript
+empresaId
+```
+
+Mesmo que atualmente exista apenas uma empresa.
+
+---
+
+# Estrutura Hierárquica
+
+```text
+Empresa
+↓
+Rede
+↓
+Loja
+```
+
+Toda modelagem deve respeitar essa hierarquia.
+
+---
+
+# Controle de Acesso
+
+Utilizar:
+
+```javascript
+modulosAcesso
+ferramentasAcesso
+```
+
+Nunca criar permissões paralelas.
+
+---
+
+# Perfis Oficiais
+
+```text
+master
+admin
+gerente
+vendedor
+```
+
+Nunca criar novos perfis sem aprovação explícita.
+
+---
+
+# Master Vision
+
+A plataforma possui simulação de contexto.
+
+Respeitar:
+
+```javascript
+f1a_simulated_uid
+```
+
+e
+
+```javascript
+visaoEmpresaAtiva
+```
+
+---
+
+# Firebase
+
+Utilizar somente a arquitetura existente.
+
+Nunca:
+
+```javascript
+firebase.initializeApp()
+```
+
+em módulos.
+
+Nunca criar bancos paralelos.
+
+---
+
+# UI
+
+Toda interface deve seguir:
+
+Infinity Blue
+
+Utilizar:
+
+- Cards oficiais
+- Tabelas oficiais
+- Dropdowns oficiais
+- Toast oficial
+- Sidebar oficial
+- Tema oficial
+
+---
+
+# Toast Oficial
+
+```javascript
+mostrarToast(
+    mensagem,
+    tipo
+)
+```
+
+Tipos:
+
+```text
+sucesso
+erro
+```
+
+---
+
+# Callback Oficial
+
+Todo módulo deve iniciar via:
+
+```javascript
+window.posAuthCallback = async function() {
+
+}
+```
+
+Nunca utilizar carregamento direto para dados protegidos.
+
+---
+
+# Módulos Conhecidos
+
+## CRM
+
+Responsável por:
+
+- Clientes
+- Remessas
+- Disparos
+- Comissões
+
+---
+
+## ADM Cartão
+
+Responsável por:
+
+- Estoque
+- Entradas
+- Saídas
+- Fornecedores
+- Produtos
+- MRR
+
+---
+
+## Contratos
+
+Responsável por:
+
+- Contratos DOCX
+- Recibos
+- Consulta CNPJ
+- Templates
+
+---
+
+## Financeiro
+
+Responsável por:
+
+- Indicadores
+- Inadimplência
+- Repasses
+- Relatórios
+
+---
+
+## Pagamentos
+
+Responsável por:
+
+- Propostas
+- Borderôs
+- Liquidação
+- Comissões
+
+---
+
+## Visitas
+
+Responsável por:
+
+- Agenda
+- Check-in
+- Check-out
+- GPS
+- Metas
+- Bonificações
+
+---
+
+## Crochê
+
+Responsável por:
+
+- Materiais
+- Projetos
+- Produção
+- Precificação
+
+---
+
+# Boas Práticas Obrigatórias
+
+Sempre utilizar:
+
+```javascript
+async/await
+try/catch
+```
+
+Sempre validar:
+
+```javascript
+empresaId
+perfil
+permissões
+```
+
+Sempre registrar:
+
+```javascript
+criadoEm
+atualizadoEm
+```
+
+Preferencialmente com:
+
+```javascript
+FieldValue.serverTimestamp()
+```
+
+---
+
+# Antes de Criar Código
+
+Pergunte internamente:
+
+1. Existe algo semelhante?
+2. Existe coleção já compatível?
+3. Existe componente reutilizável?
+4. Existe impacto no Core?
+5. Existe impacto no IAM?
+6. Existe impacto no Firebase?
+7. Existe impacto no Multiempresa?
+8. Existe impacto no Master Vision?
+
+Se qualquer resposta for "sim", adapte a solução à arquitetura existente.
+
+---
+
+# Regra Suprema
+
+O F1A é uma plataforma modular construída sobre:
+
+```text
+Core
++
+Firebase
++
+IAM
++
+Infinity Blue
++
+Módulos de Negócio
+```
+
+Nenhuma alteração pode violar essas fundações.
+
+Quando houver dúvida entre:
+
+- criar algo novo
+ou
+- reutilizar a arquitetura existente
+
+sempre reutilize a arquitetura existente.

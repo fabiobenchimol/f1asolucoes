@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lobby F1A - Central de Módulos</title>
+    
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+    
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* ==========================================
+           RESET E TIPOGRAFIA GLOBAL DO LOBBY
+           ========================================== */
+        body { font-family: 'Outfit', sans-serif; background: var(--bg-body); overflow-x: hidden; }
+
+        /* ==========================================
+           CABEÇALHO PREMIUM
+           ========================================== */
+        .lobby-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            width: 100%; max-width: 1200px; margin: 0 auto; 
+            padding: 25px 20px; box-sizing: border-box; 
+        }
+        .user-controls { display: flex; align-items: center; gap: 20px; }
+
+        /* ==========================================
+           MASTER VISION (PÍLULA PREMIUM)
+           ========================================== */
+        .master-vision-box { 
+            display: flex; align-items: center; gap: 12px; 
+            background: rgba(212, 175, 55, 0.1); /* Dourado/Cobre suave */
+            padding: 6px 16px; border-radius: 30px; 
+            border: 1px solid rgba(212, 175, 55, 0.3); 
+            min-width: 220px; justify-content: space-between; 
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.05);
+        }
+        .master-vision-box label { 
+            margin: 0; font-size: 11px; font-weight: 800; 
+            color: var(--f1a-copper); text-transform: uppercase; 
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-vision-trigger { 
+            background: transparent; border: none; color: var(--cor-titulo); 
+            font-size: 13px; font-weight: 700; cursor: pointer; outline: none; 
+            display: flex; align-items: center; justify-content: space-between; 
+            font-family: 'Outfit', sans-serif; flex: 1; transition: opacity 0.2s;
+        }
+        .btn-vision-trigger:hover { opacity: 0.7; }
+        .nome-selecionado { max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+        
+        .btn-reset-vision { 
+            background: rgba(239, 68, 68, 0.1); color: #ef4444; border: none; 
+            font-size: 12px; cursor: pointer; display: none; 
+            width: 24px; height: 24px; border-radius: 50%; 
+            align-items: center; justify-content: center; transition: all 0.2s; 
+        }
+        .btn-reset-vision:hover { background: #ef4444; color: white; transform: scale(1.1); }
+        
+        /* Modais do Master Vision */
+        .vision-search-input { 
+            width: 100%; padding: 12px 15px; border-radius: 12px; 
+            border: 1px solid var(--borda); background: var(--bg-body); 
+            color: var(--cor-titulo); margin-bottom: 15px; 
+            font-family: 'Outfit', sans-serif; outline: none; font-size: 14px; 
+            transition: border 0.3s;
+        }
+        .vision-search-input:focus { border-color: var(--f1a-blue); box-shadow: 0 0 0 3px rgba(0, 71, 255, 0.1); }
+        .vision-user-list { list-style: none; padding: 0; margin: 0; max-height: 350px; overflow-y: auto; padding-right: 5px; }
+        .vision-user-item { 
+            display: flex; align-items: center; gap: 12px; padding: 12px; 
+            border-bottom: 1px solid var(--borda); cursor: pointer; 
+            border-radius: 8px; transition: all 0.2s ease; 
+        }
+        .vision-user-item:last-child { border-bottom: none; }
+        .vision-user-item:hover { background: rgba(0, 71, 255, 0.05); border-color: transparent; transform: translateX(5px); }
+        .vision-user-avatar { 
+            width: 38px; height: 38px; border-radius: 50%; 
+            background: rgba(0,71,255,0.1); color: var(--f1a-blue); 
+            display: flex; align-items: center; justify-content: center; 
+            font-weight: 800; font-size: 14px; 
+        }
+        .vision-user-info { flex: 1; }
+        .vision-user-info h4 { margin: 0; font-size: 14px; color: var(--cor-titulo); display: flex; align-items: center; gap: 8px; font-weight: 700; }
+        .vision-user-info p { margin: 2px 0 0 0; font-size: 12px; color: var(--cor-texto); }
+
+        /* ==========================================
+           ÁREA PRINCIPAL E BOAS-VINDAS
+           ========================================== */
+        .lobby-main { 
+            max-width: 1200px; margin: 0 auto; 
+            padding: 20px 20px 60px 20px; width: 100%; 
+            box-sizing: border-box; display: block; 
+        }
+        .welcome-text { text-align: center; margin-bottom: 50px; width: 100%; }
+        .welcome-text h1 { 
+            font-size: 38px; font-weight: 800; color: var(--cor-titulo); 
+            margin-bottom: 8px; letter-spacing: -1px; 
+        }
+        .welcome-text p { font-size: 16px; color: var(--cor-texto); margin: 0; font-weight: 400; }
+
+        /* ==========================================
+           GRID DE MÓDULOS (CENTRALIZAÇÃO MATEMÁTICA ABSOLUTA)
+           ========================================== */
+        .modules-grid { 
+            display: grid; 
+            grid-template-columns: repeat(5, 210px); /* 5 colunas fixas */
+            gap: 25px; /* Espaçamento entre os cards */
+            width: 100%; /* Ocupa 100% da área segura */
+            justify-content: center; /* Centraliza as colunas de forma absoluta no meio da tela */
+            align-content: center;
+            margin: 0 auto; 
+            padding: 0;
+        }
+        
+        .module-card { 
+            width: 210px; 
+            box-sizing: border-box;
+            background: var(--bg-painel); 
+            border: 1px solid transparent; 
+            border-radius: 20px; padding: 35px 15px; 
+            display: flex; flex-direction: column; align-items: center; 
+            text-align: center; text-decoration: none; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 10px 30px rgba(0, 30, 100, 0.04); 
+            cursor: pointer; position: relative; overflow: hidden;
+        }
+        .module-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--f1a-blue); opacity: 0; transition: opacity 0.3s;
+        }
+        .module-card:hover { 
+            transform: translateY(-5px); 
+            border-color: rgba(0, 71, 255, 0.2); 
+            box-shadow: 0 15px 35px rgba(0, 71, 255, 0.1); 
+        }
+        .module-card:hover::before { opacity: 1; }
+        
+        body.dark-mode .module-card { border: 1px solid var(--borda); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        body.dark-mode .module-card:hover { border-color: var(--f1a-blue); }
+
+        .module-icon { 
+            width: 64px; height: 64px; border-radius: 18px; 
+            display: flex; align-items: center; justify-content: center; 
+            margin-bottom: 20px; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        .module-icon .material-symbols-rounded { font-size: 32px; }
+        .module-card:hover .module-icon { transform: scale(1.15) rotate(-5deg); }
+        
+        .module-card h3 { font-size: 16px; font-weight: 800; color: var(--cor-titulo); margin: 0 0 8px 0; letter-spacing: -0.3px; }
+        .module-card p { font-size: 12px; color: var(--cor-texto); margin: 0; line-height: 1.5; font-weight: 400; }
+
+        /* ==========================================
+           RESPONSIVIDADE ESTRITA
+           ========================================== */
+        @media (max-width: 1200px) { 
+            .modules-grid { grid-template-columns: repeat(4, 210px); } 
+        }
+        @media (max-width: 950px) { 
+            .modules-grid { grid-template-columns: repeat(3, 210px); } 
+            .master-vision-box { display: none !important; } 
+            .welcome-text h1 { font-size: 32px; }
+        }
+        @media (max-width: 750px) { 
+            /* No mobile volta para 100% para os cards poderem esticar */
+            .modules-grid { grid-template-columns: repeat(2, 1fr); width: 100%; } 
+            .module-card { width: 100%; } 
+        }
+        @media (max-width: 550px) {
+            .lobby-header { padding: 15px 20px; }
+            .modules-grid { grid-template-columns: 1fr; gap: 15px; }
+            .module-card { padding: 25px 20px; flex-direction: row; text-align: left; gap: 15px; border-radius: 16px; }
+            .module-card::before { width: 4px; height: 100%; top: 0; left: 0; }
+            .module-icon { width: 50px; height: 50px; margin-bottom: 0; border-radius: 14px; flex-shrink: 0; }
+            .module-icon .material-symbols-rounded { font-size: 26px; }
+            .welcome-text { margin-bottom: 30px; }
+            .welcome-text h1 { font-size: 28px; }
+            .welcome-text p { font-size: 14px; }
+            #cargoUsuarioDropdown { display: none !important; }
+        }
+    </style>
+</head>
+<body id="corpoLobby" style="display: none;">
+
+    <header class="lobby-header">
+        <img src="assets/logo_f1a.png" id="logoLobby" alt="F1A Platform" style="height: 38px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+        
+        <div class="user-controls">
+            <div class="master-vision-box" id="boxMasterVision" style="display: none;">
+                <label>Visão:</label>
+                <button class="btn-vision-trigger" id="btnVisaoAtual" onclick="abrirModalVisao()">
+                    <span class="nome-selecionado">Master</span> 
+                    <span class="material-symbols-rounded" style="font-size: 18px;">expand_more</span>
+                </button>
+                <button class="btn-reset-vision" id="btnResetVisao" onclick="simularAcessoUsuario('master')" title="Remover Filtro">
+                    <span class="material-symbols-rounded" style="font-size: 14px;">close</span>
+                </button>
+            </div>
+
+            <button class="btn-icon" onclick="alternarTemaGlobal()" title="Alternar Tema" style="background: var(--bg-painel); border: 1px solid var(--borda); cursor: pointer; color: var(--cor-texto); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: all 0.3s;" id="btnTemaGlobal" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <span class="material-symbols-rounded" style="font-size: 20px;">dark_mode</span>
+            </button>
+            
+            <div class="user-profile" onclick="toggleDropdownLobby(event)" style="cursor: pointer; position: relative; display: flex; align-items: center; gap: 12px; background: var(--bg-painel); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid var(--borda); box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: border 0.3s;">
+                <div class="user-avatar" id="iniciaisUsuarioLobby" style="width: 32px; height: 32px; border-radius: 50%; background: var(--f1a-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px;">--</div>
+                
+                <div class="user-info">
+                    <span class="user-name" id="nomeUsuarioDropdown" style="display: block; font-size: 13px; font-weight: 800; color: var(--cor-titulo);">Carregando...</span>
+                    <span class="user-role" id="cargoUsuarioDropdown" style="display: block; font-size: 11px; color: var(--cor-texto); font-weight: 600;">Aguarde</span>
+                </div>
+                <span class="material-symbols-rounded" style="color: var(--cor-texto); font-size: 18px;">expand_more</span>
+                
+                <div class="dropdown-menu escondido" id="dropdownPerfilLobby" style="position: absolute; top: 55px; right: 0; background: var(--bg-painel); border: 1px solid var(--borda); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 220px; z-index: 9999; padding: 10px; overflow: hidden;">
+                    <a href="#" onclick="alterarNomeExibicao()" class="dropdown-item" style="display: flex; align-items: center; padding: 12px 15px; color: var(--cor-titulo); text-decoration: none; font-size: 13px; font-weight: 600; border-radius: 8px; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-body)'" onmouseout="this.style.background='transparent'">
+                        <span class="material-symbols-rounded" style="margin-right: 12px; font-size: 18px; color: var(--f1a-blue);">edit</span> Alterar Nome
+                    </a>
+                    <div style="height: 1px; background: var(--borda); margin: 5px 0;"></div>
+                    <a href="#" onclick="sair()" class="dropdown-item" style="display: flex; align-items: center; padding: 12px 15px; color: #ef4444; text-decoration: none; font-size: 13px; font-weight: 700; border-radius: 8px; transition: background 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'">
+                        <span class="material-symbols-rounded" style="margin-right: 12px; font-size: 18px;">logout</span> Sair do Sistema
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="lobby-main">
+        <div id="loadingLobby" style="text-align: center; padding: 80px 0;">
+            <span class="material-symbols-rounded" style="font-size: 48px; animation: spin 1s linear infinite; color: var(--f1a-blue);">sync</span>
+            <p style="color: var(--cor-texto); margin-top: 15px; font-weight: 600;">Construindo seu ambiente...</p>
+        </div>
+
+        <div id="conteudoLobby" style="display: none; width: 100%;">
+            <div class="welcome-text">
+                <h1>Olá, <span id="nomeUsuarioLobby" style="color: var(--f1a-blue);">USUÁRIO</span>!</h1>
+                <p id="subtextoLobby">Selecione abaixo o módulo que deseja acessar hoje.</p>
+            </div>
+            
+            <div class="modules-grid" id="gridModulos">
+                </div>
+        </div>
+    </main>
+
+    <div id="modalMasterVision" class="modal-overlay escondido">
+        <div class="modal-content" style="max-width: 450px; padding: 25px; border-radius: 20px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: var(--cor-titulo); font-size: 20px; font-weight: 800;">Simular Visão</h3>
+                <button class="btn-icon" onclick="fecharModalVisao()" style="background: var(--bg-body); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--cor-texto);"><span class="material-symbols-rounded" style="font-size: 18px;">close</span></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="inputBuscaVisao" class="vision-search-input" placeholder="Buscar por nome ou e-mail..." onkeyup="filtrarListaVisao()">
+                <ul class="vision-user-list" id="listaUsuariosVisao"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="core.js?v=1"></script>
+
+    <script>
+        let listaUsuariosGlobal = [];
+        let F1A_REGISTRY = [];
+
+        // Controle do Dropdown de Perfil
+        function toggleDropdownLobby(e) { e.stopPropagation(); document.getElementById('dropdownPerfilLobby').classList.toggle('escondido'); }
+        document.addEventListener('click', function(e) { const dp = document.getElementById('dropdownPerfilLobby'); if(dp && !dp.classList.contains('escondido')) dp.classList.add('escondido'); });
+
+        window.alterarNomeExibicao = async function() {
+            const novoNome = prompt("Digite seu novo nome de exibição:");
+            if (!novoNome || novoNome.trim() === "") return;
+            try {
+                const user = firebase.auth().currentUser;
+                await db.collection("usuarios").doc(user.uid).update({ nome: novoNome.trim().toUpperCase() });
+                alert("✅ Nome atualizado!"); window.location.reload();
+            } catch (error) { alert("Erro: " + error.message); }
+        }
+
+        // ==========================================
+        // GATILHO OFICIAL
+        // ==========================================
+        window.posAuthCallback = async function() {
+            const nomeExibicao = dadosUsuarioLogado.nome || "Usuário F1A";
+            
+            // Atualiza Textos no HTML
+            document.getElementById("nomeUsuarioLobby").innerText = nomeExibicao.split(" ")[0].toUpperCase();
+            document.getElementById("iniciaisUsuarioLobby").innerText = nomeExibicao.substring(0, 2).toUpperCase();
+            document.getElementById("nomeUsuarioDropdown").innerText = nomeExibicao;
+            document.getElementById("cargoUsuarioDropdown").innerText = perfilUsuario === 'master' ? 'F1A MASTER' : perfilUsuario.toUpperCase();
+            
+            document.body.style.display = "block";
+
+            try {
+                const modulosSnap = await db.collection("modulos_f1a").get();
+                F1A_REGISTRY = [];
+                modulosSnap.forEach(mDoc => F1A_REGISTRY.push({ id: mDoc.id, ...mDoc.data() }));
+                F1A_REGISTRY.sort((a, b) => a.tipo.localeCompare(b.tipo));
+
+                if (perfilUsuario === 'master') {
+                    document.getElementById("boxMasterVision").style.display = "flex";
+                    const visaoSalva = sessionStorage.getItem('f1a_simulated_uid');
+                    
+                    if(visaoSalva && visaoSalva !== 'master') {
+                        const simDoc = await db.collection("usuarios").doc(visaoSalva).get();
+                        if (simDoc.exists) {
+                            const simUser = { id: simDoc.id, ...simDoc.data() };
+                            listaUsuariosGlobal.push(simUser);
+                            renderizarCards(simUser);
+                            
+                            const nomeSim = simUser.nome || simUser.email;
+                            document.getElementById("subtextoLobby").innerHTML = `Simulando visão de: <strong>${nomeSim}</strong>`;
+                            document.getElementById("subtextoLobby").style.color = "var(--f1a-copper)";
+                            document.getElementById("btnVisaoAtual").innerHTML = `<span class="nome-selecionado">${nomeSim}</span> <span class="material-symbols-rounded" style="font-size: 18px;">expand_more</span>`;
+                            document.getElementById("btnVisaoAtual").style.color = "var(--f1a-copper)";
+                            document.getElementById("btnResetVisao").style.display = "flex";
+                        } else {
+                            sessionStorage.removeItem('f1a_simulated_uid');
+                            renderizarCards(dadosUsuarioLogado);
+                        }
+                    } else {
+                        renderizarCards(dadosUsuarioLogado);
+                    }
+                    
+                    carregarUsuariosMasterEmFundo(usuarioLogado.uid);
+                } else {
+                    renderizarCards(dadosUsuarioLogado);
+                }
+
+                document.getElementById("loadingLobby").style.display = "none";
+                document.getElementById("conteudoLobby").style.display = "block";
+
+            } catch (error) {
+                console.error("Erro no carregamento do Lobby:", error);
+                alert("Erro ao carregar os dados.");
+            }
+        }
+
+        async function carregarUsuariosMasterEmFundo(meuUid) {
+            try {
+                const snapUsers = await db.collection("usuarios").get();
+                let listaTemporaria = [];
+                snapUsers.forEach(uDoc => {
+                    const u = uDoc.data();
+                    if(uDoc.id !== meuUid) { listaTemporaria.push({ id: uDoc.id, ...u }); }
+                });
+                listaUsuariosGlobal = listaTemporaria;
+            } catch(e) { console.error("Erro ao carregar lista de Master Vision", e); }
+        }
+
+        function renderizarCards(usuarioParaSimular) {
+            const perfil = String(usuarioParaSimular.perfil || '').toLowerCase().trim();
+            let modulosAcesso = usuarioParaSimular.modulosAcesso || [];
+            let ferramentasAcesso = usuarioParaSimular.ferramentasAcesso || [];
+            
+            if (!Array.isArray(modulosAcesso)) modulosAcesso = modulosAcesso ? [modulosAcesso] : [];
+            if (!Array.isArray(ferramentasAcesso)) ferramentasAcesso = ferramentasAcesso ? [ferramentasAcesso] : [];
+
+            // Regras de legado
+            if (modulosAcesso.length === 0 || modulosAcesso.includes('comissoes')) {
+                if (!modulosAcesso.includes('financeiro')) modulosAcesso.push('financeiro');
+                if (!modulosAcesso.includes('propostas')) modulosAcesso.push('propostas');
+            }
+            if (modulosAcesso.includes('cadastros')) ferramentasAcesso.push('equipe');
+            if (modulosAcesso.includes('dashboard')) ferramentasAcesso.push('executivo');
+
+            const grid = document.getElementById("gridModulos");
+            grid.innerHTML = ""; 
+
+            F1A_REGISTRY.forEach(mod => {
+                let temAcesso = false;
+                if (perfil === 'master') temAcesso = true; 
+                else if (mod.tipo === 'comercial' && modulosAcesso.includes(mod.id)) temAcesso = true; 
+                else if (mod.tipo === 'sistema' && ferramentasAcesso.includes(mod.id)) temAcesso = true; 
+
+                if (temAcesso) {
+                    grid.innerHTML += `
+                        <a href="${mod.url}" class="module-card">
+                            <div class="module-icon ${mod.cor}"><span class="material-symbols-rounded">${mod.icon || 'extension'}</span></div>
+                            <div style="flex: 1;">
+                                <h3>${mod.titulo}</h3>
+                                <p>${mod.desc || 'Módulo do sistema.'}</p>
+                            </div>
+                        </a>`;
+                }
+            });
+
+            if (grid.innerHTML === "") {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--cor-texto); font-weight: 600; background: var(--bg-painel); border-radius: 16px; border: 1px dashed var(--borda);">Nenhum módulo liberado para este perfil. Contate o administrador.</div>`;
+            }
+        }
+
+        function abrirModalVisao() {
+            if (listaUsuariosGlobal.length === 0) return alert("A carregar lista de utilizadores. Aguarde um instante...");
+            document.getElementById('modalMasterVision').classList.remove('escondido');
+            document.getElementById('inputBuscaVisao').value = "";
+            renderizarListaVisao(listaUsuariosGlobal);
+            document.getElementById('inputBuscaVisao').focus();
+        }
+
+        function fecharModalVisao() { document.getElementById('modalMasterVision').classList.add('escondido'); }
+
+        function renderizarListaVisao(lista) {
+            const ul = document.getElementById('listaUsuariosVisao');
+            ul.innerHTML = "";
+            if (lista.length === 0) return ul.innerHTML = "<li style='text-align:center; padding: 20px; color: var(--cor-texto); font-weight: 600;'>Nenhum usuário encontrado.</li>";
+
+            lista.forEach(u => {
+                const nomeCompleto = u.nome || u.email.split('@')[0];
+                const inicial = nomeCompleto.charAt(0).toUpperCase();
+                const perfilFormatado = (u.perfil || 'SaaS').toUpperCase();
+                
+                let badgeClass = "badge-pendente";
+                if(perfilFormatado === 'ADMIN') badgeClass = "badge-aprovada";
+                if(perfilFormatado === 'GERENTE') badgeClass = "badge-agendada";
+                if(perfilFormatado === 'VENDEDOR') badgeClass = "badge-paga";
+
+                ul.innerHTML += `
+                    <li class="vision-user-item" onclick="simularAcessoUsuario('${u.id}')">
+                        <div class="vision-user-avatar">${inicial}</div>
+                        <div class="vision-user-info">
+                            <h4>${nomeCompleto} <span class="status-badge ${badgeClass}" style="font-size: 9px; padding: 2px 6px;">${perfilFormatado}</span></h4>
+                            <p>${u.email || 'Sem e-mail'}</p>
+                        </div>
+                    </li>`;
+            });
+        }
+
+        function filtrarListaVisao() {
+            const termo = document.getElementById('inputBuscaVisao').value.toLowerCase();
+            const listaFiltrada = listaUsuariosGlobal.filter(u => {
+                const buscaStr = (u.nome || "") + " " + (u.email || "") + " " + (u.perfil || "");
+                return buscaStr.toLowerCase().includes(termo);
+            });
+            renderizarListaVisao(listaFiltrada);
+        }
+
+        function simularAcessoUsuario(uid) {
+            fecharModalVisao();
+            const subtexto = document.getElementById("subtextoLobby");
+            const btnLabel = document.getElementById("btnVisaoAtual");
+            const btnReset = document.getElementById("btnResetVisao");
+            
+            if (uid === 'master') {
+                sessionStorage.removeItem('f1a_simulated_uid');
+                renderizarCards(dadosUsuarioLogado);
+                subtexto.innerText = "Selecione abaixo o módulo que deseja acessar hoje.";
+                subtexto.style.color = "var(--cor-texto)";
+                
+                btnLabel.innerHTML = `<span class="nome-selecionado">Master</span> <span class="material-symbols-rounded" style="font-size: 18px;">expand_more</span>`;
+                btnLabel.style.color = "var(--cor-titulo)";
+                btnReset.style.display = "none";
+            } else {
+                const usuarioEncontrado = listaUsuariosGlobal.find(u => u.id === uid);
+                if (usuarioEncontrado) {
+                    sessionStorage.setItem('f1a_simulated_uid', uid); 
+                    renderizarCards(usuarioEncontrado);
+                    
+                    const nomeCompleto = usuarioEncontrado.nome || usuarioEncontrado.email;
+                    subtexto.innerHTML = `Simulando visão de: <strong>${nomeCompleto}</strong>`;
+                    subtexto.style.color = "var(--f1a-copper)";
+                    
+                    btnLabel.innerHTML = `<span class="nome-selecionado">${nomeCompleto}</span> <span class="material-symbols-rounded" style="font-size: 18px;">expand_more</span>`;
+                    btnLabel.style.color = "var(--f1a-copper)";
+                    btnReset.style.display = "flex";
+                }
+            }
+        }
+    </script>
+</body>
+</html>

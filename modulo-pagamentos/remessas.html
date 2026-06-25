@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Remessas - F1A Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    
+    <link rel="stylesheet" href="../style.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+<body style="display: none;" id="corpoPagina">
+
+    <aside class="sidebar">
+        <div class="sidebar-logo" style="cursor: pointer;" onclick="window.location.href='../lobby.html'">
+            <img src="../assets/logo_f1a.png" id="logoSidebar" alt="Logo F1A">
+        </div>
+        <nav class="nav-links">
+            <a href="../lobby.html" class="nav-item voltar-lobby" style="background: rgba(230, 145, 56, 0.1); color: var(--f1a-copper); border: 1px solid var(--f1a-copper); margin-bottom: 20px; border-radius: 8px; transition: all 0.3s ease;" onmouseover="this.style.background='var(--f1a-copper)'; this.style.color='white';" onmouseout="this.style.background='rgba(230, 145, 56, 0.1)'; this.style.color='var(--f1a-copper)';">
+                <span class="material-symbols-rounded">apps</span>Lobby F1A
+            </a>
+            <a href="index.html" class="nav-item"><span class="material-symbols-rounded">dashboard</span>Mesa de Propostas</a>
+            <a href="#" class="nav-item ativo"><span class="material-symbols-rounded">account_balance_wallet</span>Remessas</a>
+        </nav>
+    </aside>
+
+    <nav class="mobile-nav">
+        <a href="../lobby.html" class="mobile-nav-item" style="color: var(--f1a-copper);"><span class="material-symbols-rounded">apps</span>Lobby</a>
+        <a href="index.html" class="mobile-nav-item"><span class="material-symbols-rounded">dashboard</span>Mesa</a>
+        <a href="#" class="mobile-nav-item" id="btnNovaRemessaMobile" onclick="abrirModalNovaRemessa()"><div class="mobile-fab"><span class="material-symbols-rounded">add</span></div></a>
+        <a href="#" class="mobile-nav-item ativo"><span class="material-symbols-rounded">account_balance_wallet</span>Remessas</a>
+    </nav>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <img src="../assets/logo_f1a.png" class="mobile-header-logo" id="logoHeaderMobile" onclick="window.location.href='../lobby.html'">
+                <h2 class="header-title">Borderôs de Pagamento</h2>
+            </div>
+            
+            <div class="header-right">
+                <button class="btn-icon" onclick="alternarTemaLocal()" id="btnTema" title="Alternar Tema"><span class="material-symbols-rounded">dark_mode</span></button>
+                
+                <div class="user-profile" onclick="toggleDropdown(event)" style="cursor: pointer; position: relative;">
+                    <div class="user-avatar" id="iniciaisUsuario">--</div>
+                    <div class="user-info">
+                        <span class="user-name" id="nomeUsuario">Carregando...</span>
+                        <span class="user-role" id="cargoUsuario">Aguarde</span>
+                    </div>
+                    <span class="material-symbols-rounded" style="color: var(--cor-texto); margin-left: 5px;">expand_more</span>
+                    
+                    <div class="dropdown-menu escondido" id="dropdownPerfil" style="position: absolute; top: 50px; right: 0; background: var(--bg-painel); border: 1px solid var(--borda); border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 200px; z-index: 9999; padding: 10px 0;">
+                        <a href="#" onclick="if(typeof alterarNomeExibicao === 'function') alterarNomeExibicao()" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 15px; color: var(--cor-titulo); text-decoration: none; font-size: 14px;"><span class="material-symbols-rounded" style="margin-right: 10px; font-size: 18px;">edit</span> Alterar Nome</a>
+                        <hr style="border: 0; border-top: 1px solid var(--borda); margin: 5px 0;">
+                        <a href="#" onclick="sair()" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 15px; color: #ef4444; text-decoration: none; font-size: 14px; font-weight: bold;"><span class="material-symbols-rounded" style="margin-right: 10px; font-size: 18px;">logout</span> Sair da F1A</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="mesa-container" style="background: transparent; box-shadow: none; padding: 0; border: none;">
+                
+                <div class="acoes-tabela" style="padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; border-radius: 12px; margin-bottom: 20px; background: var(--bg-painel); box-shadow: var(--shadow); height: auto; border: 1px solid var(--borda);">
+                    <div style="font-size: 15px; font-weight: 800; color: var(--cor-titulo); text-transform: uppercase; display: flex; align-items: center; gap: 8px;">
+                        <span class="material-symbols-rounded" style="color: #8b5cf6;">account_balance_wallet</span> Histórico de Remessas
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px; flex: 1; justify-content: flex-end;">
+                        <button class="btn-nova-proposta" onclick="abrirModalNovaRemessa()" id="btnNovaRemessa" style="display:flex; margin: 0; white-space: nowrap; height: 38px; background: #8b5cf6;">
+                            <span class="material-symbols-rounded">add</span> Novo Borderô
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filtros-container" style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; background: var(--bg-painel); padding: 15px; border-radius: 12px; border: 1px solid var(--borda); box-shadow: var(--shadow); align-items: center;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <label style="font-size: 11px; font-weight: bold; color: var(--cor-texto); display: block; margin-bottom: 4px;">Buscar Código do Borderô</label>
+                        <input type="text" id="filtroBuscaRem" placeholder="Ex: REM-1234..." onkeyup="aplicarFiltrosRemessas()" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--borda); background: var(--bg-body); color: var(--cor-titulo); outline: none;">
+                    </div>
+
+                    <div>
+                        <label style="font-size: 11px; font-weight: bold; color: var(--cor-texto); display: block; margin-bottom: 4px;">Status da Remessa</label>
+                        <select id="filtroStatusRem" onchange="aplicarFiltrosRemessas()" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--borda); background: var(--bg-body); color: var(--cor-titulo); outline: none; font-weight: bold;">
+                            <option value="">Todos os Status</option>
+                            <option value="aberta">Pendente (Aberta)</option>
+                            <option value="paga">Liquidada (Paga)</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-top: 18px;">
+                        <button onclick="limparFiltrosRemessas()" style="padding: 8px 15px; background: var(--cor-texto); color: var(--bg-body); border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; height: 35px;">Limpar</button>
+                    </div>
+                </div>
+                
+                <div class="tabela-container" style="min-height: 400px; padding-bottom: 80px; background: var(--bg-painel); border-radius: 12px; box-shadow: var(--shadow);">
+                    <table class="tabela-dados">
+                        <thead>
+                            <tr>
+                                <th>Código do Borderô</th>
+                                <th>Vencimento</th>
+                                <th>Volume</th>
+                                <th>Total a Pagar</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaRemessas">
+                            <tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--cor-texto);">Carregando borderôs...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div id="modalNovaRemessa" class="modal-overlay escondido" style="z-index: 1000;">
+        <div class="modal-caixa" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3>Criar Novo Borderô</h3>
+                <button class="btn-fechar" onclick="fecharModalNovaRemessa()"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <div class="modal-body">
+                <label>Data de Vencimento</label>
+                <input type="date" id="dataVencimentoAvulsa" required style="margin-bottom: 15px;">
+                <button class="btn-salvar" style="background: #8b5cf6; width: 100%; margin: 0;" onclick="criarRemessaAvulsa()">
+                    <span class="material-symbols-rounded" style="vertical-align: middle;">add_circle</span> Criar Borderô Manual
+                </button>
+                
+                <div id="boxAutomacaoBorderos" style="margin-top: 30px; border-top: 1px dashed var(--borda); padding-top: 20px; display: none;">
+                    <h4 style="margin: 0 0 10px 0; color: #8b5cf6; display: flex; align-items: center; gap: 5px;"><span class="material-symbols-rounded">smart_toy</span> Automação de Agendamento</h4>
+                    <p style="font-size: 11px; color: var(--cor-texto); line-height: 1.4;">Configure os dias para gerar borderôs automaticamente.</p>
+                    <div style="display: flex; gap: 15px; margin: 15px 0; justify-content: center;">
+                        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-weight: bold;"><input type="checkbox" id="autoSeg" value="1"> Seg</label>
+                        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-weight: bold;"><input type="checkbox" id="autoQua" value="3"> Qua</label>
+                        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-weight: bold;"><input type="checkbox" id="autoSex" value="5"> Sex</label>
+                    </div>
+                    <button class="btn-salvar" style="background: #8b5cf6; width: 100%; margin: 0;" onclick="salvarConfigAutomacao()">Salvar Automação</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalRemessa" class="modal-overlay escondido" style="z-index: 1000;">
+        <div class="modal-caixa" style="max-width: 700px; width: 95%;">
+            <div class="modal-header" style="position: sticky; top: 0; background: var(--bg-painel); z-index: 10;">
+                <h3 id="printCodigoRemessa">Resumo do Borderô</h3>
+                <button class="btn-fechar" onclick="fecharModalRemessa()"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+                <div id="conteudoPrint"></div>
+                
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 25px;" id="boxAcoesRemessa">
+                    <button class="btn-salvar" id="btnExportar" style="background: #3b82f6; margin: 0; flex: 1;" onclick="exportarPDF()">📄 PDF Analítico</button>
+                    <button class="btn-salvar" id="btnExportarSintetico" style="background: #6366f1; margin: 0; flex: 1;" onclick="exportarPDFSintetico()">📑 PDF Sintético</button>
+                </div>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;" id="boxAcoesFinanceiras">
+                    <button class="btn-salvar" id="btnLiquidar" style="background: #10b981; margin: 0; flex: 1;" onclick="liquidarRemessa()">💰 Liquidar Borderô</button>
+                    <button class="btn-salvar" id="btnEstornar" style="background: #ef4444; margin: 0; flex: 1; display: none;" onclick="estornarRemessa()">⏪ Estornar Pagamento</button>
+                    <button class="btn-salvar" id="btnExcluir" style="background: #6b7280; margin: 0; flex: 1; display: none;" onclick="excluirRemessa()">🗑️ Excluir Borderô</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../auth.js"></script>
+    <script src="../ui.js?v=1"></script>
+    
+    <script src="admin.js"></script>
+    <script src="remessas.js"></script>
+
+    <script>
+        function toggleDropdown(e) {
+            e.stopPropagation();
+            document.getElementById('dropdownPerfil').classList.toggle('escondido');
+        }
+        document.addEventListener('click', function(e) {
+            const dp = document.getElementById('dropdownPerfil');
+            if(dp && !dp.classList.contains('escondido')) dp.classList.add('escondido');
+        });
+
+        function aplicarTemaSalvoLocal() { 
+            const isDark = localStorage.getItem("temaEscuro") === "true"; 
+            document.body.classList.toggle("dark-mode", isDark);
+            const logoDesktop = document.getElementById("logoSidebar"); const logoMobile = document.getElementById("logoHeaderMobile"); const btnTema = document.getElementById("btnTema");
+            if(logoDesktop) logoDesktop.src = "../assets/logo_f1a.png"; if(logoMobile) logoMobile.src = "../assets/logo_f1a.png";
+            if(btnTema) btnTema.innerHTML = isDark ? '<span class="material-symbols-rounded">light_mode</span>' : '<span class="material-symbols-rounded">dark_mode</span>';
+        }
+        aplicarTemaSalvoLocal(); 
+        window.alternarTemaLocal = function() { document.body.classList.toggle("dark-mode"); localStorage.setItem("temaEscuro", document.body.classList.contains("dark-mode")); aplicarTemaSalvoLocal(); }
+
+        // GATILHO DE SEGURANÇA GLOBAL: Dispara as funções do seu remessas.js quando o Firebase logar
+        document.addEventListener("DOMContentLoaded", () => {
+            firebase.auth().onAuthStateChanged((user) => {
+                if(user) {
+                    setTimeout(() => {
+                        // Verifica se as funções do seu remessas.js existem e as executa
+                        if(typeof carregarRemessas === 'function') carregarRemessas();
+                        if(typeof carregarConfiguracoesAutomacao === 'function') carregarConfiguracoesAutomacao();
+                    }, 600);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

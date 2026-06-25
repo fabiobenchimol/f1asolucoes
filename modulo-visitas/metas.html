@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gestão e Metas - F1A Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <link rel="stylesheet" href="../style.css">
+    
+    <style>
+        .escondido { display: none !important; }
+
+        /* ==========================================
+           TABS E NAVEGAÇÃO DA PÁGINA
+           ========================================== */
+        .tabs-header { display: flex; gap: 10px; border-bottom: 2px solid var(--borda); margin-bottom: 25px; overflow-x: auto; scrollbar-width: none; }
+        .tabs-header::-webkit-scrollbar { display: none; }
+        .tab-btn { background: transparent; border: none; color: var(--cor-texto); font-weight: 800; font-size: 13px; padding: 12px 20px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s ease; text-transform: uppercase; white-space: nowrap; display: flex; align-items: center; gap: 8px;}
+        .tab-btn:hover { color: var(--cor-titulo); }
+        .tab-btn.ativo { color: var(--f1a-blue); border-bottom-color: var(--f1a-blue); }
+        
+        .aba-conteudo { display: none; animation: fadeIn 0.3s ease; }
+        .aba-conteudo.ativo { display: block; }
+        
+        /* ==========================================
+           FORMULÁRIOS E CARTÕES DE CONTEÚDO
+           ========================================== */
+        .form-grupo { margin-bottom: 15px; }
+        .form-grupo label { display: block; font-size: 11px; font-weight: 800; color: var(--cor-texto); margin-bottom: 6px; text-transform: uppercase; }
+        select option { background-color: var(--bg-painel); color: var(--cor-titulo); font-weight: bold; }
+        
+        .card-secao { background: var(--bg-painel); padding: 20px; border-radius: 12px; border: 1px solid var(--borda); margin-bottom: 20px; box-shadow: var(--shadow); }
+        .navegador-mes { display: flex; align-items: center; justify-content: center; gap: 15px; background: rgba(0,0,0,0.02); padding: 10px; border-radius: 8px; border: 1px solid var(--borda); }
+        .nav-mes-btn { background: var(--bg-fundo); border: 1px solid var(--borda); border-radius: 6px; padding: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--cor-titulo); transition: 0.2s; }
+        .nav-mes-btn:hover { background: var(--f1a-blue); color: white; border-color: var(--f1a-blue); }
+        .nav-mes-texto { font-weight: 900; font-size: 16px; color: var(--f1a-blue); min-width: 150px; text-align: center; text-transform: uppercase; }
+
+        .tabela-wrapper { overflow-x: auto; }
+        .input-locomocao { text-align: right; font-weight: bold; font-size: 12px; color: var(--f1a-copper); border-color: rgba(230,145,56,0.3); background: rgba(230,145,56,0.02); padding: 8px; border-radius: 6px; width: 100%; box-sizing: border-box;}
+        .input-locomocao:focus { border-color: var(--f1a-copper); background: var(--bg-painel); }
+
+        /* ==========================================
+           MODO DE IMPRESSÃO (PDF CORPORATIVO)
+           ========================================== */
+        #printHeader { display: none; }
+        @media print {
+            body, html { background: #ffffff !important; color: #000000 !important; height: auto !important; overflow: visible !important; margin: 0 !important; padding: 0 !important; }
+            .sidebar, .header, #overlayMobile, .tabs-header, #seletorPromotoraContainer, .botoes-exportacao, .nav-mes-btn, #abaPromotoria, #abaLojas { display: none !important; }
+            .main-content, .content-area, #abaEscalas { display: block !important; height: auto !important; overflow: visible !important; position: static !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+            #printHeader { display: block !important; border-bottom: 2px solid #000; margin-bottom: 20px; padding-bottom: 15px; text-align: left; }
+            #printHeader * { color: #000 !important; margin: 0; visibility: visible !important; }
+            #printRazaoSocial { font-size: 20px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px !important; }
+            #printHeaderDetails p { font-size: 11px; line-height: 1.4; font-weight: 500; }
+            .navegador-mes { display: flex !important; border: none !important; background: transparent !important; margin-bottom: 15px !important; padding: 0 !important; justify-content: space-between !important; width: 100% !important; }
+            .nav-mes-texto { color: #000 !important; font-size: 16px !important; font-weight: 900 !important; text-align: left !important; min-width: auto !important;}
+            #printHeaderPromotora { display: block !important; font-size: 14px !important; font-weight: 700 !important; text-align: right !important;}
+            .card-secao { border: none !important; box-shadow: none !important; padding: 0 !important; background: transparent !important; margin: 0 !important;}
+            .tabela-wrapper { overflow: visible !important; }
+            .tabela-dados { border-collapse: collapse !important; width: 100% !important; border: 1px solid #000 !important; page-break-inside: auto; }
+            .tabela-dados tr { page-break-inside: avoid; page-break-after: auto; }
+            .tabela-dados th, .tabela-dados td { border: 1px solid #000 !important; color: #000 !important; padding: 8px !important; background: transparent !important; font-size: 12px !important; }
+            .tabela-dados th { background-color: #f3f4f6 !important; font-weight: bold !important; text-transform: uppercase !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .tabela-dados tfoot tr td { background-color: #e5e7eb !important; border-top: 2px solid #000 !important; font-weight: bold !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+    </style>
+</head>
+<body style="display: none;" id="corpoPagina">
+
+    <div id="overlayMobile" class="overlay-mobile" onclick="toggleSidebarF1A()"></div>
+
+    <aside class="sidebar" id="sidebarF1A">
+        <div class="sidebar-logo" style="cursor: pointer;" onclick="window.location.href='../lobby.html'">
+            <img src="../assets/logo_f1a.png" id="logoSidebar" alt="Logo F1A">
+        </div>
+        <nav class="nav-links">
+            <a href="../lobby.html" class="nav-item btn-inicio">
+                <span class="material-symbols-rounded">home</span><span class="nav-texto">Início</span>
+            </a>
+            <div class="nav-divisor"></div>
+            <a href="visitas.html" class="nav-item"><span class="material-symbols-rounded">calendar_month</span><span class="nav-texto">Planner de Visitas</span></a>
+            <a href="metas.html" class="nav-item ativo"><span class="material-symbols-rounded">target</span><span class="nav-texto">Gestão e Metas</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <button class="btn-menu-toggle" onclick="toggleSidebarF1A()" style="background:none; border:none; color:white; cursor:pointer;">
+                    <span class="material-symbols-rounded" style="font-size: 26px;">menu</span>
+                </button>
+                <img src="../assets/logo_f1a.png" class="mobile-header-logo" id="logoHeaderMobile" onclick="window.location.href='../lobby.html'">
+                <h2 class="header-title">Gestão de Metas</h2>
+            </div>
+            <div class="header-right">
+                <button class="btn-icon" onclick="alternarTemaGlobal()" id="btnTemaGlobal" title="Alternar Tema">
+                    <span class="material-symbols-rounded">dark_mode</span>
+                </button>
+                <div class="user-profile" onclick="toggleDropdownPerfil(event)" style="cursor: pointer; position: relative;">
+                    <div class="user-avatar" id="iniciaisUsuario">--</div>
+                    <div class="user-info">
+                        <span class="user-name" id="nomeUsuario">Carregando...</span>
+                        <span class="user-role" id="cargoUsuario">Aguarde</span>
+                    </div>
+                    <span class="material-symbols-rounded" style="color: var(--cor-texto); margin-left: 5px;">expand_more</span>
+                    
+                    <div class="menu-perfil-flutuante escondido" id="dropdownPerfilLocal">
+                        <a href="#" onclick="alterarNomeExibicao()" class="dropdown-item" style="padding: 10px 15px; color: var(--cor-titulo); text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                            <span class="material-symbols-rounded">edit</span> Alterar Nome
+                        </a>
+                        <hr style="border: 0; border-top: 1px solid var(--borda); margin: 5px 0;">
+                        <a href="#" onclick="sair()" class="dropdown-item" style="padding: 10px 15px; color: #ef4444; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 10px;">
+                            <span class="material-symbols-rounded">logout</span> Sair
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            
+            <div id="seletorPromotoraContainer" style="background: var(--bg-painel); padding: 15px 20px; border-radius: 12px; border: 1px solid var(--borda); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="material-symbols-rounded" style="color: var(--f1a-blue); font-size: 30px;">support_agent</span>
+                    <div>
+                        <h3 style="margin: 0; color: var(--cor-titulo); font-size: 16px;">Configuração da Equipe</h3>
+                        <p style="margin: 0; font-size: 11px; color: var(--cor-texto);">Selecione o vendedor para ajustar metas e visualizar escalas.</p>
+                    </div>
+                </div>
+                <select id="selectPromotoraGlob" onchange="carregarDadosPromotora()" style="width: auto; min-width: 250px; font-weight: bold; border-color: var(--f1a-copper); color: var(--f1a-copper); background: rgba(230,145,56,0.05);">
+                    <option value="">A carregar equipa...</option>
+                </select>
+            </div>
+
+            <div class="tabs-header" id="tabsNavegacao">
+                <button class="tab-btn ativo" onclick="abrirAba('abaPromotoria', this)">Promotoria</button>
+                <button class="tab-btn" onclick="abrirAba('abaLojas', this)">Lojas / Locomoção</button>
+                <button class="tab-btn" onclick="abrirAba('abaEscalas', this)">Escalas (Mensal)</button>
+            </div>
+
+            <div id="abaPromotoria" class="aba-conteudo ativo">
+                <div id="msgSemPromotora" style="text-align: center; padding: 50px 20px; color: var(--cor-texto); display: none;">
+                    <span class="material-symbols-rounded" style="font-size: 48px; opacity: 0.5;">engineering</span>
+                    <p>Selecione um vendedor na lista acima para configurar suas metas.</p>
+                </div>
+
+                <form id="formPromotoria" onsubmit="salvarMetasPromotoria(event)">
+                    <div class="card-secao">
+                        <h4 style="margin: 0 0 15px 0; color: var(--cor-titulo); border-bottom: 1px dashed var(--borda); padding-bottom: 10px;">Parâmetros Básicos</h4>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <div class="form-grupo">
+                                <label>Carga Horária (Semana)</label>
+                                <input type="number" id="metaHorasSemana" placeholder="Ex: 44" required>
+                            </div>
+                            <div class="form-grupo">
+                                <label>Carga Horária (Mês)</label>
+                                <input type="number" id="metaHorasMes" placeholder="Ex: 220" required>
+                            </div>
+                            <div class="form-grupo">
+                                <label>Meta Cartões (Mês)</label>
+                                <input type="number" id="metaCartoesMes" placeholder="Ex: 150" required>
+                            </div>
+                            
+                            <div class="form-grupo">
+                                <label style="color: var(--f1a-copper);">Meio de Transporte Padrão</label>
+                                <select id="tipoTransporte" required style="border-color: var(--f1a-copper);">
+                                    <option value="">Selecione...</option>
+                                    <option value="Moto">Moto</option>
+                                    <option value="Carro">Carro</option>
+                                    <option value="Onibus">Ônibus</option>
+                                    <option value="App">App (Uber/99)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-secao">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--borda); padding-bottom: 10px; margin-bottom: 15px;">
+                            <h4 style="margin: 0; color: var(--cor-titulo);">Gatilhos de Bônus (Cartões)</h4>
+                            <button type="button" onclick="adicionarGatilho()" style="background: var(--bg-body); border: 1px solid var(--f1a-blue); color: var(--f1a-blue); border-radius: 6px; padding: 5px 10px; font-weight: bold; cursor: pointer; font-size: 11px;">+ Adicionar Faixa</button>
+                        </div>
+                        <div id="containerGatilhos" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                        <p style="font-size: 10px; color: var(--cor-texto); margin-top: 10px; font-style: italic;">* O valor do bônus é pago por cada cartão aprovado dentro da faixa.</p>
+                    </div>
+
+                    <button type="submit" class="btn-salvar" style="width: auto; padding: 12px 30px;"><span class="material-symbols-rounded">save</span> Salvar Metas do Vendedor</button>
+                </form>
+            </div>
+
+            <div id="abaLojas" class="aba-conteudo escondido">
+                <form id="formLojas" onsubmit="salvarMetasLojasGlobais(event)">
+                    <div class="card-secao">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                            <span class="material-symbols-rounded" style="color: var(--f1a-blue);">public</span>
+                            <h4 style="margin: 0; color: var(--cor-titulo);">Tabela Global de Locomoção</h4>
+                        </div>
+                        <p style="margin: 0 0 20px 0; font-size: 12px; color: var(--cor-texto);">Defina os valores de reembolso pagos por visita a cada loja. <strong>Estes valores valem para toda a equipe</strong> com base no transporte cadastrado.</p>
+                        
+                        <div class="tabela-wrapper">
+                            <table class="tabela-dados" id="tabelaLojasLocomocao">
+                                <thead>
+                                    <tr>
+                                        <th>Loja / Cliente</th>
+                                        <th style="width: 100px; text-align: center;">Moto (R$)</th>
+                                        <th style="width: 100px; text-align: center;">Carro (R$)</th>
+                                        <th style="width: 100px; text-align: center;">Ônibus (R$)</th>
+                                        <th style="width: 100px; text-align: center;">App (R$)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-salvar" style="width: auto; padding: 12px 30px; background: var(--f1a-blue);"><span class="material-symbols-rounded">public</span> Salvar Tabela Global</button>
+                </form>
+            </div>
+
+            <div id="abaEscalas" class="aba-conteudo escondido">
+                
+                <div id="printHeader">
+                    <h1 id="printRazaoSocial">Buscando Empresa...</h1>
+                    <div id="printHeaderDetails">
+                        <p id="printCnpj">CNPJ: --</p>
+                        <p id="printEndereco">Endereço: --</p>
+                        <p id="printContato">Contato: --</p>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                    <div class="navegador-mes">
+                        <button class="nav-mes-btn" onclick="mudarMesEscala(-1)"><span class="material-symbols-rounded">chevron_left</span></button>
+                        <div class="nav-mes-texto" id="lblMesEscala">MAIO 2026</div>
+                        <button class="nav-mes-btn" onclick="mudarMesEscala(1)"><span class="material-symbols-rounded">chevron_right</span></button>
+                        
+                        <span id="printHeaderPromotora" style="display:none;"></span>
+                    </div>
+
+                    <div class="botoes-exportacao" style="display: flex; gap: 10px;">
+                        <button onclick="exportarExcelEscalas()" style="background: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 12px;"><span class="material-symbols-rounded" style="font-size: 18px;">download</span> Excel</button>
+                        <button onclick="gerarPDFEscalas()" style="background: #ef4444; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 12px;"><span class="material-symbols-rounded" style="font-size: 18px;">picture_as_pdf</span> PDF</button>
+                    </div>
+                </div>
+
+                <div class="card-secao">
+                    <div class="tabela-wrapper">
+                        <table class="tabela-dados">
+                            <thead>
+                                <tr>
+                                    <th>Empresa / Loja</th>
+                                    <th style="text-align: center;">Visitas Realizadas</th>
+                                    <th style="text-align: center;">Cartões Aprov.</th>
+                                    <th style="text-align: center;">Horas Trab.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaEscalasBody"></tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>TOTAIS NO MÊS</td>
+                                    <td id="totEscVisitas" style="text-align: center;">0</td>
+                                    <td id="totEscCartoes" style="text-align: center;">0</td>
+                                    <td id="totEscHoras" style="text-align: center;">00:00</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script src="../core.js?v=1"></script>
+    <script src="../ui.js?v=1"></script>
+    <script src="metas.js"></script>
+
+    <script>
+        // Menu Lateral
+        window.toggleSidebarF1A = function() {
+            const sidebar = document.getElementById('sidebarF1A');
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('aberta');
+                document.getElementById('overlayMobile').classList.toggle('ativa');
+            } else { sidebar.classList.toggle('retraida'); }
+        }
+
+        // Menu de Perfil Local (pois este arquivo tem header no DOM)
+        window.toggleDropdownPerfil = function(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('dropdownPerfilLocal');
+            if (menu) menu.classList.toggle('escondido');
+        };
+        
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('dropdownPerfilLocal');
+            if (menu && !menu.classList.contains('escondido')) menu.classList.add('escondido');
+        });
+
+        // Abas da Tela
+        window.abrirAba = function(idAba, btnClicado) {
+            document.querySelectorAll('.aba-conteudo').forEach(aba => { aba.classList.add('escondido'); aba.classList.remove('ativo'); });
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('ativo'));
+            
+            document.getElementById(idAba).classList.remove('escondido');
+            document.getElementById(idAba).classList.add('ativo');
+            if(btnClicado) btnClicado.classList.add('ativo');
+
+            const seletor = document.getElementById('seletorPromotoraContainer');
+            if (idAba === 'abaLojas') {
+                seletor.style.display = 'none';
+                if(typeof carregarMetasLojasGlobais === "function") carregarMetasLojasGlobais();
+            } else {
+                seletor.style.display = 'flex';
+                if (idAba === 'abaEscalas' && typeof carregarEscalasMes === "function") { carregarEscalasMes(); }
+            }
+        }
+    </script>
+</body>
+</html>

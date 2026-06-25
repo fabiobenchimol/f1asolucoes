@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Planner de Visitas - F1A Cartões</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <link rel="stylesheet" href="../style.css">
+    
+    <style>
+        /* ==========================================
+           CORREÇÕES GERAIS E BUG VISUAIS
+           ========================================== */
+        select option { background-color: var(--bg-painel); color: var(--cor-titulo); font-weight: bold; }
+        .escondido { display: none !important; }
+        
+        .kpi-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
+        .kpi-card { background: var(--bg-painel); padding: 15px; border-radius: 12px; border: 1px solid var(--borda); box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: transform 0.3s ease; }
+        .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.05); }
+
+        /* ==========================================
+           MENU RETRÁTIL (NOVO PADRÃO F1A)
+           ========================================== */
+        .sidebar { transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow-x: hidden; white-space: nowrap; }
+        .sidebar.retraida { width: 75px; }
+        .sidebar.retraida .sidebar-logo img { display: none; }
+        .sidebar.retraida .sidebar-logo::after { content: 'F1A'; color: white; font-weight: 900; font-size: 18px; }
+        .sidebar.retraida .nav-item { justify-content: center; padding: 15px 0; }
+        .sidebar.retraida .nav-item span.material-symbols-rounded { margin-right: 0; font-size: 24px; }
+        .sidebar.retraida .nav-texto { display: none; }
+        .sidebar.retraida .nav-item.ativo { border-radius: 8px; border-left: none; background: rgba(0, 71, 255, 0.2); border: 1px solid rgba(0, 71, 255, 0.5); margin: 0 10px; }
+        
+        .btn-menu-toggle { background: transparent; border: none; color: white !important; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 5px; border-radius: 8px; transition: 0.2s; }
+        .btn-menu-toggle:hover { background: rgba(255,255,255,0.1); }
+
+        /* ==========================================
+           PLANNER DESKTOP
+           ========================================== */
+        .planner-grid { display: grid; grid-template-columns: 80px repeat(7, 1fr); gap: 1px; background: var(--borda); border: 1px solid var(--borda); border-radius: 16px; overflow: hidden; margin-top: 20px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .pg-celula { background: var(--bg-painel); padding: 10px; min-height: 110px; display: flex; flex-direction: column; gap: 8px; position: relative; transition: background 0.3s ease; }
+        .pg-celula:hover { background: rgba(0, 71, 255, 0.02); } 
+        .pg-cabecalho { background: linear-gradient(to bottom, var(--bg-fundo), var(--bg-painel)); text-align: center; font-weight: 800; padding: 15px 10px; font-size: 13px; color: var(--cor-titulo); border-bottom: 2px solid rgba(0,0,0,0.05); }
+        .pg-turno { background: rgba(0, 0, 0, 0.015); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: var(--cor-texto); text-transform: uppercase; letter-spacing: 1px; }
+        
+        .btn-add-visita { width: 32px; height: 32px; border-radius: 50%; background: transparent; border: 1.5px dashed var(--f1a-blue); color: var(--f1a-blue); display: flex; align-items: center; justify-content: center; margin: auto; cursor: pointer; transition: all 0.2s ease; opacity: 0.6; }
+        .btn-add-visita:hover { background: var(--f1a-blue); color: white; border-style: solid; opacity: 1; transform: scale(1.1); }
+        .pg-celula.ocupada .btn-add-visita { display: none !important; }
+        
+        .card-visita { background: var(--bg-fundo); border-left: 4px solid #64748b; padding: 10px; border-radius: 6px; font-size: 11px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); }
+        .card-visita:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 6px 12px rgba(0,0,0,0.08); }
+        .status-pendente { border-left-color: var(--f1a-copper); }
+        .status-andamento { border-left-color: var(--f1a-blue); }
+        .status-concluido { border-left-color: #10b981; }
+        
+        .cv-loja { font-weight: 800; color: var(--cor-titulo); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px;}
+        .cv-hora { color: var(--cor-texto); display: flex; align-items: center; gap: 4px; opacity: 0.8;}
+        .cv-contador { margin-top: 6px; background: rgba(0,0,0,0.04); padding: 4px 6px; border-radius: 4px; text-align: center; font-weight: 800; color: var(--cor-titulo); font-size: 10px;}
+        .meta-atingida { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+
+        /* Modal Visual */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(4px); }
+        .modal-box { background: var(--bg-painel); width: 90%; max-width: 500px; border-radius: 16px; padding: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto; border: 1px solid var(--borda); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--borda); padding-bottom: 15px; margin-bottom: 20px; }
+        
+        .form-grupo { margin-bottom: 15px; }
+        .form-grupo label { display: block; font-size: 11px; font-weight: 800; color: var(--cor-texto); margin-bottom: 6px; text-transform: uppercase; }
+        
+        .timeline-item { padding: 10px 0; border-bottom: 1px dashed var(--borda); font-size: 12px; display: flex; align-items: flex-start; gap: 10px; }
+        .timeline-item:last-child { border-bottom: none; }
+        .tl-hora { font-weight: 800; min-width: 45px; }
+
+        .menu-perfil-flutuante { position: absolute; top: 100%; right: 0; background: var(--bg-painel); border: 1px solid var(--borda); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); width: 220px; z-index: 9999; padding: 10px 0; margin-top: 10px; }
+        .menu-perfil-flutuante a { display: flex; align-items: center; padding: 12px 20px; color: var(--cor-titulo); text-decoration: none; font-size: 14px; transition: background 0.2s ease; }
+        .menu-perfil-flutuante a:hover { background: rgba(0,0,0,0.03); }
+
+        .info-header-vendedor { background: rgba(0,0,0,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--borda); margin-bottom: 20px; }
+        .info-header-vendedor h3 { margin: 0 0 5px 0; color: var(--f1a-blue); font-size: 16px; font-weight: 800;}
+        .info-header-vendedor p { margin: 0; color: var(--cor-texto); font-size: 12px; }
+
+        /* ==========================================
+           PLANNER MOBILE (COMPACT GRID F1A)
+           ========================================== */
+        @media (max-width: 768px) {
+            .content-area { padding: 10px; }
+            .kpi-container { grid-template-columns: 1fr 1fr; gap: 10px; }
+            
+            /* Controles superiores reduzidos */
+            .header-controles-planner { flex-direction: column; align-items: stretch !important; gap: 15px; padding: 10px !important; }
+            .header-controles-planner > div { justify-content: space-between; }
+            #labelSemanaAtual { font-size: 12px !important; }
+            
+            /* Grelha elástica para Mobile */
+            .planner-grid {
+                display: grid !important;
+                grid-template-columns: 25px repeat(7, minmax(40px, 1fr)) !important;
+                gap: 1px;
+                width: 100%;
+                border-radius: 8px;
+            }
+            .pg-cabecalho { 
+                display: block !important; 
+                padding: 5px 2px !important; 
+                font-size: 9px !important; 
+                line-height: 1.2;
+                word-break: break-word;
+            }
+            .pg-cabecalho span { font-size: 8px !important; }
+            
+            .pg-turno { 
+                display: flex !important; 
+                writing-mode: vertical-rl; 
+                text-orientation: mixed; 
+                transform: rotate(180deg); 
+                font-size: 9px !important; 
+                padding: 0 !important;
+                justify-content: center;
+                border-radius: 0 !important;
+                margin: 0 !important;
+                grid-column: span 1 !important;
+                background: rgba(0,0,0,0.03) !important;
+                color: var(--cor-texto) !important;
+                min-height: 60px;
+            }
+            .pg-turno.divisor-almoco {
+                writing-mode: horizontal-tb;
+                transform: none;
+                grid-column: 1 / -1 !important;
+                min-height: 20px !important;
+                color: var(--f1a-copper) !important;
+                background: rgba(230, 145, 56, 0.05) !important;
+            }
+            .pg-celula { 
+                display: flex !important; 
+                min-height: 60px !important; 
+                padding: 2px !important; 
+                border-radius: 0 !important;
+                margin: 0 !important;
+                gap: 2px !important;
+            }
+            .btn-add-visita { width: 20px; height: 20px; }
+            .btn-add-visita span { font-size: 14px; }
+            
+            /* Otimização dos Cards para Ecrãs pequenos */
+            .card-visita { padding: 3px !important; font-size: 8px !important; border-left-width: 2px !important; border-radius: 4px !important; }
+            .cv-loja { font-size: 8px !important; white-space: normal !important; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; margin-bottom: 2px !important; line-height: 1.1; }
+            .cv-hora { font-size: 7px !important; }
+            .cv-hora span { font-size: 9px !important; }
+            .cv-contador { font-size: 7px !important; padding: 2px !important; margin-top: 2px !important; }
+        }
+    </style>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+<body style="display: none;" id="corpoPagina">
+
+    <div id="overlayMobile" class="overlay-mobile" onclick="toggleSidebarF1A()"></div>
+
+    <aside class="sidebar" id="sidebarF1A">
+        <div class="sidebar-logo" style="cursor: pointer;" onclick="window.location.href='../lobby.html'">
+            <img src="../assets/logo_f1a.png" id="logoSidebar" alt="Logo F1A">
+        </div>
+        <nav class="nav-links">
+            <a href="../lobby.html" class="nav-item btn-inicio">
+                <span class="material-symbols-rounded">home</span><span class="nav-texto">Início</span>
+            </a>
+            <div class="nav-divisor"></div>
+            <a href="visitas.html" class="nav-item ativo"><span class="material-symbols-rounded">calendar_month</span><span class="nav-texto">Planner de Visitas</span></a>
+            <a href="metas.html" class="nav-item"><span class="material-symbols-rounded">target</span><span class="nav-texto">Gestão e Metas</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-content" id="mainContentF1A">
+        <header class="header">
+            <div class="header-left">
+                <button class="btn-menu-toggle" onclick="toggleSidebarF1A()"><span class="material-symbols-rounded" style="font-size: 26px;">menu</span></button>
+                <img src="../assets/logo_f1a.png" class="mobile-header-logo" id="logoHeaderMobile" onclick="window.location.href='../lobby.html'">
+                <h2 class="header-title">Planner e Rotas</h2>
+            </div>
+            
+            <div class="header-right">
+                <button class="btn-icon" onclick="alternarTemaLocal()" id="btnTema" title="Alternar Tema"><span class="material-symbols-rounded">dark_mode</span></button>
+                <div class="user-profile" onclick="toggleDropdownPerfil(event)" style="cursor: pointer; position: relative;">
+                    <div class="user-avatar" id="iniciaisUsuario">--</div>
+                    <div class="user-info">
+                        <span class="user-name" id="nomeUsuario">Carregando...</span>
+                        <span class="user-role" id="cargoUsuario">Aguarde</span>
+                    </div>
+                    <span class="material-symbols-rounded" style="color: var(--cor-texto); margin-left: 5px;">expand_more</span>
+                    <div class="menu-perfil-flutuante escondido" id="dropdownPerfilLocal">
+                        <a href="#" onclick="fazerLogout()" style="color: #ef4444; font-weight: bold;">
+                            <span class="material-symbols-rounded" style="margin-right: 10px;">logout</span> Sair do Sistema
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            
+            <div class="header-controles-planner" style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-painel); padding: 15px 20px; border-radius: 12px; border: 1px solid var(--borda); box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button class="btn-icon" onclick="mudarSemana(-1)" style="background: var(--bg-fundo); border: 1px solid var(--borda);"><span class="material-symbols-rounded">chevron_left</span></button>
+                    <button style="background: var(--bg-fundo); border: 1px solid var(--borda); color: var(--cor-titulo); padding: 8px 16px; border-radius: 6px; font-weight: 800; cursor: pointer; font-size: 12px;" onclick="irParaHoje()">HOJE</button>
+                    <button class="btn-icon" onclick="mudarSemana(1)" style="background: var(--bg-fundo); border: 1px solid var(--borda);"><span class="material-symbols-rounded">chevron_right</span></button>
+                    <h3 style="margin: 0 0 0 15px; color: var(--f1a-blue); font-size: 16px; font-weight: 800;" id="labelSemanaAtual">A carregar...</h3>
+                </div>
+
+                <div style="display: flex; gap: 10px;" id="painelControlesAdmin">
+                    <button id="btnCopiarSemana" class="escondido" onclick="copiarSemanaAnterior()" style="background: transparent; color: var(--f1a-blue); border: 1px solid var(--f1a-blue); padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 12px;">
+                        <span class="material-symbols-rounded" style="font-size: 16px;">content_copy</span> Repetir Escala
+                    </button>
+                    <select id="filtroPromotora" onchange="trocarVisaoPromotora()" style="padding: 8px 15px; border-radius: 8px; border: 1px solid var(--f1a-copper); background: rgba(230, 145, 56, 0.05); color: var(--f1a-copper); font-weight: 800; cursor: pointer; outline: none; font-size: 12px;">
+                        <option value="">A carregar equipa...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="planner-grid">
+                <div style="background: rgba(0,0,0,0.03);"></div>
+                <div class="pg-cabecalho" id="cab-0">SEG</div>
+                <div class="pg-cabecalho" id="cab-1">TER</div>
+                <div class="pg-cabecalho" id="cab-2">QUA</div>
+                <div class="pg-cabecalho" id="cab-3">QUI</div>
+                <div class="pg-cabecalho" id="cab-4">SEX</div>
+                <div class="pg-cabecalho" id="cab-5">SÁB</div>
+                <div class="pg-cabecalho" id="cab-6">DOM</div>
+
+                <div class="pg-turno">Manhã</div>
+                <div class="pg-celula" id="cel-seg-manha"></div><div class="pg-celula" id="cel-ter-manha"></div><div class="pg-celula" id="cel-qua-manha"></div>
+                <div class="pg-celula" id="cel-qui-manha"></div><div class="pg-celula" id="cel-sex-manha"></div><div class="pg-celula" id="cel-sab-manha"></div><div class="pg-celula" id="cel-dom-manha"></div>
+
+                <div class="pg-turno divisor-almoco" style="grid-column: 1 / -1; color: var(--f1a-copper); background: rgba(230, 145, 56, 0.03);">ALMOÇO</div>
+
+                <div class="pg-turno">Tarde</div>
+                <div class="pg-celula" id="cel-seg-tarde"></div><div class="pg-celula" id="cel-ter-tarde"></div><div class="pg-celula" id="cel-qua-tarde"></div>
+                <div class="pg-celula" id="cel-qui-tarde"></div><div class="pg-celula" id="cel-sex-tarde"></div><div class="pg-celula" id="cel-sab-tarde"></div><div class="pg-celula" id="cel-dom-tarde"></div>
+
+                <div class="pg-turno" style="background: rgba(0, 71, 255, 0.02);">Noite</div>
+                <div class="pg-celula" id="cel-seg-noite"></div><div class="pg-celula" id="cel-ter-noite"></div><div class="pg-celula" id="cel-qua-noite"></div>
+                <div class="pg-celula" id="cel-qui-noite"></div><div class="pg-celula" id="cel-sex-noite"></div><div class="pg-celula" id="cel-sab-noite"></div><div class="pg-celula" id="cel-dom-noite"></div>
+            </div>
+
+            <div>
+                <h4 style="margin: 0 0 15px 0; color: var(--cor-titulo); font-size: 14px; text-transform: uppercase; display: flex; align-items: center; gap: 8px;">
+                    <span class="material-symbols-rounded" style="color: var(--f1a-copper);">monitoring</span> Resultados e Desempenho
+                </h4>
+                <div class="kpi-container">
+                    <div class="kpi-card">
+                        <div style="font-size: 10px; font-weight: 800; color: var(--cor-texto); text-transform: uppercase;">Horas (Semana)</div>
+                        <div style="font-size: 26px; font-weight: 800; color: var(--f1a-blue); margin: 5px 0;" id="kpiHorasSemana">00:00 <span style="font-size:12px; color:var(--cor-texto); font-weight:normal;">/ --h</span></div>
+                        <div style="font-size: 11px; color: var(--cor-texto);">Trabalhadas x Meta</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div style="font-size: 10px; font-weight: 800; color: var(--cor-texto); text-transform: uppercase;">Horas (Mês)</div>
+                        <div style="font-size: 26px; font-weight: 800; color: var(--f1a-blue); margin: 5px 0;" id="kpiHorasMes">00:00 <span style="font-size:12px; color:var(--cor-texto); font-weight:normal;">/ --h</span></div>
+                        <div style="font-size: 11px; color: var(--cor-texto);">Banco de horas: --:--</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div style="font-size: 10px; font-weight: 800; color: var(--cor-texto); text-transform: uppercase;">Cartões (Semana)</div>
+                        <div style="font-size: 26px; font-weight: 800; color: var(--f1a-blue); margin: 5px 0;" id="kpiCartoesSemana">0 <span style="font-size:12px; color:var(--cor-texto); font-weight:normal;">/ --</span></div>
+                        <div style="font-size: 11px; color: var(--cor-texto);">Aprovados na semana atual</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div style="font-size: 10px; font-weight: 800; color: var(--cor-texto); text-transform: uppercase;">Cartões (Mês)</div>
+                        <div style="font-size: 26px; font-weight: 800; color: var(--f1a-blue); margin: 5px 0;" id="kpiCartoesMes">0 <span style="font-size:12px; color:var(--cor-texto); font-weight:normal;">/ --</span></div>
+                        <div style="font-size: 11px; color: var(--cor-texto);">Aprovados x Meta Mensal</div>
+                    </div>
+                    <div class="kpi-card" style="border-left: 3px solid var(--f1a-copper);">
+                        <div style="font-size: 10px; font-weight: 800; color: var(--cor-texto); text-transform: uppercase;">Bônus Estimado (R$)</div>
+                        <div style="font-size: 26px; font-weight: 800; color: var(--f1a-copper); margin: 5px 0;" id="kpiBonusMes">R$ 0,00</div>
+                        <div style="font-size: 11px; color: var(--cor-texto);">Acumulado no Mês Atual</div>
+                    </div>
+                    <div class="kpi-card" style="border-left: 3px solid var(--f1a-copper);">
+                        <div style="font-size: 10px; font-weight: 800; color: var(--cor-texto); text-transform: uppercase;">Ajuda Custo (Semana)</div>
+                        <div style="font-size: 26px; font-weight: 800; color: var(--f1a-copper); margin: 5px 0;" id="kpiCustoSemana">R$ 0,00</div>
+                        <div style="font-size: 11px; color: var(--cor-texto);">Reembolso de Deslocamento</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="modalVisita" class="modal-overlay escondido">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 style="margin: 0; color: var(--cor-titulo); font-weight: 800;" id="tituloModalVisita">Detalhes da Visita</h3>
+                <button class="btn-icon" onclick="fecharModalVisita()"><span class="material-symbols-rounded">close</span></button>
+            </div>
+
+            <form id="areaFormAdmin" onsubmit="salvarVisitaFirebase(event)" class="escondido">
+                <input type="hidden" id="visitaDiaIndice">
+                <input type="hidden" id="visitaTurnoAtual">
+                <input type="hidden" id="visitaIdAtual">
+
+                <div class="form-grupo">
+                    <label>Loja / Ponto de Venda</label>
+                    <select id="visitaLojaSelect" required></select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-grupo"><label>Hora Início</label><input type="time" id="visitaHoraInicio" required></div>
+                    <div class="form-grupo"><label>Hora Fim</label><input type="time" id="visitaHoraFim" required></div>
+                </div>
+                <div class="form-grupo">
+                    <label>Notas / Orientações (Admin)</label>
+                    <textarea id="visitaNotas" rows="2" placeholder="Ex: Focar na oferta X..."></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button type="button" id="btnExcluirVisita" onclick="excluirVisitaFirebase()" style="background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1;">Excluir</button>
+                    <button type="submit" style="background: var(--f1a-blue); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 2;">Salvar Agendamento</button>
+                </div>
+            </form>
+
+            <div id="areaHeaderVendedor" class="escondido info-header-vendedor">
+                <h3 id="vhLoja">Nome da Loja</h3>
+                <p><span class="material-symbols-rounded" style="font-size:14px; vertical-align:middle;">schedule</span> <span id="vhHorario">00:00 - 00:00</span></p>
+                <p id="vhNotas" style="margin-top:8px; font-style:italic; font-size:11px;"></p>
+            </div>
+
+            <div id="areaExecucaoPromotora" class="escondido">
+                <div style="background: rgba(230, 145, 56, 0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(230, 145, 56, 0.2); margin-bottom: 20px;">
+                    <label style="display: block; font-size: 11px; font-weight: bold; color: var(--f1a-copper); margin-bottom: 8px; text-transform: uppercase;">Registrar Cartão Aprovado</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" id="nomeClienteCartao" placeholder="Nome e Sobrenome do Cliente" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--borda); background: var(--bg-fundo); color: var(--cor-titulo);">
+                        <button type="button" onclick="registrarCartaoAprovado()" style="background: var(--f1a-copper); color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer;"><span class="material-symbols-rounded">add</span></button>
+                    </div>
+                    <div id="containerAprovadosUI" style="max-height: 100px; overflow-y: auto; font-size: 11px; display: flex; flex-direction: column; gap: 5px;"></div>
+                </div>
+
+                <div class="form-grupo">
+                    <label>Observação da Visita (Vendedor)</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="obsVendedorInput" placeholder="Relate algo importante (opcional)...">
+                        <button type="button" onclick="salvarObsVendedor()" style="background: var(--bg-painel); color: var(--f1a-blue); border: 1px solid var(--f1a-blue); padding: 0 15px; border-radius: 8px; font-weight: bold; cursor: pointer;">Salvar</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px; padding-top: 10px; border-top: 1px dashed var(--borda);">
+                    <label style="font-size: 11px; font-weight: bold; color: var(--cor-titulo); margin-bottom: 8px; display: block; text-align: center;">Comprovação de Ponto (Foto + Localização)</label>
+                    <input type="file" id="inputFotoCamera" accept="image/*" capture="environment" class="escondido" onchange="processarPontoAutomatico(event)">
+                    <input type="hidden" id="intencaoDePonto"> 
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" id="btnFazerCheckin" onclick="iniciarCapturaPonto('checkin')" style="flex: 1; background: #10b981; color: white; padding: 12px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;"><span class="material-symbols-rounded" style="font-size: 18px;">location_on</span> CHECK-IN</button>
+                        <button type="button" id="btnFazerCheckout" onclick="iniciarCapturaPonto('checkout')" disabled style="flex: 1; background: #ef4444; color: white; padding: 12px; border-radius: 8px; font-weight: bold; border: none; cursor: not-allowed; opacity: 0.5; display: flex; align-items: center; justify-content: center; gap: 5px;"><span class="material-symbols-rounded" style="font-size: 18px;">logout</span> CHECK-OUT</button>
+                    </div>
+                </div>
+
+                <div>
+                    <h5 style="margin: 0 0 10px 0; color: var(--cor-titulo); font-size: 12px; text-transform: uppercase;">Linha do Tempo</h5>
+                    <div id="linhaDoTempoVisita" style="background: rgba(0,0,0,0.02); padding: 10px; border-radius: 8px; border: 1px solid var(--borda); max-height: 150px; overflow-y: auto;"></div>
+                </div>
+            </div>
+
+            <div id="areaAuditoriaAdmin" class="escondido" style="margin-top: 20px; border-top: 2px dashed var(--borda); padding-top: 20px;">
+                <h4 style="margin: 0 0 15px 0; color: var(--cor-titulo); font-size: 14px; text-transform: uppercase; display: flex; align-items: center; gap: 8px;">
+                    <span class="material-symbols-rounded" style="color: var(--f1a-blue);">admin_panel_settings</span> Auditoria de Ponto
+                </h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="background: rgba(0,0,0,0.02); padding: 10px; border-radius: 8px; text-align: center;">
+                        <h5 style="margin:0 0 10px 0; font-size: 11px;">Check-in (Entrada)</h5>
+                        <img id="auditFotoIn" src="" style="width: 100%; max-height: 120px; object-fit: cover; border-radius: 6px; display: none; margin-bottom: 10px; border: 1px solid var(--borda);">
+                        <a id="auditGpsIn" href="#" target="_blank" style="display: none; color: var(--f1a-blue); font-size: 11px; text-decoration: none; font-weight: bold; background: var(--bg-painel); padding: 5px; border-radius: 4px;">📍 Ver Mapa</a>
+                        <p id="auditVazioIn" style="font-size: 10px; color: var(--cor-texto); font-style: italic;">Aguardando...</p>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.02); padding: 10px; border-radius: 8px; text-align: center;">
+                        <h5 style="margin:0 0 10px 0; font-size: 11px;">Check-out (Saída)</h5>
+                        <img id="auditFotoOut" src="" style="width: 100%; max-height: 120px; object-fit: cover; border-radius: 6px; display: none; margin-bottom: 10px; border: 1px solid var(--borda);">
+                        <a id="auditGpsOut" href="#" target="_blank" style="display: none; color: #ef4444; font-size: 11px; text-decoration: none; font-weight: bold; background: var(--bg-painel); padding: 5px; border-radius: 4px;">📍 Ver Mapa</a>
+                        <p id="auditVazioOut" style="font-size: 10px; color: var(--cor-texto); font-style: italic;">Aguardando...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="../core.js?v=1"></script>
+    <script src="../ui.js?v=1"></script>
+    <script src="visitas.js"></script>
+    
+    <script>
+        // Manutenção de Tema
+        function aplicarTemaSalvoLocal() { 
+            const isDark = localStorage.getItem("temaEscuro") === "true"; 
+            document.body.classList.toggle("dark-mode", isDark);
+            const btnTema = document.getElementById("btnTema");
+            if(btnTema) btnTema.innerHTML = isDark ? '<span class="material-symbols-rounded">light_mode</span>' : '<span class="material-symbols-rounded">dark_mode</span>';
+        }
+        aplicarTemaSalvoLocal(); 
+        window.alternarTemaLocal = function() { document.body.classList.toggle("dark-mode"); localStorage.setItem("temaEscuro", document.body.classList.contains("dark-mode")); aplicarTemaSalvoLocal(); }
+
+        // ==========================================
+        // LÓGICA DO MENU RETRÁTIL (F1A GLOBAL)
+        // ==========================================
+        window.toggleSidebarF1A = function() {
+            const sidebar = document.getElementById('sidebarF1A');
+            if (window.innerWidth <= 768) {
+                // No Mobile: Abre e fecha a cortina (Off-canvas)
+                sidebar.classList.toggle('aberta');
+                document.getElementById('overlayMobile').classList.toggle('ativa');
+            } else {
+                // No Desktop: Encolhe e expande a largura
+                sidebar.classList.toggle('retraida');
+            }
+        }
+
+        // Lógica do Dropdown de Perfil
+        window.toggleDropdownPerfil = function(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('dropdownPerfilLocal');
+            if (menu) menu.classList.toggle('escondido');
+        };
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('dropdownPerfilLocal');
+            if (menu && !menu.classList.contains('escondido')) menu.classList.add('escondido');
+        });
+    </script>
+</body>
+</html>

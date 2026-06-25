@@ -1,0 +1,493 @@
+---
+description: Regras do módulo Visitas da plataforma F1A
+globs:
+  - "**/modulo-visitas/**"
+alwaysApply: false
+---
+
+# F1A Visitas
+
+Você é especialista no módulo Visitas da plataforma F1A.
+
+Este módulo é responsável por:
+
+- Agenda Comercial
+- Escalas
+- Planejamento Semanal
+- Check-in
+- Check-out
+- GPS
+- Auditoria
+- Metas
+- Bonificações
+- Ajuda de Custo
+- Produção
+
+---
+
+# Conceito Central
+
+O módulo Visitas é a origem da produção comercial.
+
+Fluxo oficial:
+
+Agenda
+↓
+Visita
+↓
+Produção
+↓
+CRM
+↓
+Proposta
+↓
+Pagamento
+
+---
+
+# Coleções Oficiais
+
+## visitas_agenda
+
+Coleção principal.
+
+Campos conhecidos:
+
+```javascript
+promotoraId
+
+data
+turno
+
+lojaId
+
+horaInicio
+horaFim
+
+status
+
+cartoesAprovados
+
+checkinFoto
+checkoutFoto
+
+checkinGpsLat
+checkinGpsLng
+
+checkoutGpsLat
+checkoutGpsLng
+
+notas
+
+atualizadoEm
+```
+
+---
+
+# Status Oficiais
+
+Valores válidos:
+
+```text
+pendente
+andamento
+concluido
+```
+
+Nunca alterar.
+
+Nunca traduzir.
+
+Nunca renomear.
+
+---
+
+# Fluxo Oficial
+
+pendente
+↓
+andamento
+↓
+concluido
+
+---
+
+# Planner Oficial
+
+Estrutura semanal:
+
+```text
+SEG
+TER
+QUA
+QUI
+SEX
+SAB
+DOM
+```
+
+---
+
+# Turnos Oficiais
+
+Valores encontrados:
+
+```text
+manha
+almoco
+tarde
+```
+
+Preservar compatibilidade.
+
+---
+
+# Escalas
+
+O sistema suporta:
+
+- agenda semanal
+- agenda mensal
+- replicação automática
+
+---
+
+# Replicação de Agenda
+
+Função identificada:
+
+```javascript
+copiarSemanaAnterior()
+```
+
+Objetivo:
+
+Semana anterior
+↓
+Nova semana
+↓
+Reset de status
+
+---
+
+# Auditoria de Presença
+
+Obrigatória.
+
+Toda visita pode registrar:
+
+## Check-in
+
+```javascript
+checkinFoto
+
+checkinGpsLat
+checkinGpsLng
+```
+
+---
+
+## Check-out
+
+```javascript
+checkoutFoto
+
+checkoutGpsLat
+checkoutGpsLng
+```
+
+---
+
+# Regra Crítica
+
+Nunca remover:
+
+- GPS
+- Fotos
+- Auditoria
+
+Esses dados possuem valor operacional.
+
+---
+
+# Produção
+
+Campos encontrados:
+
+```javascript
+cartoesAprovados
+```
+
+Representam produção realizada.
+
+---
+
+# Integração Comercial
+
+Fluxo:
+
+Visita
+↓
+Cartões Aprovados
+↓
+CRM
+↓
+Proposta
+↓
+Pagamento
+
+Nunca quebrar essa integração.
+
+---
+
+# Controle de Equipe
+
+Perfis envolvidos:
+
+```text
+master
+admin
+gerente
+vendedor
+```
+
+---
+
+# Restrições do Vendedor
+
+Normalmente NÃO pode:
+
+✗ criar agendas globais
+
+✗ alterar metas
+
+✗ excluir agendas
+
+✗ administrar equipe
+
+---
+
+# Metas
+
+Coleção:
+
+```javascript
+visitas_config_metas
+```
+
+---
+
+# Campos Conhecidos
+
+```javascript
+horasSemana
+horasMes
+
+cartoesBase
+
+tipoTransporte
+
+gatilhosBonus
+
+ajudaDeCusto
+```
+
+---
+
+# Metas Inteligentes
+
+Função identificada:
+
+```javascript
+processarMetasInteligentes()
+```
+
+Conceito:
+
+Meta Mensal
+↓
+Visitas Restantes
+↓
+Meta por Visita
+
+Preservar lógica.
+
+---
+
+# Bonificações
+
+Estrutura:
+
+```javascript
+inicio
+fim
+valorBonus
+```
+
+Exemplo:
+
+```text
+1-50
+51-100
+101-150
+```
+
+Nunca alterar formato sem compatibilidade.
+
+---
+
+# Transporte
+
+Tipos oficiais:
+
+```text
+Moto
+Carro
+Ônibus
+App
+```
+
+---
+
+# Ajuda de Custo
+
+Estrutura identificada:
+
+```javascript
+{
+  lojaId: "",
+
+  moto: 0,
+  carro: 0,
+  onibus: 0,
+  app: 0
+}
+```
+
+---
+
+# Multiempresa
+
+Obrigatório.
+
+Toda consulta deve respeitar:
+
+```javascript
+empresaId
+visaoEmpresaAtiva
+```
+
+---
+
+# Hierarquia
+
+Empresa
+↓
+Gerente
+↓
+Vendedor
+↓
+Agenda
+↓
+Visita
+
+---
+
+# Dashboard Esperado
+
+Indicadores:
+
+- Visitas Agendadas
+- Visitas Concluídas
+- Produção
+- Cartões Aprovados
+- Meta
+- Bonificação
+
+---
+
+# Master Vision
+
+Suportado.
+
+Utilizar:
+
+```javascript
+f1a_simulated_uid
+```
+
+quando existir.
+
+---
+
+# UI
+
+Utilizar:
+
+- planner oficial
+- cards oficiais
+- tabelas oficiais
+- toast oficial
+
+---
+
+# Toast
+
+Obrigatório:
+
+```javascript
+mostrarToast(
+    mensagem,
+    tipo
+)
+```
+
+---
+
+# Auditoria
+
+Registrar:
+
+- usuário
+- data
+- ação
+
+para alterações críticas.
+
+---
+
+# Regras do Agente
+
+Ao alterar o módulo Visitas:
+
+✓ preservar agenda
+
+✓ preservar escalas
+
+✓ preservar GPS
+
+✓ preservar fotos
+
+✓ preservar produção
+
+✓ preservar metas
+
+✓ preservar bonificações
+
+✓ preservar ajuda de custo
+
+✓ preservar integração CRM
+
+✓ preservar integração Pagamentos
+
+✓ preservar multiempresa
+
+✓ preservar Master Vision
+
+Nunca remover auditoria.
+
+Nunca alterar status oficiais.
+
+Nunca quebrar a rastreabilidade da produção comercial.
+
+Nunca remover validações de check-in e check-out.

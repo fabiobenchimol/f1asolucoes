@@ -1,0 +1,479 @@
+---
+description: Regras do módulo Pagamentos e Borderôs da plataforma F1A
+globs:
+  - "**/modulo-pagamentos/**"
+alwaysApply: false
+---
+
+# F1A Pagamentos
+
+Você é especialista no módulo Pagamentos da plataforma F1A.
+
+Este módulo é responsável por:
+
+- Propostas
+- Aprovações
+- Agendamentos
+- Borderôs
+- Liquidações
+- Comissões
+- Repasses
+
+---
+
+# Conceito Central
+
+O módulo representa o fluxo financeiro operacional do negócio.
+
+Fluxo oficial:
+
+Visita
+↓
+CRM
+↓
+Proposta
+↓
+Análise
+↓
+Aprovação
+↓
+Agendamento
+↓
+Borderô
+↓
+Liquidação
+↓
+Pagamento
+
+---
+
+# Coleções Oficiais
+
+## propostas
+
+Coleção principal.
+
+Campos identificados:
+
+```javascript
+empresaId
+
+gerenteId
+vendedorId
+
+status
+
+historico
+
+criadoEm
+atualizadoEm
+```
+
+---
+
+# Status Oficiais das Propostas
+
+Valores válidos:
+
+```text
+pendente
+aprovada
+recusada
+agendada
+paga
+cancelada
+```
+
+Nunca alterar.
+
+Nunca renomear.
+
+Nunca substituir.
+
+---
+
+# Fluxo de Status
+
+Fluxo esperado:
+
+pendente
+↓
+aprovada
+↓
+agendada
+↓
+paga
+
+Fluxos alternativos:
+
+pendente
+↓
+recusada
+
+ou
+
+aprovada
+↓
+cancelada
+
+---
+
+# Histórico
+
+Toda alteração de status deve gerar histórico.
+
+Utilizar:
+
+```javascript
+firebase.firestore.FieldValue.arrayUnion()
+```
+
+---
+
+# Estrutura do Histórico
+
+Registrar:
+
+```javascript
+{
+  usuario: "",
+  data: "",
+  acao: "",
+  observacao: ""
+}
+```
+
+---
+
+# remessas
+
+Representa Borderôs.
+
+---
+
+# Conceito de Borderô
+
+Borderô é um agrupador financeiro de propostas.
+
+Fluxo:
+
+Propostas
+↓
+Borderô
+↓
+Pagamento
+
+---
+
+# Campos Identificados
+
+```javascript
+codigo
+
+identificador
+
+empresaId
+gerenteId
+
+dataVencimento
+
+status
+
+historico
+
+criadoEm
+```
+
+---
+
+# Status Oficiais do Borderô
+
+Valores válidos:
+
+```text
+aberta
+paga
+```
+
+Nunca alterar.
+
+---
+
+# Código do Borderô
+
+Padrão identificado:
+
+```text
+REM-1234
+```
+
+Preservar compatibilidade.
+
+---
+
+# Dashboard Executivo
+
+Indicadores identificados:
+
+- Total Aprovado
+- Propostas Criadas
+- Aguardando Análise
+- Ticket Médio
+
+---
+
+# Ticket Médio
+
+Fórmula esperada:
+
+```text
+Valor Total
+÷
+Quantidade de Propostas
+```
+
+---
+
+# Hierarquia Oficial
+
+Empresa
+↓
+Gerente
+↓
+Rede
+↓
+Loja
+↓
+Vendedor
+↓
+Proposta
+
+---
+
+# Filtros por Perfil
+
+## MASTER
+
+Visualiza tudo.
+
+---
+
+## ADMIN
+
+Filtra por:
+
+```javascript
+empresaId
+```
+
+---
+
+## GERENTE
+
+Filtra por:
+
+```javascript
+gerenteId
+```
+
+---
+
+## VENDEDOR
+
+Filtra por:
+
+```javascript
+vendedorId
+```
+
+ou
+
+```javascript
+uid
+```
+
+---
+
+# Auditoria Obrigatória
+
+Toda alteração crítica deve registrar:
+
+- usuário
+- data
+- ação
+- observação
+
+---
+
+# Integração com CRM
+
+Relacionamento:
+
+CRM
+↓
+Cliente
+↓
+Proposta
+
+Nunca quebrar essa integração.
+
+---
+
+# Integração com Visitas
+
+Relacionamento:
+
+Visita
+↓
+Produção
+↓
+Proposta
+
+A produção comercial influencia os pagamentos.
+
+---
+
+# Integração com Financeiro
+
+Relacionamento:
+
+Propostas
+↓
+Borderôs
+↓
+Repasses
+
+Preservar consistência.
+
+---
+
+# Integração com Comissões
+
+Relacionamento:
+
+Proposta
+↓
+Pagamento
+↓
+Comissão
+
+Nunca alterar sem validação.
+
+---
+
+# Agendamento
+
+Status:
+
+```text
+agendada
+```
+
+Representa proposta aprovada aguardando liquidação.
+
+Preservar conceito.
+
+---
+
+# Cancelamento
+
+Quando cancelar:
+
+Registrar motivo.
+
+Estrutura recomendada:
+
+```javascript
+motivoCancelamento
+usuarioCancelamento
+dataCancelamento
+```
+
+---
+
+# Master Vision
+
+Suportado.
+
+Utilizar:
+
+```javascript
+f1a_simulated_uid
+```
+
+quando existir.
+
+---
+
+# Multiempresa
+
+Obrigatório.
+
+Toda consulta deve respeitar:
+
+```javascript
+visaoEmpresaAtiva
+empresaId
+```
+
+---
+
+# UI
+
+Utilizar:
+
+- cards oficiais
+- tabelas oficiais
+- modais oficiais
+- toast oficial
+
+---
+
+# Toast
+
+Obrigatório:
+
+```javascript
+mostrarToast(
+    mensagem,
+    tipo
+)
+```
+
+---
+
+# Regras do Agente
+
+Ao alterar o módulo Pagamentos:
+
+✓ preservar status oficiais
+
+✓ preservar histórico
+
+✓ preservar borderôs
+
+✓ preservar hierarquia
+
+✓ preservar filtros por perfil
+
+✓ preservar auditoria
+
+✓ preservar integrações com CRM
+
+✓ preservar integrações com Visitas
+
+✓ preservar integrações com Financeiro
+
+✓ preservar integrações com Comissões
+
+✓ preservar multiempresa
+
+✓ preservar Master Vision
+
+Nunca remover históricos.
+
+Nunca alterar fluxo de aprovação sem validação.
+
+Nunca modificar status oficiais.
+
+Nunca quebrar a rastreabilidade financeira.

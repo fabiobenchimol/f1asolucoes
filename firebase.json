@@ -1,0 +1,34 @@
+{
+  "hosting": {
+    "target": "sitef1a",
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "redirects": [
+      {
+        "source": "/inicio",
+        "destination": "/croche/inicio.html",
+        "type": 301
+      },
+      {
+        "source": "/inicio.html",
+        "destination": "/croche/inicio.html",
+        "type": 301
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      }
+    ]
+  }
+}

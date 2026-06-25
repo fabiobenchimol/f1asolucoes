@@ -1,0 +1,685 @@
+---
+description: Regras do módulo ADM Cartão da plataforma F1A
+globs:
+  - "**/modulo-adm-cartao/**"
+alwaysApply: false
+---
+
+# F1A ADM Cartão
+
+Você é especialista no módulo ADM Cartão da plataforma F1A.
+
+Este módulo é responsável pelo controle operacional do negócio CEOCARD.
+
+Ele controla:
+
+- Fornecedores
+- Produtos
+- Entradas
+- Estoque
+- Saídas
+- Redes
+- Lojas
+- Aluguéis
+- Remessas
+- MRR
+- Cronograma BIM
+
+---
+
+# Fluxo Oficial
+
+Fornecedor
+↓
+Entrada
+↓
+Estoque
+↓
+Saída
+↓
+Rede
+↓
+Loja
+↓
+Aluguel
+↓
+Recebimento
+
+Toda evolução deve preservar esse fluxo.
+
+---
+
+# Coleções Oficiais
+
+## adm_fornecedores
+
+Cadastro de fornecedores.
+
+Campos conhecidos:
+
+```javascript
+razaoSocial
+nomeFantasia
+cnpj
+
+telefone
+email
+
+criadoEm
+```
+
+---
+
+## adm_produtos
+
+Cadastro de equipamentos.
+
+Campos:
+
+```javascript
+marca
+modelo
+
+criadoEm
+```
+
+---
+
+## adm_entradas
+
+Registro de compras.
+
+Campos:
+
+```javascript
+fornecedorId
+
+numeroNF
+rastreio
+
+produtos
+
+dataEntrada
+```
+
+---
+
+## adm_estoque
+
+Inventário principal.
+
+Campos conhecidos:
+
+```javascript
+serial
+produtoId
+
+status
+
+dataEntrada
+```
+
+---
+
+# Status Oficiais do Estoque
+
+```text
+disponivel
+alugada
+```
+
+Nunca alterar.
+
+Nunca renomear.
+
+---
+
+## adm_saidas
+
+Histórico de expedição.
+
+Campos:
+
+```javascript
+maquinetaId
+lojaId
+
+dataSaida
+```
+
+---
+
+## adm_remessas
+
+Controle logístico.
+
+Campos variáveis.
+
+Preservar compatibilidade.
+
+---
+
+## adm_cronograma_bim
+
+Planejamento operacional.
+
+Não alterar estrutura sem validação.
+
+---
+
+## redes
+
+Coleção oficial de Redes.
+
+Utilizada pelos módulos:
+
+- CRM
+- ADM Cartão
+- Contratos
+- Pagamentos
+
+Campos conhecidos:
+
+```javascript
+nome
+empresaId
+criadoEm
+```
+---
+
+## lojas
+
+Coleção oficial de Lojas.
+
+Relacionamento:
+
+Rede
+↓
+Loja
+
+Campos conhecidos:
+
+```javascript
+redeId
+nome
+empresaId
+criadoEm
+```
+
+---
+
+# Hierarquia
+
+Empresa
+↓
+Rede
+↓
+Loja
+↓
+Maquineta
+
+Toda consulta deve respeitar:
+
+```javascript
+empresaId
+redeId
+lojaId
+```
+
+---
+
+# Multiempresa
+
+Obrigatório.
+
+Toda operação deve considerar:
+
+```javascript
+visaoEmpresaAtiva
+```
+
+---
+
+# Cadastro de Redes
+
+Campos de negócio identificados:
+
+```javascript
+vendedorResponsavel
+
+taxaManutencao
+
+percentualComissaoManutencao
+
+percentualComissaoPlasticos
+```
+
+Esses campos possuem impacto financeiro.
+
+Nunca alterar sem revisar CRM e Comissões.
+
+---
+
+# Cadastro de Lojas
+
+Relacionadas a:
+
+```javascript
+redeId
+```
+
+Nunca criar lojas órfãs.
+
+---
+
+# Entradas
+
+Representam compras.
+
+Fluxo:
+
+Fornecedor
+↓
+Nota Fiscal
+↓
+Entrada
+↓
+Estoque
+
+---
+
+# Estoque
+
+Toda maquineta deve possuir:
+
+```javascript
+serial
+produtoId
+```
+
+Nunca permitir duplicidade de serial.
+
+---
+
+# Saídas
+
+Fluxo:
+
+Estoque
+↓
+Loja
+↓
+Aluguel
+
+Ao registrar saída:
+
+Atualizar status do estoque.
+
+---
+
+# Cadastro de Maquinetas
+
+Página oficial:
+
+/modulo-adm-cartao/cadastro-maquinetas.html
+
+Fluxo oficial:
+
+Entrada
+↓
+Estoque
+↓
+Saída
+↓
+Rede
+↓
+Loja
+
+---
+
+# Saída de Equipamentos
+
+O modal de saída deve utilizar:
+
+Rede
+↓
+Loja
+
+através de dropdown em cascata.
+
+Coleções oficiais:
+
+```javascript
+redes
+lojas
+```
+
+Não utilizar:
+
+```javascript
+cartao_redes
+cartao_lojas
+```
+
+São considerados legados.
+
+---
+
+# Compatibilidade
+
+Registros antigos podem não possuir:
+
+```javascript
+redeId
+redeNome
+```
+
+Sempre prever fallback para edição.
+
+# Controle de Aluguel
+
+Fluxo:
+
+Rede
+↓
+Loja
+↓
+Equipamento
+↓
+Mensalidade
+
+---
+
+# Receita Recorrente
+
+MRR Oficial:
+
+```text
+Monthly Recurring Revenue
+```
+
+Base:
+
+```text
+Quantidade Alugada
+x
+Valor de Aluguel
+```
+
+---
+
+# Indicadores Oficiais
+
+Dashboard esperado:
+
+- Total Compradas
+- Total Disponíveis
+- Total Alugadas
+- Taxa de Ocupação
+- Receita Recorrente
+- MRR
+
+---
+
+# Taxa de Ocupação
+
+Fórmula oficial:
+
+```text
+(Máquinas Alugadas ÷ Total de Máquinas) × 100
+```
+
+Preservar cálculo.
+
+---
+
+# Remessas
+
+Padrão identificado:
+
+```text
+Emb-Rede{codigo}-Loja{codigo}-Lote{numero}
+```
+
+Exemplo:
+
+```text
+Emb-Rede001-Loja005-Lote001
+```
+
+---
+
+# Auditoria de Remessas
+
+Página oficial:
+
+/modulo-adm-cartao/remessas.html
+
+---
+
+Fluxo:
+
+Criar Remessa
+↓
+Receber Arquivos
+↓
+Auditar
+↓
+Concluir
+
+---
+
+Campos identificados:
+
+```javascript
+descricao
+status
+criadoEm
+```
+
+---
+
+Funcionalidades obrigatórias:
+
+- editar descrição
+- auditoria
+- filtros persistentes
+- contadores por filtro
+- exclusão de remessas
+
+---
+
+Status conhecidos:
+
+```text
+aguardando
+em_auditoria
+concluida
+```
+
+Preservar compatibilidade.
+
+---
+
+Os indicadores da auditoria devem obedecer aos filtros ativos da grid.
+
+Nunca utilizar contagem global quando houver filtros aplicados.
+
+# Arquivos de Remessa
+
+Nunca alterar nomenclatura sem compatibilidade.
+
+---
+
+# Integração com CRM
+
+Relacionamento:
+
+Rede
+↓
+Loja
+↓
+Fatura
+↓
+Comissão
+
+O módulo ADM Cartão é uma das bases do cálculo de comissões.
+
+---
+
+# Integração com Contratos
+
+Dados utilizados:
+
+```javascript
+taxaManutencao
+```
+
+e
+
+```javascript
+valorCartao
+```
+
+Possuem reflexo contratual.
+
+---
+
+# Integração com Pagamentos
+
+Utilizado para:
+
+- cálculo de comissão
+- cálculo de repasse
+- validações operacionais
+
+---
+
+# Master Vision
+
+Suportado.
+
+Ao detectar:
+
+```javascript
+f1a_simulated_uid
+```
+
+Executar contexto simulado.
+
+---
+
+# UI
+
+Padrão visual oficial:
+
+/modulo-crm/clientes.html
+
+---
+
+Cabeçalho obrigatório:
+
+- empresa ativa
+- avatar
+- nome
+- cargo
+- dropdown perfil
+- alternância de tema
+
+---
+
+Sidebar obrigatória:
+
+- nav-texto
+- retração
+- sair do módulo
+
+---
+
+Não criar versões alternativas.
+
+Sempre replicar o padrão consolidado do sistema F1A.
+
+---
+
+# Toast
+
+Obrigatório:
+
+```javascript
+mostrarToast(
+    mensagem,
+    tipo
+)
+```
+
+---
+
+# Auditoria
+
+Registrar sempre:
+
+```javascript
+usuario
+data
+acao
+```
+
+Em:
+
+- entradas
+- saídas
+- exclusões
+- alterações críticas
+
+---
+
+# Regras do Agente
+
+Ao alterar o módulo ADM Cartão:
+
+✓ preservar fluxo Entrada → Estoque → Saída
+
+✓ preservar serial único
+
+✓ preservar status oficiais
+
+✓ preservar MRR
+
+✓ preservar taxa de ocupação
+
+✓ preservar integração CRM
+
+✓ preservar integração Contratos
+
+✓ preservar integração Pagamentos
+
+✓ preservar multiempresa
+
+✓ preservar Master Vision
+
+Nunca remover históricos.
+
+Nunca alterar cálculos financeiros sem validação.
+
+Nunca quebrar o relacionamento:
+
+Rede → Loja → Equipamento.
+
+# Modo Econômico
+
+Quando o usuário informar:
+
+- diagnóstico concluído
+- análise concluída
+- revisão realizada pelo F1A Reviewer
+
+não realizar nova investigação.
+
+Trabalhar apenas nos arquivos informados.
+
+Não buscar referências externas.
+
+Não reavaliar a arquitetura.
+
+Aplicar diretamente a correção solicitada.

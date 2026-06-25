@@ -1,0 +1,586 @@
+---
+description: Identity and Access Management (IAM) da Plataforma F1A
+globs:
+alwaysApply: true
+---
+
+# F1A Identity and Access Management
+
+Você é especialista no sistema de autenticação, autorização e permissões da plataforma F1A.
+
+Toda funcionalidade criada deve respeitar rigorosamente as regras de acesso existentes.
+
+A segurança da plataforma tem prioridade sobre conveniência.
+
+---
+
+# Conceito Fundamental
+
+O F1A utiliza um modelo de:
+
+Identity and Access Management (IAM)
+
+baseado em:
+
+- Usuários
+- Perfis
+- Empresas
+- Redes
+- Lojas
+- Módulos
+- Ferramentas
+
+---
+
+# Hierarquia Organizacional
+
+Estrutura oficial:
+
+Empresa
+↓
+Rede
+↓
+Loja
+
+Toda autorização deve respeitar essa hierarquia.
+
+---
+
+# Perfis Oficiais
+
+Perfis válidos:
+
+```text
+master
+admin
+gerente
+vendedor
+```
+
+Nunca criar novos perfis sem aprovação explícita.
+
+---
+
+# Hierarquia de Perfis
+
+MASTER
+↓
+ADMIN
+↓
+GERENTE
+↓
+VENDEDOR
+
+---
+
+# Perfil MASTER
+
+Possui acesso total.
+
+Permissões:
+
+✓ Todas as empresas
+
+✓ Todas as redes
+
+✓ Todas as lojas
+
+✓ Todos os módulos
+
+✓ Todas as ferramentas
+
+✓ Master Vision
+
+✓ Simulação de usuários
+
+✓ Simulação de permissões
+
+✓ Simulação de empresas
+
+---
+
+# Perfil ADMIN
+
+Possui acesso administrativo da empresa.
+
+Permissões:
+
+✓ Gestão da empresa
+
+✓ Redes
+
+✓ Lojas
+
+✓ Usuários
+
+✓ Módulos autorizados
+
+✗ Não possui Master Vision global
+
+---
+
+# Perfil GERENTE
+
+Permissões:
+
+✓ Equipe
+
+✓ Redes autorizadas
+
+✓ Lojas autorizadas
+
+✓ Operações
+
+✓ Relatórios permitidos
+
+---
+
+# Perfil VENDEDOR
+
+Permissões restritas.
+
+Normalmente:
+
+✓ Operação diária
+
+✓ Carteira própria
+
+✓ Agenda própria
+
+✓ Produção própria
+
+✗ Administração
+
+✗ Configurações
+
+✗ Cadastros globais
+
+---
+
+# Coleção Oficial
+
+usuarios
+
+---
+
+# Estrutura Oficial do Usuário
+
+```javascript
+{
+    uid: "",
+
+    nome: "",
+    email: "",
+
+    perfil: "",
+
+    status: "",
+
+    empresaId: [],
+    redeId: [],
+    lojaId: [],
+
+    modulosAcesso: [],
+    ferramentasAcesso: [],
+
+    primeiroAcesso: true,
+
+    emailRecuperacao: ""
+}
+```
+
+---
+
+# Status de Usuário
+
+Valores permitidos:
+
+```text
+ativo
+bloqueado
+```
+
+---
+
+# Regra de Bloqueio
+
+Quando:
+
+```javascript
+status === "bloqueado"
+```
+
+O acesso deve ser negado imediatamente.
+
+---
+
+# Multiempresa
+
+Usuários podem possuir:
+
+- Uma empresa
+- Múltiplas empresas
+- Todas as empresas
+
+Campo:
+
+```javascript
+empresaId
+```
+
+---
+
+# Compatibilidade Legada
+
+Campos podem existir como:
+
+```javascript
+empresaId
+```
+
+ou
+
+```javascript
+[
+  "empresa1",
+  "empresa2"
+]
+```
+
+Sempre normalizar.
+
+Exemplo:
+
+```javascript
+const empresas = Array.isArray(usuario.empresaId)
+    ? usuario.empresaId
+    : [usuario.empresaId];
+```
+
+---
+
+# Multirrede
+
+Campo:
+
+```javascript
+redeId
+```
+
+Pode conter:
+
+- Uma rede
+- Múltiplas redes
+
+---
+
+# Multiloja
+
+Campo:
+
+```javascript
+lojaId
+```
+
+Pode conter:
+
+- Uma loja
+- Múltiplas lojas
+
+---
+
+# Controle de Módulos
+
+Campo:
+
+```javascript
+modulosAcesso
+```
+
+Responsável por liberar páginas.
+
+---
+
+# Módulos Identificados
+
+```text
+crm
+contratos
+financeiro
+modulo_financeiro
+pagamentos
+visitas
+adm-cartao
+croche
+```
+
+---
+
+# Controle de Ferramentas
+
+Campo:
+
+```javascript
+ferramentasAcesso
+```
+
+Permite liberar recursos específicos.
+
+---
+
+# Ferramentas Identificadas
+
+```text
+dashboard
+executivo
+equipe
+administracao
+mastervision
+```
+
+---
+
+# Regra de Acesso
+
+Antes de carregar qualquer módulo:
+
+Validar:
+
+```javascript
+usuario.modulosAcesso
+```
+
+Antes de liberar qualquer funcionalidade:
+
+Validar:
+
+```javascript
+usuario.ferramentasAcesso
+```
+
+---
+
+# Router Guards
+
+O Router Guard pertence ao Core.
+
+Os módulos NÃO devem:
+
+- implementar autenticação própria
+- implementar autorização própria
+- recriar regras de acesso
+
+Devem consumir as regras existentes.
+
+---
+
+# Empresa Ativa
+
+Origem:
+
+```javascript
+visaoEmpresaAtiva
+```
+
+Armazenamento:
+
+```javascript
+sessionStorage
+```
+
+Toda consulta deve respeitar essa empresa.
+
+---
+
+# Master Vision
+
+Funcionalidade exclusiva MASTER.
+
+Permite:
+
+- trocar contexto de usuário
+- trocar contexto de empresa
+- testar permissões
+- validar módulos
+
+---
+
+# Identificador de Simulação
+
+Campo identificado:
+
+```javascript
+f1a_simulated_uid
+```
+
+Origem:
+
+```javascript
+sessionStorage
+```
+
+---
+
+# Regras de Master Vision
+
+Ao detectar:
+
+```javascript
+f1a_simulated_uid
+```
+
+O sistema deve operar no contexto simulado.
+
+---
+
+# Filtros por Perfil
+
+## MASTER
+
+Visualiza tudo.
+
+---
+
+## ADMIN
+
+Filtra por:
+
+```javascript
+empresaId
+```
+
+---
+
+## GERENTE
+
+Filtra por:
+
+```javascript
+gerenteId
+```
+
+quando aplicável.
+
+---
+
+## VENDEDOR
+
+Filtra por:
+
+```javascript
+vendedorId
+```
+
+ou
+
+```javascript
+uid
+```
+
+dependendo do módulo.
+
+---
+
+# Primeiro Acesso
+
+Campo:
+
+```javascript
+primeiroAcesso
+```
+
+Fluxo:
+
+Login
+↓
+Cadastro de e-mail pessoal
+↓
+Troca de senha
+↓
+Atualização cadastral
+↓
+Liberação
+
+---
+
+# Recuperação de Senha
+
+Campo:
+
+```javascript
+emailRecuperacao
+```
+
+Utilizado para:
+
+```text
+Password Reset
+```
+
+via Firebase Auth.
+
+---
+
+# Criação de Usuários
+
+Ao criar usuários:
+
+Sempre definir:
+
+```javascript
+perfil
+status
+
+empresaId
+
+modulosAcesso
+ferramentasAcesso
+
+primeiroAcesso
+```
+
+---
+
+# Exclusão de Usuários
+
+Evitar exclusão física.
+
+Priorizar:
+
+```javascript
+status = "bloqueado"
+```
+
+---
+
+# Auditoria
+
+Registrar sempre:
+
+- usuário criador
+- data criação
+- data alteração
+
+Sempre que possível.
+
+---
+
+# Regras do Agente
+
+Antes de gerar qualquer código:
+
+1. Verifique o perfil.
+2. Verifique empresa ativa.
+3. Verifique módulos liberados.
+4. Verifique ferramentas liberadas.
+5. Verifique Master Vision.
+6. Verifique filtros hierárquicos.
+7. Verifique compatibilidade string/array.
+
+Nunca conceda permissões automaticamente.
+
+Nunca ignore validações de acesso.
+
+Nunca bypass o modelo IAM do F1A.
+
+O IAM é uma das fundações da plataforma e deve ser preservado em qualquer evolução do sistema.
