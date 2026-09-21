@@ -61,6 +61,8 @@ window.posAuthCallback = async function() {
         }
 
         tentarPreencherPerfil();
+        await carregarBibliotecaClausulas();
+        aplicarPermissaoBibliotecaClausulas();
     } catch (erro) {
         console.error("Erro ao validar permissoes do utilizador:", erro);
         window.location.replace("../lobby.html");
@@ -161,6 +163,13 @@ window.adaptarTela = function() {
     document.getElementById("secaoValores").classList.toggle("escondido", isRecibo);
     document.getElementById("dataContratoContainer").classList.toggle("escondido", isRecibo);
     document.getElementById("dataRecibo").classList.toggle("escondido", !isRecibo);
+    const secaoClausula = document.getElementById("secaoClausulaAdicional");
+    if (secaoClausula) secaoClausula.classList.toggle("escondido", isRecibo);
+    if (isRecibo) {
+        const check = document.getElementById("checkIncluirClausula");
+        if (check) check.checked = false;
+        if (typeof window.alternarClausulaAdicional === "function") window.alternarClausulaAdicional();
+    }
 };
 
 window.verificarPacote = function() {
@@ -231,7 +240,7 @@ function numeroParaExtenso(numero, isMoeda = false) {
     if (intNum > 0) {
         let milhoes = Math.floor(intNum / 1000000); let milhares = Math.floor((intNum % 1000000) / 1000); let centavosInt = intNum % 1000;
         if (milhoes > 0) partes.push(obterGrupo(milhoes) + (milhoes === 1 ? " milhao" : " milhoes"));
-        if (milhares > 0) partes.push((milhares === 1 ? "um mil" : obterGrupo(milhares)) + " mil");
+        if (milhares > 0) partes.push(milhares === 1 ? "mil" : obterGrupo(milhares) + " mil");
         if (centavosInt > 0) {
             let txt = obterGrupo(centavosInt);
             if (partes.length > 0 && (centavosInt <= 100 || centavosInt % 100 === 0)) partes.push("e " + txt); else partes.push(txt);
@@ -247,6 +256,16 @@ function numeroParaExtenso(numero, isMoeda = false) {
         }
     }
     return res.trim();
+}
+
+function percentualParaExtenso(numero) {
+    const valor = Number(numero) || 0;
+    const [intStr, decStr] = valor.toFixed(2).split(".");
+    const intNum = parseInt(intStr, 10);
+    const decNum = parseInt(decStr, 10);
+    const inteiroExtenso = intNum === 0 ? "zero" : numeroParaExtenso(intNum, false);
+    if (decNum === 0) return inteiroExtenso + " por cento";
+    return inteiroExtenso + " vírgula " + numeroParaExtenso(decNum, false) + " por cento";
 }
 
 function validarCampos() {
@@ -265,9 +284,16 @@ function validarCampos() {
         if (uf === "") return "Para gerar um contrato, preencha a UF.";
         if (document.getElementById("taxaManutencao").value.trim() === "") return "Preencha o valor da Manutencao de Fatura.";
         if (document.getElementById("taxaPlastico").value.trim() === "") return "Preencha o valor da Taxa de Plastico.";
+        if (document.getElementById("taxaTransacoes").value.trim() === "") return "Preencha a Taxa sobre o Recebido.";
+        if (document.getElementById("taxaSpc").value.trim() === "") return "Preencha a Tarifa por Consulta na Mesa de Credito.";
         if (pacote === "personalizado") {
             if (document.getElementById("qtdCartoes").value.trim() === "") return "Preencha a Quantidade de Cartoes.";
             if (document.getElementById("valorTotal").value.trim() === "") return "Preencha o Valor Total do Pacote.";
+        }
+        const checkClausula = document.getElementById("checkIncluirClausula");
+        if (checkClausula && checkClausula.checked) {
+            const textoClausula = obterTextoClausulaEditor();
+            if (!textoClausula) return "Informe o texto da cláusula adicional antes de gerar o contrato.";
         }
     }
     return null;
@@ -287,6 +313,12 @@ window.gerarDocumento = async function() {
 
         const conteudo = await resposta.arrayBuffer();
         const zip = new PizZip(conteudo);
+        Object.keys(zip.files).forEach(function(nomeArquivo) {
+            if (!/^word\/.*\.xml$/i.test(nomeArquivo)) return;
+            const arquivoXml = zip.file(nomeArquivo);
+            if (!arquivoXml) return;
+            zip.file(nomeArquivo, arquivoXml.asText().replace(/\{\{/g, "{").replace(/\}\}/g, "}"));
+        });
         const documento = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true, delimiters: { start: "{", end: "}" } });
 
         const vCli = document.getElementById("cliente").value.toUpperCase().trim();
@@ -314,12 +346,20 @@ window.gerarDocumento = async function() {
 
             let tManStr = document.getElementById("taxaManutencao").value;
             let tPlasStr = document.getElementById("taxaPlastico").value;
+            let tTransStr = document.getElementById("taxaTransacoes").value;
+            let tSpcStr = document.getElementById("taxaSpc").value;
             let numMan = parseFloat(tManStr.replace(/\./g, "").replace(",", ".")) || 0;
             let numPlas = parseFloat(tPlasStr.replace(/\./g, "").replace(",", ".")) || 0;
+            let numTrans = parseFloat(tTransStr.replace(/\./g, "").replace(",", ".")) || 0;
+            let numSpc = parseFloat(tSpcStr.replace(/\./g, "").replace(",", ".")) || 0;
             objSubst.taxa_manutencao = tManStr;
             objSubst.taxa_manutencao_extenso = numeroParaExtenso(numMan, true);
             objSubst.taxa_plastico = tPlasStr;
             objSubst.taxa_plastico_extenso = numeroParaExtenso(numPlas, true);
+            objSubst.taxa_transacoes = tTransStr + "%";
+            objSubst.taxa_transacoes_extenso = percentualParaExtenso(numTrans);
+            objSubst.taxa_spc = tSpcStr;
+            objSubst.taxa_spc_extenso = numeroParaExtenso(numSpc, true);
 
             let qNum = parseInt(pQtd.replace(/\D/g, "")) || 0;
             let uNum = parseFloat(pVal.replace(/\./g, "").replace(",", ".")) || 0;
@@ -327,6 +367,7 @@ window.gerarDocumento = async function() {
             objSubst.qtd_cartoes = pQtd; objSubst.qtd_extenso = numeroParaExtenso(qNum, false);
             objSubst.valor_cartao = pVal; objSubst.valor_extenso = numeroParaExtenso(uNum, true);
             objSubst.valor_total = pTot; objSubst.valor_total_extenso = numeroParaExtenso(tNum, true);
+            aplicarClausulaOpcionalNoDocumento(objSubst);
         }
 
         documento.render(objSubst);
@@ -340,6 +381,261 @@ window.gerarDocumento = async function() {
         console.error(erro);
     }
 };
+
+const COLECAO_CLAUSULAS = "contratos_clausulas";
+let bibliotecaClausulas = [];
+
+function obterEmpresaIdAtiva() {
+    const visao = sessionStorage.getItem("visaoEmpresaAtiva");
+    if (visao) return visao;
+    const dataUsuario = (typeof dadosUsuarioLogado !== "undefined" && dadosUsuarioLogado) ? dadosUsuarioLogado : null;
+    const emp = dataUsuario ? dataUsuario.empresaId : "";
+    if (Array.isArray(emp)) return emp[0] || "";
+    return emp || "";
+}
+
+function podeGerirBibliotecaClausulas() {
+    const dataUsuario = (typeof dadosUsuarioLogado !== "undefined" && dadosUsuarioLogado) ? dadosUsuarioLogado : null;
+    const perfil = String((dataUsuario && dataUsuario.perfil) || "").toLowerCase();
+    return perfil === "master" || perfil === "admin" || perfil === "gerente";
+}
+
+function aplicarPermissaoBibliotecaClausulas() {
+    const caixa = document.getElementById("caixaBtnNovaClausula");
+    if (caixa) caixa.classList.toggle("escondido", !podeGerirBibliotecaClausulas());
+}
+
+async function carregarBibliotecaClausulas() {
+    const select = document.getElementById("selectClausulaPronta");
+    if (!select) return;
+    const empresaId = obterEmpresaIdAtiva();
+    bibliotecaClausulas = [];
+    select.innerHTML = '<option value="">Selecione uma cláusula...</option>';
+    if (!empresaId) return;
+
+    try {
+        const snap = await db.collection(COLECAO_CLAUSULAS).where("empresaId", "==", empresaId).get();
+        snap.forEach((doc) => {
+            const data = doc.data() || {};
+            if (data.ativo === false) return;
+            bibliotecaClausulas.push({
+                id: doc.id,
+                nome: data.nome || "",
+                texto: data.texto || ""
+            });
+        });
+        bibliotecaClausulas.sort((a, b) => String(a.nome).localeCompare(String(b.nome), "pt-BR"));
+        bibliotecaClausulas.forEach((item) => {
+            const opt = document.createElement("option");
+            opt.value = item.id;
+            opt.textContent = item.nome;
+            select.appendChild(opt);
+        });
+    } catch (erro) {
+        console.error("Erro ao carregar biblioteca de clausulas:", erro);
+    }
+}
+
+window.alternarClausulaAdicional = function() {
+    const check = document.getElementById("checkIncluirClausula");
+    const campos = document.getElementById("camposClausulaAdicional");
+    if (!campos) return;
+    const ativo = !!(check && check.checked);
+    campos.classList.toggle("escondido", !ativo);
+};
+
+window.carregarClausulaSelecionada = function() {
+    const select = document.getElementById("selectClausulaPronta");
+    const editor = document.getElementById("editorClausula");
+    if (!select || !editor) return;
+    const id = select.value;
+    if (!id) return;
+    const item = bibliotecaClausulas.find((c) => c.id === id);
+    if (!item) return;
+    editor.innerHTML = item.texto || "";
+};
+
+window.aplicarFormatacaoClausula = function(evento, comando) {
+    if (evento) evento.preventDefault();
+    const editor = document.getElementById("editorClausula");
+    if (editor) editor.focus();
+    document.execCommand(comando, false, null);
+};
+
+window.abrirModalNovaClausula = function() {
+    if (!podeGerirBibliotecaClausulas()) {
+        if (typeof mostrarToast !== "undefined") mostrarToast("Seu perfil nao pode cadastrar clausulas.", "erro");
+        return;
+    }
+    const modal = document.getElementById("modalNovaClausula");
+    const nome = document.getElementById("nomeNovaClausula");
+    const texto = document.getElementById("textoNovaClausula");
+    if (nome) nome.value = "";
+    if (texto) texto.value = "";
+    if (modal) modal.classList.remove("escondido");
+};
+
+window.fecharModalNovaClausula = function() {
+    const modal = document.getElementById("modalNovaClausula");
+    if (modal) modal.classList.add("escondido");
+};
+
+window.salvarNovaClausula = async function() {
+    if (!podeGerirBibliotecaClausulas()) {
+        if (typeof mostrarToast !== "undefined") mostrarToast("Seu perfil nao pode cadastrar clausulas.", "erro");
+        return;
+    }
+    const empresaId = obterEmpresaIdAtiva();
+    if (!empresaId) {
+        if (typeof mostrarToast !== "undefined") mostrarToast("Selecione uma empresa ativa para salvar a clausula.", "erro");
+        return;
+    }
+    const nome = (document.getElementById("nomeNovaClausula").value || "").trim();
+    const textoBruto = (document.getElementById("textoNovaClausula").value || "").trim();
+    if (!nome) {
+        if (typeof mostrarToast !== "undefined") mostrarToast("Informe o nome da clausula.", "erro");
+        return;
+    }
+    if (!textoBruto) {
+        if (typeof mostrarToast !== "undefined") mostrarToast("Informe o texto da clausula.", "erro");
+        return;
+    }
+
+    const textoHtml = textoBruto
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\n/g, "<br>");
+
+    try {
+        const ref = await db.collection(COLECAO_CLAUSULAS).add({
+            empresaId: empresaId,
+            nome: nome,
+            texto: textoHtml,
+            ativo: true,
+            criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+            atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        await carregarBibliotecaClausulas();
+        const select = document.getElementById("selectClausulaPronta");
+        if (select) {
+            select.value = ref.id;
+            window.carregarClausulaSelecionada();
+        }
+        window.fecharModalNovaClausula();
+        if (typeof mostrarToast !== "undefined") mostrarToast("Clausula salva na biblioteca.", "sucesso");
+    } catch (erro) {
+        console.error(erro);
+        if (typeof mostrarToast !== "undefined") mostrarToast("Nao foi possivel salvar a clausula.", "erro");
+    }
+};
+
+function obterTextoClausulaEditor() {
+    const editor = document.getElementById("editorClausula");
+    if (!editor) return "";
+    return String(editor.innerText || editor.textContent || "").replace(/\u00a0/g, " ").trim();
+}
+
+function escaparXmlDocx(texto) {
+    return String(texto)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+function rPrClausula(fmt) {
+    let xml = '<w:rFonts w:ascii="Aptos Display" w:eastAsia="Times New Roman" w:hAnsi="Aptos Display" w:cs="Times New Roman"/>';
+    if (fmt.b) xml += "<w:b/><w:bCs/>";
+    if (fmt.i) xml += "<w:i/><w:iCs/>";
+    if (fmt.u) xml += '<w:u w:val="single"/>';
+    xml += '<w:sz w:val="25"/><w:szCs w:val="25"/>';
+    return xml;
+}
+
+function runTextoClausula(texto, fmt) {
+    if (!texto) return "";
+    return "<w:r><w:rPr>" + rPrClausula(fmt) + '</w:rPr><w:t xml:space="preserve">' + escaparXmlDocx(texto) + "</w:t></w:r>";
+}
+
+function runQuebraClausula(fmt) {
+    return "<w:r><w:rPr>" + rPrClausula(fmt) + "</w:rPr><w:br/></w:r>";
+}
+
+function herdarFormatacaoClausula(no, fmt) {
+    const proximo = { b: !!fmt.b, i: !!fmt.i, u: !!fmt.u };
+    if (!no || no.nodeType !== 1) return proximo;
+    const tag = String(no.tagName || "").toLowerCase();
+    if (tag === "b" || tag === "strong") proximo.b = true;
+    if (tag === "i" || tag === "em") proximo.i = true;
+    if (tag === "u") proximo.u = true;
+    const estilo = (no.getAttribute && no.getAttribute("style")) ? String(no.getAttribute("style")).toLowerCase() : "";
+    if (estilo.indexOf("font-weight:bold") >= 0 || estilo.indexOf("font-weight: 700") >= 0 || estilo.indexOf("font-weight:700") >= 0) proximo.b = true;
+    if (estilo.indexOf("font-style:italic") >= 0 || estilo.indexOf("font-style: italic") >= 0) proximo.i = true;
+    if (estilo.indexOf("text-decoration:underline") >= 0 || estilo.indexOf("text-decoration: underline") >= 0) proximo.u = true;
+    return proximo;
+}
+
+function converterNosParaRunsDocx(no, fmt) {
+    let xml = "";
+    if (!no) return xml;
+    if (no.nodeType === 3) {
+        const partes = String(no.nodeValue || "").replace(/\r/g, "").split("\n");
+        partes.forEach((parte, idx) => {
+            xml += runTextoClausula(parte, fmt);
+            if (idx < partes.length - 1) xml += runQuebraClausula(fmt);
+        });
+        return xml;
+    }
+    if (no.nodeType !== 1) return xml;
+    const tag = String(no.tagName || "").toLowerCase();
+    if (tag === "br") return runQuebraClausula(fmt);
+    const proximo = herdarFormatacaoClausula(no, fmt);
+    const filhos = no.childNodes || [];
+    for (let i = 0; i < filhos.length; i++) xml += converterNosParaRunsDocx(filhos[i], proximo);
+    if ((tag === "div" || tag === "p" || tag === "li") && no.nextSibling) xml += runQuebraClausula(proximo);
+    return xml;
+}
+
+function removerPrefixoNumeracaoCinco(container) {
+    const texto = String(container.innerText || container.textContent || "").replace(/\u00a0/g, " ");
+    if (!/^\s*5\.\s*/.test(texto)) return;
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null);
+    const primeiro = walker.nextNode();
+    if (!primeiro) return;
+    primeiro.nodeValue = String(primeiro.nodeValue || "").replace(/^\s*5\.\s*/, "");
+}
+
+function montarXmlParagrafoClausula(htmlEditor) {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = htmlEditor || "";
+    removerPrefixoNumeracaoCinco(tmp);
+    let runs = "";
+    const filhos = tmp.childNodes || [];
+    for (let i = 0; i < filhos.length; i++) runs += converterNosParaRunsDocx(filhos[i], { b: false, i: false, u: false });
+    const prefixo = runTextoClausula("5. ", { b: false, i: false, u: false });
+    return (
+        '<w:p><w:pPr>' +
+        '<w:spacing w:before="100" w:beforeAutospacing="1" w:after="100" w:afterAutospacing="1" w:line="240" w:lineRule="auto"/>' +
+        '<w:jc w:val="both"/>' +
+        "</w:pPr>" +
+        prefixo +
+        runs +
+        "</w:p>"
+    );
+}
+
+function aplicarClausulaOpcionalNoDocumento(objSubst) {
+    const check = document.getElementById("checkIncluirClausula");
+    const incluir = !!(check && check.checked);
+    if (!incluir) {
+        objSubst.clausula_opcional = false;
+        objSubst.clausula_opcional_xml = "";
+        return;
+    }
+    const editor = document.getElementById("editorClausula");
+    objSubst.clausula_opcional = true;
+    objSubst.clausula_opcional_xml = montarXmlParagrafoClausula(editor ? editor.innerHTML : "");
+}
 
 window.toggleDropdownPerfil = function(event) {
     event.stopPropagation();

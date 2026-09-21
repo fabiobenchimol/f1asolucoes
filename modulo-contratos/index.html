@@ -62,6 +62,123 @@
             cursor: pointer !important;
             filter: none !important;
         }
+
+        .check-clausula {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            text-transform: none;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--cor-titulo);
+            margin: 0;
+        }
+        .check-clausula input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            accent-color: var(--f1a-blue);
+            cursor: pointer;
+        }
+        .toolbar-clausula { display: flex; gap: 8px; margin-bottom: 8px; }
+        .btn-fmt-clausula {
+            width: 36px;
+            height: 32px;
+            border: 1.5px solid var(--borda);
+            background: var(--bg-body);
+            color: var(--cor-titulo);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 13px;
+        }
+        .btn-fmt-clausula:hover { border-color: var(--f1a-copper); }
+        .editor-clausula {
+            min-height: 110px;
+            max-height: 240px;
+            overflow-y: auto;
+            padding: 12px;
+            border: 1.5px solid var(--borda);
+            border-radius: 8px;
+            background-color: var(--bg-body);
+            color: var(--cor-titulo);
+            font-size: 13px;
+            line-height: 1.5;
+            outline: none;
+        }
+        .editor-clausula:focus { border-color: var(--f1a-copper); box-shadow: 0 0 0 3px rgba(230, 145, 56, 0.15); }
+        .btn-nova-clausula {
+            background: transparent;
+            border: 1.5px dashed var(--f1a-blue);
+            color: var(--f1a-blue);
+            border-radius: 8px;
+            padding: 10px 12px;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 12px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            height: 38px;
+            margin-top: 21px;
+            box-sizing: border-box;
+        }
+        .modal-clausula-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-clausula-caixa {
+            background: var(--bg-painel);
+            border: 1px solid var(--borda);
+            border-radius: 12px;
+            padding: 24px;
+            width: 100%;
+            max-width: 560px;
+            box-shadow: var(--shadow);
+        }
+        .modal-clausula-acoes { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+        .btn-secundario-clausula {
+            background: var(--bg-body);
+            color: var(--cor-titulo);
+            border: 1.5px solid var(--borda);
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+        .btn-primario-clausula {
+            background: var(--f1a-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: 800;
+        }
+        textarea#textoNovaClausula {
+            width: 100%;
+            min-height: 120px;
+            padding: 10px 12px;
+            margin-top: 5px;
+            border: 1.5px solid var(--borda);
+            border-radius: 8px;
+            background-color: var(--bg-body);
+            font-size: 13px;
+            color: var(--cor-titulo);
+            box-sizing: border-box;
+            font-family: inherit;
+            resize: vertical;
+        }
+        @media (max-width: 768px) {
+            #camposClausulaAdicional > div:first-child { grid-template-columns: 1fr !important; }
+            .btn-nova-clausula { margin-top: 8px; width: 100%; }
+        }
     </style>
 
 </head>
@@ -197,15 +314,53 @@
 
                     <div class="grid-2-col" style="margin-top: 20px; border-top: 1px dashed var(--borda); padding-top: 15px;">
                         <div>
-                            <label>Taxa de Manutenção de Fatura (R$):</label>
+                            <label>Tarifa de Manutenção da Fatura (R$):</label>
                             <input type="text" id="taxaManutencao" placeholder="Ex: 5,90" oninput="aplicarMascaraMoeda(this)">
                         </div>
                         <div>
-                            <label>Taxa Plastico (R$):</label>
+                            <label>Tarifa do Plastico (R$):</label>
                             <input type="text" id="taxaPlastico" placeholder="Ex: 3,50" oninput="aplicarMascaraMoeda(this)">
                         </div>
                     </div>
 
+                    <div class="grid-2-col" style="margin-top: 15px;">
+                        <div>
+                            <label>Taxa sobre o Recebido (%):</label>
+                            <input type="text" id="taxaTransacoes" placeholder="Ex: 2,50" oninput="aplicarMascaraMoeda(this)">
+                        </div>
+                        <div>
+                            <label>Tarifa por Consulta na Mesa de Crédito (R$):</label>
+                            <input type="text" id="taxaSpc" placeholder="Ex: 1,50" oninput="aplicarMascaraMoeda(this)">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="secaoClausulaAdicional" class="secao-form">
+                    <h4 class="secao-titulo"><span class="material-symbols-rounded">gavel</span> 4. Cláusula Adicional</h4>
+                    <label class="check-clausula" for="checkIncluirClausula">
+                        <input type="checkbox" id="checkIncluirClausula" onchange="alternarClausulaAdicional()">
+                        Incluir cláusula adicional
+                    </label>
+                    <div id="camposClausulaAdicional" class="escondido" style="margin-top: 18px;">
+                        <div style="display: grid; grid-template-columns: 1fr auto; gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label for="selectClausulaPronta">Selecione uma cláusula...</label>
+                                <select id="selectClausulaPronta" onchange="carregarClausulaSelecionada()">
+                                    <option value="">Selecione uma cláusula...</option>
+                                </select>
+                            </div>
+                            <div id="caixaBtnNovaClausula">
+                                <button type="button" class="btn-nova-clausula" id="btnNovaClausula" onclick="abrirModalNovaClausula()">+ Nova cláusula</button>
+                            </div>
+                        </div>
+                        <div class="toolbar-clausula">
+                            <button type="button" class="btn-fmt-clausula" title="Negrito" onmousedown="aplicarFormatacaoClausula(event, 'bold')"><b>B</b></button>
+                            <button type="button" class="btn-fmt-clausula" title="Itálico" onmousedown="aplicarFormatacaoClausula(event, 'italic')"><i>I</i></button>
+                            <button type="button" class="btn-fmt-clausula" title="Sublinhado" onmousedown="aplicarFormatacaoClausula(event, 'underline')"><u>U</u></button>
+                        </div>
+                        <div id="editorClausula" class="editor-clausula" contenteditable="true" data-placeholder="Digite ou edite o texto da cláusula. O número 5. será inserido automaticamente."></div>
+                    </div>
                 </div>
 
                 <button onclick="gerarDocumento()" style="width: 100%; padding: 15px; margin-top: 10px; background: var(--f1a-copper); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
@@ -215,8 +370,26 @@
         </div>
     </main>
 
+    <div id="modalNovaClausula" class="modal-clausula-overlay escondido">
+        <div class="modal-clausula-caixa">
+            <h4 class="secao-titulo" style="margin-bottom: 18px;"><span class="material-symbols-rounded">add_notes</span> Nova cláusula</h4>
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label for="nomeNovaClausula">Nome da cláusula</label>
+                <input type="text" id="nomeNovaClausula" placeholder="Ex: Bonificação — Aplicativo personalizado">
+            </div>
+            <div class="form-group">
+                <label for="textoNovaClausula">Texto da cláusula</label>
+                <textarea id="textoNovaClausula" placeholder="Digite o texto que poderá ser reutilizado nos contratos."></textarea>
+            </div>
+            <div class="modal-clausula-acoes">
+                <button type="button" class="btn-secundario-clausula" onclick="fecharModalNovaClausula()">Cancelar</button>
+                <button type="button" class="btn-primario-clausula" onclick="salvarNovaClausula()">Salvar cláusula</button>
+            </div>
+        </div>
+    </div>
+
     <script src="../core.js?v=1"></script>
     <script src="../ui.js?v=1"></script>
-    <script src="contratos.js?v=7"></script>
+    <script src="contratos.js?v=10"></script>
 </body>
 </html>
