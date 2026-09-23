@@ -1,0 +1,212 @@
+const DEMO_SOURCE = {
+    tipo: "cadastro_inicial",
+    rotulo: "Dados demonstrativos",
+    verificadoEm: "2026-09",
+    observacao: "Especificações e preços de referência para validação do MVP; confirme antes de uma decisão de compra."
+};
+
+const base = (dados) => ({
+    empresaId: "global",
+    ativo: true,
+    imagemUrl: "",
+    fonteDados: DEMO_SOURCE,
+    ...dados
+});
+
+export const SMARTPHONES_SEED = [
+    base({
+        id: "apple-iphone-15-128", marca: "Apple", modelo: "iPhone 15", variante: "128 GB",
+        nome: "iPhone 15", anoLancamento: 2023, ram: 6, armazenamento: 128,
+        processador: "Apple A16 Bionic", gpu: "Apple GPU 5-core",
+        tela: { tipo: "OLED", tamanho: 6.1, resolucao: "2556 × 1179", hz: 60, brilhoNits: 2000 },
+        camera: { principalMp: 48, ultrawideMp: 12, teleobjetivaMp: 0, frontalMp: 12, video: "4K 60 fps" },
+        bateria: { mah: 3349 }, carregamento: { watts: 20, semFioWatts: 15 },
+        construcao: { material: "Alumínio e vidro", protecao: "IP68" },
+        conectividade: { cincoG: true, wifi: "Wi‑Fi 6", bluetooth: "5.3", nfc: true },
+        software: { sistema: "iOS", anosAtualizacoes: 5 },
+        preco: { atual: 4299, medio: 4499, minimo: 3999, maximo: 4899, tipo: "estimado" },
+        notas: { tela: 8.7, camera: 9.0, processamento: 9.2, gpu: 9.0, bateria: 8.2, carregamento: 7.2, construcao: 9.1, conectividade: 8.8, software: 9.4, atualizacoes: 9.4, armazenamento: 8.0, custoBeneficio: 8.2 }
+    }),
+    base({
+        id: "apple-iphone-15-plus-128", marca: "Apple", modelo: "iPhone 15 Plus", variante: "128 GB",
+        nome: "iPhone 15 Plus", anoLancamento: 2023, ram: 6, armazenamento: 128,
+        processador: "Apple A16 Bionic", gpu: "Apple GPU 5-core",
+        tela: { tipo: "OLED", tamanho: 6.7, resolucao: "2796 × 1290", hz: 60, brilhoNits: 2000 },
+        camera: { principalMp: 48, ultrawideMp: 12, teleobjetivaMp: 0, frontalMp: 12, video: "4K 60 fps" },
+        bateria: { mah: 4383 }, carregamento: { watts: 20, semFioWatts: 15 },
+        construcao: { material: "Alumínio e vidro", protecao: "IP68" },
+        conectividade: { cincoG: true, wifi: "Wi‑Fi 6", bluetooth: "5.3", nfc: true },
+        software: { sistema: "iOS", anosAtualizacoes: 5 },
+        preco: { atual: 4999, medio: 5199, minimo: 4699, maximo: 5599, tipo: "estimado" },
+        notas: { tela: 8.8, camera: 9.0, processamento: 9.2, gpu: 9.0, bateria: 9.1, carregamento: 7.2, construcao: 9.1, conectividade: 8.8, software: 9.4, atualizacoes: 9.4, armazenamento: 8.0, custoBeneficio: 8.0 }
+    }),
+    base({
+        id: "apple-iphone-15-pro-128", marca: "Apple", modelo: "iPhone 15 Pro", variante: "128 GB",
+        nome: "iPhone 15 Pro", anoLancamento: 2023, ram: 8, armazenamento: 128,
+        processador: "Apple A17 Pro", gpu: "Apple GPU 6-core",
+        tela: { tipo: "OLED LTPO", tamanho: 6.1, resolucao: "2556 × 1179", hz: 120, brilhoNits: 2000 },
+        camera: { principalMp: 48, ultrawideMp: 12, teleobjetivaMp: 12, frontalMp: 12, video: "4K 60 fps ProRes" },
+        bateria: { mah: 3274 }, carregamento: { watts: 20, semFioWatts: 15 },
+        construcao: { material: "Titânio e vidro", protecao: "IP68" },
+        conectividade: { cincoG: true, wifi: "Wi‑Fi 6E", bluetooth: "5.3", nfc: true },
+        software: { sistema: "iOS", anosAtualizacoes: 5 },
+        preco: { atual: 5999, medio: 6299, minimo: 5599, maximo: 6799, tipo: "estimado" },
+        notas: { tela: 9.4, camera: 9.5, processamento: 9.7, gpu: 9.6, bateria: 8.5, carregamento: 7.4, construcao: 9.7, conectividade: 9.2, software: 9.6, atualizacoes: 9.5, armazenamento: 8.2, custoBeneficio: 8.1 }
+    }),
+    base({
+        id: "apple-iphone-15-pro-max-256", marca: "Apple", modelo: "iPhone 15 Pro Max", variante: "256 GB",
+        nome: "iPhone 15 Pro Max", anoLancamento: 2023, ram: 8, armazenamento: 256,
+        processador: "Apple A17 Pro", gpu: "Apple GPU 6-core",
+        tela: { tipo: "OLED LTPO", tamanho: 6.7, resolucao: "2796 × 1290", hz: 120, brilhoNits: 2000 },
+        camera: { principalMp: 48, ultrawideMp: 12, teleobjetivaMp: 12, frontalMp: 12, video: "4K 60 fps ProRes" },
+        bateria: { mah: 4441 }, carregamento: { watts: 20, semFioWatts: 15 },
+        construcao: { material: "Titânio e vidro", protecao: "IP68" },
+        conectividade: { cincoG: true, wifi: "Wi‑Fi 6E", bluetooth: "5.3", nfc: true },
+        software: { sistema: "iOS", anosAtualizacoes: 5 },
+        preco: { atual: 6999, medio: 7399, minimo: 6599, maximo: 7899, tipo: "estimado" },
+        notas: { tela: 9.6, camera: 9.7, processamento: 9.7, gpu: 9.6, bateria: 9.2, carregamento: 7.4, construcao: 9.7, conectividade: 9.2, software: 9.6, atualizacoes: 9.5, armazenamento: 9.0, custoBeneficio: 7.8 }
+    }),
+    base({
+        id: "samsung-galaxy-s24-256", marca: "Samsung", modelo: "Galaxy S24", variante: "256 GB",
+        nome: "Galaxy S24", anoLancamento: 2024, ram: 8, armazenamento: 256,
+        processador: "Exynos 2400", gpu: "Xclipse 940",
+        tela: { tipo: "Dynamic AMOLED 2X", tamanho: 6.2, resolucao: "2340 × 1080", hz: 120, brilhoNits: 2600 },
+        camera: { principalMp: 50, ultrawideMp: 12, teleobjetivaMp: 10, frontalMp: 12, video: "8K 30 fps" },
+        bateria: { mah: 4000 }, carregamento: { watts: 25, semFioWatts: 15 },
+        construcao: { material: "Alumínio e vidro", protecao: "IP68" },
+        conectividade: { cincoG: true, wifi: "Wi‑Fi 6E", bluetooth: "5.3", nfc: true },
+        software: { sistema: "Android / One UI", anosAtualizacoes: 7 },
+        preco: { atual: 3599, medio: 3899, minimo: 3299, maximo: 4299, tipo: "estimado" },
+        notas: { tela: 9.3, camera: 9.1, processamento: 9.3, gpu: 9.2, bateria: 8.7, carregamento: 8.0, construcao: 9.3, conectividade: 9.3, software: 9.2, atualizacoes: 9.8, armazenamento: 9.0, custoBeneficio: 9.1 }
+    }),
+    base({
+        id: "samsung-galaxy-s24-plus-256", marca: "Samsung", modelo: "Galaxy S24+", variante: "256 GB",
+        nome: "Galaxy S24+", anoLancamento: 2024, ram: 12, armazenamento: 256,
+        processador: "Exynos 2400", gpu: "Xclipse 940",
+        tela: { tipo: "Dynamic AMOLED 2X LTPO", tamanho: 6.7, resolucao: "3120 × 1440", hz: 120, brilhoNits: 2600 },
+        camera: { principalMp: 50, ultrawideMp: 12, teleobjetivaMp: 10, frontalMp: 12, video: "8K 30 fps" },
+        bateria: { mah: 4900 }, carregamento: { watts: 45, semFioWatts: 15 },
+        construcao: { material: "Alumínio e vidro", protecao: "IP68" },
+        conectividade: { cincoG: true, wifi: "Wi‑Fi 6E", bluetooth: "5.3", nfc: true },
+        software: { sistema: "Android / One UI", anosAtualizacoes: 7 },
+        preco: { atual: 4599, medio: 4899, minimo: 4299, maximo: 5299, tipo: "estimado" },
+        notas: { tela: 9.6, camera: 9.1, processamento: 9.3, gpu: 9.2, bateria: 9.2, carregamento: 8.7, construcao: 9.3, conectividade: 9.3, software: 9.2, atualizacoes: 9.8, armazenamento: 9.2, custoBeneficio: 9.0 }
+    }),
+    base({
+        id: "samsung-galaxy-s24-ultra-256", marca: "Samsung", modelo: "Galaxy S24 Ultra", variante: "256 GB",
+        nome: "Galaxy S24 Ultra", anoLancamento: 2024, ram: 12, armazenamento: 256,
+        processador: "Snapdragon 8 Gen 3 for Galaxy", gpu: "Adreno 750",
+        tela: { tipo: "Dynamic AMOLED 2X LTPO", tamanho: 6.8, resolucao: "3120 × 1440", hz: 120, brilhoNits: 2600 },
+        camera: { principalMp: 200, ultrawideMp: 12, teleobjetivaMp: 50, frontalMp: 12, video: "8K 30 fps" },
+        bateria: { mah: 5000 }, carregamento: { watts: 45, semFioWatts: 15 },
+        construcao: { material: "Titânio e vidro", protecao: "IP68" },
+        conectividade: { cincoG: true, wifi: "Wi‑Fi 7", bluetooth: "5.3", nfc: true },
+        software: { sistema: "Android / One UI", anosAtualizacoes: 7 },
+        preco: { atual: 6499, medio: 6899, minimo: 6099, maximo: 7499, tipo: "estimado" },
+        notas: { tela: 9.8, camera: 9.8, processamento: 9.7, gpu: 9.7, bateria: 9.3, carregamento: 8.7, construcao: 9.7, conectividade: 9.7, software: 9.3, atualizacoes: 9.8, armazenamento: 9.2, custoBeneficio: 8.4 }
+    }),
+    base({
+        id: "xiaomi-14-512", marca: "Xiaomi", modelo: "Xiaomi 14", variante: "512 GB",
+        nome: "Xiaomi 14", anoLancamento: 2024, ram: 12, armazenamento: 512,
+        processador: "Snapdragon 8 Gen 3", gpu: "Adreno 750",
+        tela: { tipo: "LTPO OLED", tamanho: 6.36, resolucao: "2670 × 1200", hz: 120, brilhoNits: 3000 },
+        camera: { principalMp: 50, ultrawideMp: 50, teleobjetivaMp: 50, frontalMp: 32, video: "8K 24 fps" },
+        bateria: { mah: 4610 }, carregamento: { watts: 90, semFioWatts: 50 },
+        construcao: { material: "Alumínio e vidro", protecao: "IP68" },
+        conectividade: { cincoG: true, wifi: "Wi‑Fi 7", bluetooth: "5.4", nfc: true },
+        software: { sistema: "Android / HyperOS", anosAtualizacoes: 4 },
+        preco: { atual: 4699, medio: 4999, minimo: 4399, maximo: 5399, tipo: "estimado" },
+        notas: { tela: 9.5, camera: 9.3, processamento: 9.7, gpu: 9.7, bateria: 9.1, carregamento: 9.7, construcao: 9.3, conectividade: 9.7, software: 8.8, atualizacoes: 8.7, armazenamento: 9.8, custoBeneficio: 9.1 }
+    }),
+    base({
+        id: "xiaomi-14-ultra-512", marca: "Xiaomi", modelo: "Xiaomi 14 Ultra", variante: "512 GB",
+        nome: "Xiaomi 14 Ultra", anoLancamento: 2024, ram: 16, armazenamento: 512,
+        processador: "Snapdragon 8 Gen 3", gpu: "Adreno 750",
+        tela: { tipo: "LTPO AMOLED", tamanho: 6.73, resolucao: "3200 × 1440", hz: 120, brilhoNits: 3000 },
+        camera: { principalMp: 50, ultrawideMp: 50, teleobjetivaMp: 50, frontalMp: 32, video: "8K 30 fps" },
+        bateria: { mah: 5000 }, carregamento: { watts: 90, semFioWatts: 80 },
+        construcao: { material: "Alumínio e couro sintético", protecao: "IP68" },
+        conectividade: { cincoG: true, wifi: "Wi‑Fi 7", bluetooth: "5.4", nfc: true },
+        software: { sistema: "Android / HyperOS", anosAtualizacoes: 4 },
+        preco: { atual: 7299, medio: 7699, minimo: 6899, maximo: 8299, tipo: "estimado" },
+        notas: { tela: 9.8, camera: 9.9, processamento: 9.7, gpu: 9.7, bateria: 9.3, carregamento: 9.8, construcao: 9.4, conectividade: 9.7, software: 8.8, atualizacoes: 8.7, armazenamento: 9.8, custoBeneficio: 8.2 }
+    }),
+    base({
+        id: "redmi-note-14-pro-256", marca: "Redmi", modelo: "Redmi Note 14 Pro", variante: "256 GB",
+        nome: "Redmi Note 14 Pro", anoLancamento: 2024, ram: 8, armazenamento: 256,
+        processador: "Dimensity 7300 Ultra", gpu: "Mali-G615 MC2",
+        tela: { tipo: "AMOLED", tamanho: 6.67, resolucao: "2712 × 1220", hz: 120, brilhoNits: 3000 },
+        camera: { principalMp: 200, ultrawideMp: 8, teleobjetivaMp: 0, frontalMp: 20, video: "4K 30 fps" },
+        bateria: { mah: 5110 }, carregamento: { watts: 45, semFioWatts: 0 },
+        construcao: { material: "Vidro e polímero", protecao: "IP68" },
+        conectividade: { cincoG: true, wifi: "Wi‑Fi 6", bluetooth: "5.4", nfc: true },
+        software: { sistema: "Android / HyperOS", anosAtualizacoes: 3 },
+        preco: { atual: 2199, medio: 2399, minimo: 1999, maximo: 2599, tipo: "estimado" },
+        notas: { tela: 9.1, camera: 8.5, processamento: 8.3, gpu: 8.1, bateria: 9.1, carregamento: 8.8, construcao: 8.7, conectividade: 8.8, software: 8.4, atualizacoes: 8.0, armazenamento: 9.0, custoBeneficio: 9.4 }
+    }),
+    base({
+        id: "motorola-edge-50-pro-256", marca: "Motorola", modelo: "Edge 50 Pro", variante: "256 GB",
+        nome: "Edge 50 Pro", anoLancamento: 2024, ram: 12, armazenamento: 256,
+        processador: "Snapdragon 7 Gen 3", gpu: "Adreno 720",
+        tela: { tipo: "pOLED", tamanho: 6.7, resolucao: "2712 × 1220", hz: 144, brilhoNits: 2000 },
+        camera: { principalMp: 50, ultrawideMp: 13, teleobjetivaMp: 10, frontalMp: 50, video: "4K 30 fps" },
+        bateria: { mah: 4500 }, carregamento: { watts: 125, semFioWatts: 50 },
+        construcao: { material: "Alumínio e couro sintético", protecao: "IP68" },
+        conectividade: { cincoG: true, wifi: "Wi‑Fi 6E", bluetooth: "5.4", nfc: true },
+        software: { sistema: "Android / Hello UI", anosAtualizacoes: 3 },
+        preco: { atual: 2999, medio: 3299, minimo: 2799, maximo: 3599, tipo: "estimado" },
+        notas: { tela: 9.3, camera: 8.9, processamento: 8.7, gpu: 8.6, bateria: 8.8, carregamento: 9.9, construcao: 9.0, conectividade: 9.2, software: 8.8, atualizacoes: 8.0, armazenamento: 9.0, custoBeneficio: 9.3 }
+    }),
+    base({
+        id: "motorola-edge-50-ultra-512", marca: "Motorola", modelo: "Edge 50 Ultra", variante: "512 GB",
+        nome: "Edge 50 Ultra", anoLancamento: 2024, ram: 12, armazenamento: 512,
+        processador: "Snapdragon 8s Gen 3", gpu: "Adreno 735",
+        tela: { tipo: "pOLED", tamanho: 6.7, resolucao: "2712 × 1220", hz: 144, brilhoNits: 2500 },
+        camera: { principalMp: 50, ultrawideMp: 50, teleobjetivaMp: 64, frontalMp: 50, video: "4K 60 fps" },
+        bateria: { mah: 4500 }, carregamento: { watts: 125, semFioWatts: 50 },
+        construcao: { material: "Alumínio e madeira/couro", protecao: "IP68" },
+        conectividade: { cincoG: true, wifi: "Wi‑Fi 7", bluetooth: "5.4", nfc: true },
+        software: { sistema: "Android / Hello UI", anosAtualizacoes: 3 },
+        preco: { atual: 3999, medio: 4299, minimo: 3699, maximo: 4699, tipo: "estimado" },
+        notas: { tela: 9.5, camera: 9.3, processamento: 9.3, gpu: 9.2, bateria: 8.8, carregamento: 9.9, construcao: 9.2, conectividade: 9.6, software: 8.8, atualizacoes: 8.0, armazenamento: 9.8, custoBeneficio: 9.2 }
+    }),
+    base({
+        id: "google-pixel-9-128", marca: "Google", modelo: "Pixel 9", variante: "128 GB",
+        nome: "Pixel 9", anoLancamento: 2024, ram: 12, armazenamento: 128,
+        processador: "Google Tensor G4", gpu: "Mali-G715",
+        tela: { tipo: "OLED", tamanho: 6.3, resolucao: "2424 × 1080", hz: 120, brilhoNits: 2700 },
+        camera: { principalMp: 50, ultrawideMp: 48, teleobjetivaMp: 0, frontalMp: 10.5, video: "4K 60 fps" },
+        bateria: { mah: 4700 }, carregamento: { watts: 27, semFioWatts: 15 },
+        construcao: { material: "Alumínio e vidro", protecao: "IP68" },
+        conectividade: { cincoG: true, wifi: "Wi‑Fi 7", bluetooth: "5.3", nfc: true },
+        software: { sistema: "Android", anosAtualizacoes: 7 },
+        preco: { atual: 4499, medio: 4799, minimo: 4199, maximo: 5199, tipo: "estimado" },
+        notas: { tela: 9.3, camera: 9.5, processamento: 9.0, gpu: 8.8, bateria: 8.9, carregamento: 8.1, construcao: 9.2, conectividade: 9.5, software: 9.8, atualizacoes: 9.8, armazenamento: 8.2, custoBeneficio: 8.7 }
+    }),
+    base({
+        id: "google-pixel-9-pro-256", marca: "Google", modelo: "Pixel 9 Pro", variante: "256 GB",
+        nome: "Pixel 9 Pro", anoLancamento: 2024, ram: 16, armazenamento: 256,
+        processador: "Google Tensor G4", gpu: "Mali-G715",
+        tela: { tipo: "LTPO OLED", tamanho: 6.3, resolucao: "2856 × 1280", hz: 120, brilhoNits: 3000 },
+        camera: { principalMp: 50, ultrawideMp: 48, teleobjetivaMp: 48, frontalMp: 42, video: "8K 30 fps" },
+        bateria: { mah: 4700 }, carregamento: { watts: 27, semFioWatts: 21 },
+        construcao: { material: "Alumínio e vidro", protecao: "IP68" },
+        conectividade: { cincoG: true, wifi: "Wi‑Fi 7", bluetooth: "5.3", nfc: true },
+        software: { sistema: "Android", anosAtualizacoes: 7 },
+        preco: { atual: 5999, medio: 6299, minimo: 5599, maximo: 6799, tipo: "estimado" },
+        notas: { tela: 9.7, camera: 9.8, processamento: 9.1, gpu: 8.9, bateria: 8.9, carregamento: 8.2, construcao: 9.4, conectividade: 9.5, software: 9.8, atualizacoes: 9.8, armazenamento: 9.2, custoBeneficio: 8.3 }
+    }),
+    base({
+        id: "oneplus-12-512", marca: "OnePlus", modelo: "OnePlus 12", variante: "512 GB",
+        nome: "OnePlus 12", anoLancamento: 2024, ram: 16, armazenamento: 512,
+        processador: "Snapdragon 8 Gen 3", gpu: "Adreno 750",
+        tela: { tipo: "LTPO AMOLED", tamanho: 6.82, resolucao: "3168 × 1440", hz: 120, brilhoNits: 4500 },
+        camera: { principalMp: 50, ultrawideMp: 48, teleobjetivaMp: 64, frontalMp: 32, video: "8K 24 fps" },
+        bateria: { mah: 5400 }, carregamento: { watts: 100, semFioWatts: 50 },
+        construcao: { material: "Alumínio e vidro", protecao: "IP65" },
+        conectividade: { cincoG: true, wifi: "Wi‑Fi 7", bluetooth: "5.4", nfc: true },
+        software: { sistema: "Android / OxygenOS", anosAtualizacoes: 4 },
+        preco: { atual: 4899, medio: 5199, minimo: 4599, maximo: 5599, tipo: "estimado" },
+        notas: { tela: 9.7, camera: 9.3, processamento: 9.7, gpu: 9.7, bateria: 9.6, carregamento: 9.8, construcao: 9.0, conectividade: 9.7, software: 9.1, atualizacoes: 8.7, armazenamento: 9.8, custoBeneficio: 9.3 }
+    })
+];
