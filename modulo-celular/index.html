@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Pesquise, compare e encontre smartphones equivalentes no F1A Soluções.">
+    <title>Comparador de Smartphones - F1A Soluções</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="comparador.css">
+</head>
+<body id="corpoPagina" style="display:none">
+    <div id="overlayMobile" class="overlay-mobile"></div>
+
+    <aside class="sidebar" id="sidebarF1A">
+        <div class="sidebar-logo" data-ir-lobby>
+            <img src="../assets/logo_f1a.png" id="logoSidebar" alt="F1A Soluções">
+        </div>
+        <nav class="nav-links" aria-label="Navegação do comparador">
+            <a href="#inicio" class="nav-item ativo"><span class="material-symbols-rounded">manage_search</span><span class="nav-texto">Comparador</span></a>
+            <a href="#equivalentes" class="nav-item"><span class="material-symbols-rounded">compare_arrows</span><span class="nav-texto">Equivalentes</span></a>
+            <a href="#comparacao" class="nav-item"><span class="material-symbols-rounded">view_column</span><span class="nav-texto">Comparação</span></a>
+            <a href="#ranking" class="nav-item"><span class="material-symbols-rounded">leaderboard</span><span class="nav-texto">Ranking</span></a>
+            <div class="nav-divisor"></div>
+            <a href="../lobby.html" class="nav-item"><span class="material-symbols-rounded">arrow_back</span><span class="nav-texto">Sair do Módulo</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <button type="button" class="btn-icon" id="btnMenu" aria-label="Recolher menu"><span class="material-symbols-rounded">menu</span></button>
+                <h2 class="header-title">Comparador de Smartphones</h2>
+            </div>
+            <div class="header-right">
+                <div id="containerSeletorVisaoEmpresa" class="company-context" aria-label="Empresa ativa"></div>
+                <button type="button" class="btn-icon" id="btnTemaGlobal" aria-label="Alternar tema"><span class="material-symbols-rounded">dark_mode</span></button>
+                <div class="user-profile" id="perfilUsuario" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                    <div class="user-avatar" id="iniciaisUsuario">--</div>
+                    <div class="user-info">
+                        <span class="user-name" id="nomeUsuario">Carregando...</span>
+                        <span class="user-role" id="cargoUsuario">Aguarde</span>
+                    </div>
+                    <span class="material-symbols-rounded">expand_more</span>
+                    <div class="menu-perfil-flutuante escondido" id="dropdownPerfilLocal">
+                        <a href="#" class="dropdown-item" id="btnAlterarNome"><span class="material-symbols-rounded">edit</span>Alterar Nome</a>
+                        <a href="#" class="dropdown-item danger" id="btnSair"><span class="material-symbols-rounded">logout</span>Sair do Sistema</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="mesa-container comparator-shell">
+                <section class="page-header" id="inicio">
+                    <div>
+                        <span class="eyebrow">Análise objetiva e configurável</span>
+                        <h1>Comparador de Smartphones</h1>
+                        <p>Encontre, compare e descubra os smartphones equivalentes ao aparelho pesquisado.</p>
+                    </div>
+                    <div class="profile-selector">
+                        <label for="perfilUso">Qual é o melhor para você?</label>
+                        <select id="perfilUso" name="perfilUso"></select>
+                    </div>
+                </section>
+
+                <section class="search-card card" aria-labelledby="tituloBusca">
+                    <div class="search-heading">
+                        <span class="material-symbols-rounded">search</span>
+                        <div><h2 id="tituloBusca">Pesquise um aparelho</h2><p>Selecione a versão exata para iniciar a análise.</p></div>
+                    </div>
+                    <div class="search-box">
+                        <label for="buscaSmartphone">Modelo do smartphone</label>
+                        <div class="search-input-wrap">
+                            <span class="material-symbols-rounded">smartphone</span>
+                            <input type="search" id="buscaSmartphone" name="buscaSmartphone" placeholder="Digite o modelo do smartphone..." autocomplete="off" aria-autocomplete="list" aria-controls="autocompleteResultados">
+                            <button type="button" id="limparBusca" aria-label="Limpar pesquisa" hidden><span class="material-symbols-rounded">close</span></button>
+                        </div>
+                        <div id="autocompleteResultados" class="autocomplete-panel" role="listbox" hidden></div>
+                    </div>
+                    <div class="search-examples"><span>Exemplos:</span><button type="button">iPhone 15</button><button type="button">Galaxy S24</button><button type="button">Xiaomi 14</button><button type="button">Edge 50</button><button type="button">Pixel 9</button></div>
+                    <div id="catalogoStatus" class="catalog-status" aria-live="polite">Carregando catálogo...</div>
+                </section>
+
+                <section id="aparelhoSelecionado" class="section-block" hidden aria-live="polite"></section>
+
+                <section id="equivalentes" class="section-block" hidden>
+                    <div class="section-heading">
+                        <div><span class="eyebrow">Ordenados pelo índice calculado</span><h2>Smartphones equivalentes</h2><p>Preço, desempenho e conjunto técnico são avaliados em conjunto.</p></div>
+                        <button type="button" class="btn-primary compare-selected-button" id="btnCompararSelecionados" disabled><span class="material-symbols-rounded">view_column</span>Comparar selecionados <b id="contadorSelecionados">0</b></button>
+                    </div>
+                    <div class="filters-card card">
+                        <div class="form-group"><label for="filtroMarca">Marca</label><select id="filtroMarca" name="filtroMarca"><option value="">Todas</option></select></div>
+                        <div class="form-group"><label for="filtroPreco">Preço máximo</label><input type="number" id="filtroPreco" name="filtroPreco" min="0" step="100" placeholder="Sem limite"></div>
+                        <div class="form-group"><label for="filtroNota">Nota mínima</label><input type="number" id="filtroNota" name="filtroNota" min="0" max="10" step="0.1" placeholder="0"></div>
+                        <div class="form-group"><label for="filtroRam">RAM mínima</label><select id="filtroRam" name="filtroRam"><option value="">Todas</option><option value="6">6 GB</option><option value="8">8 GB</option><option value="12">12 GB</option><option value="16">16 GB</option></select></div>
+                    </div>
+                    <div id="listaEquivalentes" class="equivalents-grid"></div>
+                </section>
+
+                <section id="comparacao" class="section-block" hidden>
+                    <div class="section-heading"><div><span class="eyebrow">Notas de 0 a 10</span><h2>Comparação lado a lado</h2><p>Clique em qualquer nota para ver os critérios usados.</p></div></div>
+                    <div id="tabelaComparacao" class="card comparison-card"></div>
+                </section>
+
+                <section id="ranking" class="section-block">
+                    <div id="rankingConteudo" class="card ranking-card"><div class="empty-state">Carregando ranking...</div></div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay escondido" id="modalDetalhes" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+        <div class="modal-caixa modal-large" id="modalDetalhesConteudo"></div>
+    </div>
+    <div class="modal-overlay escondido" id="modalExplicacao" role="dialog" aria-modal="true">
+        <div class="modal-caixa modal-small">
+            <div class="modal-header"><h3 id="tituloExplicacao">Por que esta nota?</h3><button type="button" class="btn-fechar" data-fechar-explicacao><span class="material-symbols-rounded">close</span></button></div>
+            <div class="modal-body"><ul id="listaExplicacao"></ul></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="../core.js?v=1"></script>
+    <script src="../ui.js?v=1"></script>
+    <script type="module" src="comparador.js"></script>
+</body>
+</html>
